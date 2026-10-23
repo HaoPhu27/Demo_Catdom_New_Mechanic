@@ -589,8 +589,10 @@ footer.site-footer {
 
 @media (min-width: 761px) {
   .mech-grid:has(.card-art.is-embed) {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  }
+  .mech-reverse:has(.card-art.is-embed) {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   }
 }
 
@@ -933,7 +935,8 @@ function applyEmbedStyle(mechId) {
     }
     style.textContent = `header.topbar{display:none!important}
 main{padding-top:12px!important}
-main>*:not(${sel}){display:none!important}`;
+main>*:not(${sel}){display:none!important}
+.demos{grid-template-columns:repeat(2,minmax(0,1fr))!important}`;
     if (noticeEl) noticeEl.hidden = true;
 
     measureFrame(iframe, doc);
