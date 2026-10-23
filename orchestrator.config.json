@@ -33,7 +33,8 @@
     }
   },
   "checks": [
-    { "name": "html-agy", "command": "node tools/check-html.mjs selfish-cat-agy.html", "timeout_sec": 60 }
+    { "name": "test-weed", "command": "node --test tests/weed.test.mjs", "timeout_sec": 120 },
+    { "name": "html-weed", "command": "node tools/check-html.mjs weed.html", "timeout_sec": 60 }
   ],
   "checks_example": [
     { "name": "lint",  "command": "npm run lint",     "timeout_sec": 300 },
