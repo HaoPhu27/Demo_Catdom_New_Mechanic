@@ -2,3 +2,5 @@
 state/
 tasks/
 reviews/
+tools/solvecli/bin/
+tools/solvecli/obj/
