@@ -1,0 +1,1216 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CatDom Mechanics – Showcase &amp; Playground</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="assets/catdom-kit.js"></script>
+<style>
+:root {
+  --bg-page: #fff6ec;
+  --bg-alt: #f3ecff;
+  --bg-card: #fffdf8;
+  --ink: #2a2340;
+  --accent: #7b4dff;
+  --accent-soft: #efe8ff;
+  --border: 3px solid #2a2340;
+  --border-sm: 2px solid #2a2340;
+  --radius-btn: 14px;
+  --radius-card: 22px;
+  --radius-chip: 999px;
+  --shadow-btn: 4px 4px 0 #2a2340;
+  --shadow-btn-hover: 6px 6px 0 #2a2340;
+  --shadow-btn-active: 2px 2px 0 #2a2340;
+  --shadow-card: 6px 6px 0 #2a2340;
+  --shadow-chip: 3px 3px 0 #2a2340;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-page);
+  color: var(--ink);
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, .font-title {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ---------- Header ---------- */
+header.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: var(--border);
+  width: 100%;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.logo {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--ink);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo span {
+  font-size: 24px;
+}
+
+nav.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+nav.main-nav a {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+nav.main-nav a:hover {
+  background: var(--accent-soft);
+  border-color: var(--ink);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  border: var(--border);
+  border-radius: var(--radius-btn);
+  box-shadow: var(--shadow-btn);
+  padding: 12px 24px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  user-select: none;
+}
+
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-btn-hover);
+}
+
+.btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--shadow-btn-active);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #6c3ce8;
+}
+
+.btn-secondary {
+  background: var(--bg-card);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  background: #fff6ec;
+}
+
+.chip {
+  border: var(--border-sm);
+  border-radius: var(--radius-chip);
+  box-shadow: var(--shadow-chip);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 14px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+/* ---------- Hero ---------- */
+.hero {
+  background: var(--bg-page);
+  padding: 64px 24px 32px;
+}
+
+.hero-wrap {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 48px;
+}
+
+.hero-text h1 {
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.hero-desc {
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 28px;
+  max-width: 580px;
+}
+
+.hero-btns {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Cards & Art ---------- */
+.card-art {
+  border: var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-card);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 270px;
+}
+
+.art-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.art-cat-single {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.art-cat-single svg {
+  width: 100%;
+  height: 100%;
+}
+
+.art-count-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: 3px solid var(--ink);
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 26px;
+  text-align: center;
+  color: var(--ink);
+  background: #ffb02e;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.art-speech-bubble {
+  background: #fffdf8;
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 6px 16px;
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 14.5px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.art-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.art-cat-item {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+
+.art-cat-item svg {
+  width: 100%;
+  height: 100%;
+}
+
+.art-prop {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.art-prop svg {
+  width: 100%;
+  height: 100%;
+}
+
+.art-heart-prop {
+  width: 44px;
+  height: 44px;
+}
+
+.art-heart-prop svg {
+  width: 100%;
+  height: 100%;
+}
+
+.art-germ {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  font-size: 26px;
+}
+
+.hero-cats-cluster {
+  display: grid;
+  grid-template-columns: repeat(2, 95px);
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.hero-cluster-cat {
+  width: 95px;
+  height: 95px;
+}
+
+.hero-cluster-cat svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Mechanic Sections ---------- */
+section.mech {
+  width: 100%;
+  position: relative;
+}
+
+section#selfish { background: var(--bg-page); }
+section#weed { background: var(--bg-alt); }
+section#sick { background: var(--bg-page); }
+section#couple { background: var(--bg-alt); }
+
+.mech-grid {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 48px;
+}
+
+.mech-reverse {
+  grid-template-columns: 0.85fr 1.15fr;
+}
+
+.mech-reverse .mech-text-col {
+  order: 2;
+}
+
+.mech-reverse .mech-art-col {
+  order: 1;
+}
+
+.mech-text-col h2 {
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.lead-desc {
+  font-size: 17.5px;
+  margin: 0 0 18px 0;
+}
+
+.lead-desc b {
+  color: var(--ink);
+}
+
+ul.mech-rules {
+  margin: 0 0 24px 0;
+  padding-left: 20px;
+}
+
+ul.mech-rules li {
+  margin-bottom: 10px;
+  font-size: 15.5px;
+}
+
+ul.mech-rules li b {
+  font-weight: 700;
+}
+
+.btn-group {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.link-detail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--accent);
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.link-detail:hover {
+  text-decoration: underline;
+  transform: translateX(4px);
+}
+
+/* ---------- Drip Dividers ---------- */
+.drip-wrap {
+  width: 100%;
+  line-height: 0;
+  overflow: hidden;
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
+.drip-svg {
+  display: block;
+  width: 100%;
+  height: 48px;
+}
+
+/* ---------- Footer ---------- */
+footer.site-footer {
+  background: var(--ink);
+  color: #fffdf8;
+  padding: 64px 24px 32px;
+  border-top: var(--border);
+}
+
+.footer-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.5fr;
+  gap: 40px;
+  margin-bottom: 48px;
+}
+
+.footer-brand .footer-logo {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 800;
+  font-size: 24px;
+  color: #fffdf8;
+  margin-bottom: 12px;
+}
+
+.footer-brand p {
+  color: #d9d2f0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.footer-col h4 {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  color: #fffdf8;
+  margin: 0 0 16px 0;
+}
+
+.footer-col nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-col nav a {
+  color: #d9d2f0;
+  text-decoration: none;
+  font-size: 14.5px;
+  transition: color 0.15s;
+}
+
+.footer-col nav a:hover {
+  color: #ffb02e;
+}
+
+.footer-command {
+  background: #1e1930;
+  border: 2px solid #4a3e6b;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #ffd84a;
+  font-family: Consolas, monospace;
+  margin: 10px 0;
+  user-select: all;
+}
+
+.footer-sub {
+  color: #b5aacf;
+  font-size: 13.5px;
+}
+
+.footer-bottom {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px solid #4a3e6b;
+  text-align: center;
+  color: #9f94bd;
+  font-size: 13.5px;
+}
+
+/* ---------- Dialog (Viewer) ---------- */
+dialog#viewer {
+  border: var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 8px 8px 0 var(--ink);
+  background: var(--bg-card);
+  padding: 0;
+  width: 92vw;
+  max-width: 980px;
+  height: 86vh;
+  max-height: 850px;
+  overflow: hidden;
+}
+
+dialog#viewer::backdrop {
+  background: rgba(42, 35, 64, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.viewer-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.viewer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border-bottom: var(--border);
+  flex-shrink: 0;
+}
+
+#viewer-title {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--ink);
+}
+
+.viewer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mode-switch {
+  display: inline-flex;
+  background: var(--bg-page);
+  border: var(--border-sm);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.btn-mode {
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-mode[aria-pressed="true"] {
+  background: var(--accent);
+  color: #ffffff;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.btn-close {
+  width: 36px;
+  height: 36px;
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  background: var(--bg-card);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-close:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.btn-close:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.serve-notice {
+  background: #fff3d6;
+  color: #9a5b00;
+  border-bottom: 2px solid var(--ink);
+  padding: 10px 18px;
+  font-size: 13.5px;
+  margin: 0;
+}
+
+.serve-notice code {
+  background: #ffe3a8;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.viewer-body {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  background: #f5f2fb;
+  overflow: hidden;
+}
+
+#viewer-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ---------- Responsive (Mobile <= 760px) ---------- */
+@media (max-width: 760px) {
+  .header-inner {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  nav.main-nav {
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    gap: 6px;
+  }
+
+  nav.main-nav a {
+    font-size: 13.5px;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+
+  .hero {
+    padding: 36px 16px 20px;
+  }
+
+  .hero-wrap {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .hero-text h1 {
+    font-size: 32px;
+  }
+
+  .hero-btns, .btn-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-btns .btn, .btn-group .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .mech-grid, .mech-reverse {
+    grid-template-columns: 1fr;
+    padding: 40px 16px;
+    gap: 28px;
+  }
+
+  .mech-art-col, .mech-reverse .mech-art-col {
+    order: -1;
+    width: 100%;
+  }
+
+  .mech-text-col, .mech-reverse .mech-text-col {
+    order: 1;
+    width: 100%;
+  }
+
+  .card-art {
+    padding: 24px 16px;
+    min-height: 220px;
+  }
+
+  dialog#viewer {
+    width: 96vw;
+    height: 94vh;
+    max-height: 96vh;
+    border-radius: 16px;
+  }
+
+  .viewer-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+
+  .viewer-toolbar {
+    justify-content: space-between;
+  }
+
+  .mode-switch {
+    flex: 1;
+  }
+
+  .btn-mode {
+    flex: 1;
+    text-align: center;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="header-inner">
+    <a href="#" class="logo"><span>🐱</span> CatDom Mechanics</a>
+    <nav class="main-nav">
+      <a href="#selfish">Mèo Ích Kỷ</a>
+      <a href="#weed">Cây Dại</a>
+      <a href="#sick">Mèo Bệnh</a>
+      <a href="#couple">Couple Mèo</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-wrap">
+      <div class="hero-text">
+        <div class="chip">✨ CatDom Game Mechanics</div>
+        <h1>Bộ Sưu Tập Mechanic Mới Của CatDom</h1>
+        <p class="hero-desc">Trang demo tổng hợp trực quan 4 cơ chế chướng ngại vật độc đáo giúp Lead review gameplay dễ dàng: xem hoạt cảnh tự lặp hoặc chơi thử tương tác ngay trên trang.</p>
+        <div class="hero-btns">
+          <a href="#selfish" class="btn btn-primary">Xem mechanic đầu tiên</a>
+          <a href="#weed" class="btn btn-secondary">Khám phá Cây Dại</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="card-art" id="hero-art">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider from Hero (#fff6ec) to Section 1 (#fff6ec) -->
+  <div class="drip-wrap" style="background: var(--bg-page);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-page)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 1: Selfish Cat -->
+  <section id="selfish" class="mech" data-page="selfish-cat.html">
+    <div class="mech-grid">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 01</div>
+        <h2>😾 Mèo Ích Kỷ</h2>
+        <p class="lead-desc">Phải clear nó <b>trước hoặc trong khi</b> clear N con mèo. Ví dụ số là 5: nó phải nằm trong 5 con được clear đầu tiên, để quá là bị cào.</p>
+        <ul class="mech-rules">
+          <li><b>Bộ đếm N</b> hiện trên đầu Mèo Ích Kỷ ngay từ đầu màn.</li>
+          <li>Mỗi <b>con mèo khác</b> bị clear thì bộ đếm giảm <b>1</b> (hole nuốt 3 con cùng lúc thì giảm 3).</li>
+          <li>Bộ đếm về <b>0</b> mà nó còn trên bàn thì nó <b>nhảy ra cào</b>: thua màn (clear nó trước khi về 0 để an toàn).</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+        </div>
+        <a href="selfish-cat.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-selfish">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider from Section 1 (#fff6ec) to Section 2 (#f3ecff) -->
+  <div class="drip-wrap" style="background: var(--bg-alt);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-page)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 2: Weed -->
+  <section id="weed" class="mech" data-page="weed.html">
+    <div class="mech-grid mech-reverse">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 02</div>
+        <h2>🌿 Cây Dại</h2>
+        <p class="lead-desc">Mỗi mèo lọt hố làm cây dại mọc 1 ô. Phủ kín khu vực là thua, trừ khi Special Hole kịp nhặt thuốc sâu để diệt sạch.</p>
+        <ul class="mech-rules">
+          <li><b>Khu vực cây dại</b> có viền nét đứt; lúc đầu đã có ít nhất 1 ô cây và hole không đi vào được khu này.</li>
+          <li>Mỗi <b>con mèo</b> lọt hố làm cây mọc thêm <b>1 ô</b>, lan sang ô kề cạnh; phủ kín khu vực là thua.</li>
+          <li><b>Special Hole</b> không nuốt mèo, chỉ nhặt được <b>thuốc sâu</b> để xoá sạch toàn bộ cây dại vĩnh viễn.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+        </div>
+        <a href="weed.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-weed">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider from Section 2 (#f3ecff) to Section 3 (#fff6ec) -->
+  <div class="drip-wrap" style="background: var(--bg-page);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-alt)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 3: Sick Cat -->
+  <section id="sick" class="mech" data-page="sick-cat.html">
+    <div class="mech-grid">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 03</div>
+        <h2>🤒 Mèo Bệnh</h2>
+        <p class="lead-desc">Mỗi mèo khoẻ lọt hố làm bệnh lây thêm 1 con. Hãy dập ổ bệnh bằng cách cho mèo bệnh lọt hố trước khi một nửa map nhiễm bệnh.</p>
+        <ul class="mech-rules">
+          <li>Đầu màn, <b>1 con mèo ngẫu nhiên</b> bị bệnh; mèo trong <b>box/tower</b> được bảo vệ, không bao giờ bị lây.</li>
+          <li>Mỗi con mèo <b>khoẻ</b> lọt hố gây <b>1 ca lây</b> sang con khoẻ gần ổ bệnh nhất (tính theo ô ngang + dọc).</li>
+          <li>Cho <b>mèo bệnh</b> lọt hố để dập ổ bệnh; nếu mèo bệnh chiếm <b>≥ 50%</b> số mèo còn lại thì thua.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+        </div>
+        <a href="sick-cat.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-sick">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider from Section 3 (#fff6ec) to Section 4 (#f3ecff) -->
+  <div class="drip-wrap" style="background: var(--bg-alt);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-page)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 4: Couple Cat -->
+  <section id="couple" class="mech" data-page="couple-cat.html">
+    <div class="mech-grid mech-reverse">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 04</div>
+        <h2>💘 Couple Mèo</h2>
+        <p class="lead-desc">Ăn một con mang mũi tên tình yêu thì con còn lại đếm ngược N con mèo. Phải đưa nó lọt hố trước khi đếm về 0.</p>
+        <ul class="mech-rules">
+          <li>Mỗi cặp nối với nhau bằng <b>mũi tên tình yêu</b> cùng màu; ban đầu chúng chưa kích hoạt đếm ngược.</li>
+          <li>Khi ăn <b>một con</b>, con còn lại nhớ người yêu và bắt đầu <b>đếm ngược N</b> mỗi khi có mèo khác lọt hố.</li>
+          <li>Đưa con còn lại lọt hố trước khi về 0 để <b>đoàn tụ an toàn</b>; đếm về 0 thì nó cào và thua màn.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+        </div>
+        <a href="couple-cat.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-couple">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider from Section 4 (#f3ecff) to Footer (#2a2340) -->
+  <div class="drip-wrap" style="background: var(--ink);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-alt)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">🐱 CatDom Mechanics Review</div>
+      <p>Trang demo trực quan hoá cơ chế chướng ngại vật CatDom phục vụ quá trình thẩm định thiết kế màn và cân bằng gameplay của Lead.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Các Mechanic</h4>
+      <nav>
+        <a href="#selfish">Mèo Ích Kỷ (Selfish Cat)</a>
+        <a href="#weed">Cây Dại (Weed Obstacle)</a>
+        <a href="#sick">Mèo Bệnh (Sick Cat)</a>
+        <a href="#couple">Couple Mèo (Love Cats)</a>
+      </nav>
+    </div>
+    <div class="footer-col">
+      <h4>Khởi chạy máy chủ cục bộ</h4>
+      <p class="footer-sub">Để iframe nhúng tải đầy đủ CSS nội bộ và đọc được contentDocument, hãy chạy:</p>
+      <div class="footer-command">node tools/serve.mjs</div>
+      <p class="footer-sub">Mở trình duyệt tại: <a href="http://127.0.0.1:5173/" style="color:#ffb02e;">http://127.0.0.1:5173/</a></p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© CatDom Support &amp; Review Workflow · DreamCoffee Style</p>
+  </div>
+</footer>
+
+<!-- Viewer Dialog -->
+<dialog id="viewer">
+  <div class="viewer-window">
+    <div class="viewer-header">
+      <h2 id="viewer-title">Mechanic Review</h2>
+      <div class="viewer-toolbar">
+        <div class="mode-switch" role="group" aria-label="Chế độ xem">
+          <button type="button" class="btn-mode" data-mode="gif" aria-pressed="true">Xem GIF gameplay</button>
+          <button type="button" class="btn-mode" data-mode="play" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <button type="button" class="btn-close" data-action="close" aria-label="Đóng hộp xem">✕</button>
+      </div>
+    </div>
+    <p id="serve-notice" class="serve-notice" hidden>
+      ⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> trong iframe (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem chế độ rút gọn.
+    </p>
+    <div class="viewer-body">
+      <iframe id="viewer-frame" title="Hộp xem chi tiết mechanic CatDom" src="about:blank"></iframe>
+    </div>
+  </div>
+</dialog>
+
+<!-- Inline Script -->
+<script>
+let currentMech = null;
+let currentMode = null;
+
+const MECH_CONFIG = {
+  selfish: { title: '😾 Mèo Ích Kỷ', page: 'selfish-cat.html' },
+  weed:    { title: '🌿 Cây Dại', page: 'weed.html' },
+  sick:    { title: '🤒 Mèo Bệnh', page: 'sick-cat.html' },
+  couple:  { title: '💘 Couple Mèo', page: 'couple-cat.html' }
+};
+
+function openViewer(mechId, mode) {
+  if (!MECH_CONFIG[mechId] || (mode !== 'gif' && mode !== 'play')) {
+    return;
+  }
+
+  currentMech = mechId;
+  currentMode = mode;
+
+  const cfg = MECH_CONFIG[mechId];
+  const dialog = document.getElementById('viewer');
+  const titleEl = document.getElementById('viewer-title');
+  const iframe = document.getElementById('viewer-frame');
+  const noticeEl = document.getElementById('serve-notice');
+  const btnGif = dialog.querySelector('button[data-mode="gif"]');
+  const btnPlay = dialog.querySelector('button[data-mode="play"]');
+
+  // Đặt tiêu đề theo tên mechanic
+  if (titleEl) {
+    titleEl.textContent = cfg.title;
+  }
+
+  // Cập nhật trạng thái nút chuyển chế độ
+  if (btnGif) btnGif.setAttribute('aria-pressed', mode === 'gif' ? 'true' : 'false');
+  if (btnPlay) btnPlay.setAttribute('aria-pressed', mode === 'play' ? 'true' : 'false');
+
+  function applyEmbedStyle() {
+    try {
+      if (iframe.getAttribute('src') === 'about:blank') {
+        return;
+      }
+      const doc = iframe.contentDocument;
+      if (doc && doc.URL === 'about:blank') {
+        return;
+      }
+      if (!doc || !doc.head) {
+        if (noticeEl) noticeEl.hidden = false;
+        return;
+      }
+      const sel = currentMode === 'gif' ? '.demos' : '.card.play';
+      let style = doc.getElementById('embed-style');
+      if (!style) {
+        style = doc.createElement('style');
+        style.id = 'embed-style';
+        doc.head.appendChild(style);
+      }
+      style.textContent = `header.topbar{display:none!important}
+main{padding-top:12px!important}
+main>*:not(${sel}){display:none!important}`;
+      if (noticeEl) noticeEl.hidden = true;
+    } catch (e) {
+      if (noticeEl) noticeEl.hidden = false;
+    }
+  }
+
+  // Khi iframe load, chèn CSS nhúng nguyên văn vào contentDocument
+  iframe.onload = function() {
+    applyEmbedStyle();
+  };
+
+  const targetPage = cfg.page;
+  const currentSrc = iframe.getAttribute('src');
+  if (currentSrc === targetPage) {
+    applyEmbedStyle();
+  } else {
+    iframe.src = targetPage;
+  }
+
+  // Mở dialog nếu chưa mở
+  if (!dialog.open) {
+    dialog.showModal();
+  }
+}
+
+window.openViewer = openViewer;
+
+// Khởi tạo các sự kiện và vẽ ảnh minh hoạ khi DOM sẵn sàng
+document.addEventListener('DOMContentLoaded', function() {
+  const dialog = document.getElementById('viewer');
+  const iframe = document.getElementById('viewer-frame');
+  const btnClose = dialog.querySelector('button[data-action="close"]');
+  const btnModeGif = dialog.querySelector('button[data-mode="gif"]');
+  const btnModePlay = dialog.querySelector('button[data-mode="play"]');
+
+  // Đóng dialog khi bấm nút close
+  if (btnClose) {
+    btnClose.addEventListener('click', function() {
+      dialog.close();
+    });
+  }
+
+  // Dọn dẹp iframe về about:blank khi đóng dialog (nút close, Esc, backdrop)
+  dialog.addEventListener('close', function() {
+    iframe.src = 'about:blank';
+  });
+
+  // Đóng dialog khi bấm vào nền ngoài khung
+  dialog.addEventListener('click', function(event) {
+    if (event.target === dialog) {
+      dialog.close();
+    }
+  });
+
+  // Chuyển chế độ xem trong dialog
+  if (btnModeGif) {
+    btnModeGif.addEventListener('click', function() {
+      if (currentMech) openViewer(currentMech, 'gif');
+    });
+  }
+  if (btnModePlay) {
+    btnModePlay.addEventListener('click', function() {
+      if (currentMech) openViewer(currentMech, 'play');
+    });
+  }
+
+  // Gắn sự kiện cho các nút trong từng section mechanic
+  document.querySelectorAll('section.mech').forEach(function(sec) {
+    const id = sec.id;
+    const gifBtn = sec.querySelector('button[data-action="gif"]');
+    const playBtn = sec.querySelector('button[data-action="play"]');
+    if (gifBtn) {
+      gifBtn.addEventListener('click', function() {
+        openViewer(id, 'gif');
+      });
+    }
+    if (playBtn) {
+      playBtn.addEventListener('click', function() {
+        openViewer(id, 'play');
+      });
+    }
+  });
+
+  // Vẽ ảnh minh hoạ bằng CatDom.catSVG
+  renderIllustrations();
+});
+
+function renderIllustrations() {
+  if (typeof CatDom === 'undefined') return;
+
+  // Hero: cụm 4 con mèo đại diện cho 4 mechanic
+  const heroArt = document.getElementById('hero-art');
+  if (heroArt) {
+    heroArt.innerHTML = `
+      <div class="art-stage">
+        <div class="hero-cats-cluster">
+          <div class="hero-cluster-cat">${CatDom.catSVG('purple', 'annoyed', {crown: true, arms: 'crossed'})}</div>
+          <div class="hero-cluster-cat">${CatDom.catSVG('green', 'happy')}</div>
+          <div class="hero-cluster-cat">${CatDom.catSVG('pink', 'sick', {sick: true})}</div>
+          <div class="hero-cluster-cat">${CatDom.catSVG('blue', 'love')}</div>
+        </div>
+        <div class="art-speech-bubble">🐱 4 Mechanic Đang Chờ Review!</div>
+      </div>
+    `;
+  }
+
+  // Mechanic 01: Mèo Ích Kỷ
+  const artSelfish = document.getElementById('art-selfish');
+  if (artSelfish) {
+    artSelfish.innerHTML = `
+      <div class="art-stage">
+        <div class="art-cat-single">
+          ${CatDom.catSVG('purple', 'annoyed', {crown: true, arms: 'crossed'})}
+          <div class="art-count-badge">5</div>
+        </div>
+        <div class="art-speech-bubble">"Cho trẫm về trước!"</div>
+      </div>
+    `;
+  }
+
+  // Mechanic 02: Cây Dại
+  const artWeed = document.getElementById('art-weed');
+  if (artWeed) {
+    artWeed.innerHTML = `
+      <div class="art-stage">
+        <div class="art-row">
+          <div class="art-cat-item">${CatDom.catSVG('green', 'scared')}</div>
+          <div class="art-prop">${CatDom.weedSVG()}</div>
+          <div class="art-prop">${CatDom.pesticideSVG()}</div>
+        </div>
+        <div class="art-speech-bubble">"Special Hole mau nhặt thuốc sâu!"</div>
+      </div>
+    `;
+  }
+
+  // Mechanic 03: Mèo Bệnh
+  const artSick = document.getElementById('art-sick');
+  if (artSick) {
+    artSick.innerHTML = `
+      <div class="art-stage">
+        <div class="art-row">
+          <div class="art-cat-item">${CatDom.catSVG('pink', 'sick', {sick: true})}<span class="art-germ">🦠</span></div>
+          <div class="art-cat-item">${CatDom.catSVG('blue', 'scared')}</div>
+        </div>
+        <div class="art-speech-bubble">"Hắt xì! Mau cho lọt hố để dập ổ bệnh!"</div>
+      </div>
+    `;
+  }
+
+  // Mechanic 04: Couple Mèo
+  const artCouple = document.getElementById('art-couple');
+  if (artCouple) {
+    artCouple.innerHTML = `
+      <div class="art-stage">
+        <div class="art-row">
+          <div class="art-cat-item">${CatDom.catSVG('pink', 'love')}</div>
+          <div class="art-prop art-heart-prop">${CatDom.heartMarkSVG('#ff3d8b')}</div>
+          <div class="art-cat-item">${CatDom.catSVG('blue', 'love')}</div>
+        </div>
+        <div class="art-speech-bubble">"Đừng để lạc mất nhau nhé!"</div>
+      </div>
+    `;
+  }
+}
+</script>
+</body>
+</html>
