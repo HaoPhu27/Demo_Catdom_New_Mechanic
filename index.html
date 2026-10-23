@@ -539,6 +539,8 @@ footer.site-footer {
   justify-content: center;
 }
 
+.art-illus[hidden], .art-embed[hidden], .serve-notice[hidden] { display: none !important; }
+
 .art-embed {
   width: 100%;
 }
@@ -895,6 +897,17 @@ const VALID_MECHS = {
 const currentModes = {};
 const observers = {};
 
+function measureFrame(iframe, doc) {
+  try {
+    const main = doc.querySelector('main');
+    const win = doc.defaultView;
+    const h = main
+      ? Math.ceil(main.getBoundingClientRect().bottom + (win ? win.scrollY : 0))
+      : doc.body.scrollHeight;
+    iframe.style.height = h + 'px';
+  } catch (e) {}
+}
+
 function applyEmbedStyle(mechId) {
   const iframe = document.getElementById('frame-' + mechId);
   const embedEl = document.getElementById('embed-' + mechId);
@@ -923,21 +936,21 @@ main{padding-top:12px!important}
 main>*:not(${sel}){display:none!important}`;
     if (noticeEl) noticeEl.hidden = true;
 
-    iframe.style.height = doc.documentElement.scrollHeight + 'px';
+    measureFrame(iframe, doc);
+    requestAnimationFrame(function() {
+      measureFrame(iframe, doc);
+    });
 
     if (observers[mechId]) {
       observers[mechId].disconnect();
       delete observers[mechId];
     }
-    if (typeof ResizeObserver !== 'undefined' && doc.body) {
+    const targetEl = doc.querySelector('main') || doc.body;
+    if (typeof ResizeObserver !== 'undefined' && targetEl) {
       const ro = new ResizeObserver(function() {
-        try {
-          if (doc.documentElement) {
-            iframe.style.height = doc.documentElement.scrollHeight + 'px';
-          }
-        } catch (e) {}
+        measureFrame(iframe, doc);
       });
-      ro.observe(doc.body);
+      ro.observe(targetEl);
       observers[mechId] = ro;
     }
   } catch (e) {
