@@ -11,7 +11,7 @@
 - Game gốc (chỉ đọc): `D:/Xgame/CatDom_NoTime`.
 
 ## Phase hiện tại
-- Feature `mechanics` xong: MW-1, MS-1, MC-1 approved. Nhánh cuối `feature/MC-1` chứa toàn bộ, chưa merge vào `main` (chờ Lead review).
+- Feature `mechanics` xong: MW-1, MS-1, MC-1 approved. Lead đã review và merge vào `main` (2026-10-23).
 
 ## Rủi ro đang mở
 - Điều kiện thua của Mèo bệnh (1/2) chưa được playtest.
