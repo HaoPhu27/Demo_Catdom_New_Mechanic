@@ -33,9 +33,9 @@
     }
   },
   "checks": [
-    { "name": "test-couple", "command": "node --test tests/couple.test.mjs", "timeout_sec": 120 },
-    { "name": "html-couple", "command": "node tools/check-html.mjs couple-cat.html", "timeout_sec": 60 },
-    { "name": "test-weed-sick (hồi quy)", "command": "node --test tests/weed.test.mjs tests/sick.test.mjs", "timeout_sec": 120 }
+    { "name": "test-index", "command": "node --test tests/index.test.mjs", "timeout_sec": 120 },
+    { "name": "html-index", "command": "node tools/check-html.mjs index.html", "timeout_sec": 60 },
+    { "name": "test-logic (hồi quy)", "command": "node --test tests/weed.test.mjs tests/sick.test.mjs tests/couple.test.mjs", "timeout_sec": 120 }
   ],
   "checks_example": [
     { "name": "lint",  "command": "npm run lint",     "timeout_sec": 300 },
