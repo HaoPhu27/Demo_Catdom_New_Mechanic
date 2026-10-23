@@ -1,5 +1,6 @@
 // Test nghiệm thu tĩnh cho index.html theo tasks/feature-landing/plan.md (mục "Hợp đồng nguyên văn").
-// Hành vi chạy thật (mở dialog, nhúng iframe) do Claude review trên trình duyệt.
+// LP-2: bỏ dialog, demo hiện ngay trong khung visual (.mech-art-col) của từng section.
+// Hành vi chạy thật (nhúng iframe, co giãn chiều cao) do Claude review trên trình duyệt.
 // Chạy: node --test tests/index.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -49,22 +50,45 @@ test('mỗi section có đúng 2 nút gif/play với đúng nhãn và link trang
   }
 });
 
-test('dialog xem: id, tiêu đề, iframe, nút đóng, 2 nút chế độ', () => {
-  const open = /<dialog\b[^>]*\bid=["']viewer["'][^>]*>/i.exec(html);
-  assert.ok(open, 'thiếu <dialog id="viewer">');
-  assert.equal((html.match(/<dialog\b/gi) || []).length, 1, 'chỉ có 1 dialog');
-  const body = html.slice(open.index, html.indexOf('</dialog>', open.index));
-  assert.match(body, /<h2\b[^>]*\bid=["']viewer-title["']/);
-  assert.match(body, /<iframe\b[^>]*\bid=["']viewer-frame["'][^>]*\btitle=["'][^"']+["']|<iframe\b[^>]*\btitle=["'][^"']+["'][^>]*\bid=["']viewer-frame["']/, 'iframe cần id="viewer-frame" và title');
-  assert.match(body, /<button\b[^>]*type=["']button["'][^>]*data-action=["']close["']|<button\b[^>]*data-action=["']close["'][^>]*type=["']button["']/);
-  assert.match(body, /<button\b[^>]*data-mode=["']gif["']/);
-  assert.match(body, /<button\b[^>]*data-mode=["']play["']/);
+test('không có popup/modal: không dialog, không showModal, không viewer cũ', () => {
+  assert.doesNotMatch(html, /<dialog\b/i, 'không được có <dialog>');
+  assert.doesNotMatch(inlineScripts, /showModal\s*\(|\.showPopover\s*\(/, 'không được mở modal/popover');
+  assert.doesNotMatch(html, /\bid=["']viewer(?:-frame|-title)?["']/, 'không còn #viewer/#viewer-frame/#viewer-title');
+  assert.doesNotMatch(html, /::backdrop|position\s*:\s*fixed/, 'không được có lớp phủ toàn màn hình');
+  assert.doesNotMatch(inlineScripts, /\bopenViewer\b/, 'bỏ hàm openViewer cũ');
 });
 
-test('JS: openViewer, CSS nhúng nguyên văn, xử lý lỗi, dọn iframe khi đóng', () => {
-  assert.match(inlineScripts, /function\s+openViewer\s*\(|(?:window\.)?openViewer\s*=\s*(?:function|\()/, 'cần hàm toàn cục openViewer');
-  assert.match(inlineScripts, /showModal\s*\(/);
+test('mỗi khung visual chứa sẵn vùng demo: ảnh minh hoạ, iframe, dòng nhắc serve', () => {
+  for (const [id, page] of MECHS) {
+    const {body} = sectionBody(id);
+    const card = new RegExp(`<div\\b[^>]*\\bid=["']art-${id}["'][^>]*>`, 'i').exec(body);
+    assert.ok(card, `section ${id}: thiếu khung #art-${id}`);
+    const artCol = body.slice(body.indexOf('mech-art-col'));
+    assert.ok(artCol.includes(`id="art-${id}"`), `section ${id}: #art-${id} phải nằm trong .mech-art-col`);
+    assert.match(artCol, new RegExp(`<div\\b[^>]*\\bid=["']illus-${id}["']`), `section ${id}: thiếu #illus-${id}`);
+    const embed = new RegExp(`<div\\b[^>]*\\bid=["']embed-${id}["'][^>]*>`, 'i').exec(artCol);
+    assert.ok(embed, `section ${id}: thiếu #embed-${id}`);
+    assert.match(embed[0], /\bhidden\b/, `section ${id}: #embed-${id} phải hidden lúc đầu`);
+    const frame = new RegExp(`<iframe\\b[^>]*\\bid=["']frame-${id}["'][^>]*>`, 'i').exec(artCol);
+    assert.ok(frame, `section ${id}: thiếu iframe #frame-${id} trong khung visual`);
+    assert.match(frame[0], /\btitle=["'][^"']+["']/, `section ${id}: iframe cần title`);
+    assert.match(frame[0], /\bsrc=["']about:blank["']/, `section ${id}: iframe ban đầu src="about:blank"`);
+    assert.match(artCol, /class=["'][^"']*\bserve-notice\b[^"']*["'][^>]*\bhidden\b[^>]*>[\s\S]*?node tools\/serve\.mjs/, `section ${id}: thiếu .serve-notice hidden có chữ node tools/serve.mjs`);
+    for (const act of ['gif', 'play']) {
+      const btn = new RegExp(`<button\\b[^>]*data-action=["']${act}["'][^>]*>`, 'i').exec(body)[0];
+      assert.match(btn, new RegExp(`aria-controls=["']embed-${id}["']`), `section ${id}: nút ${act} cần aria-controls="embed-${id}"`);
+      assert.match(btn, /aria-pressed=["']false["']/, `section ${id}: nút ${act} cần aria-pressed="false" ban đầu`);
+    }
+    assert.ok(page);
+  }
+});
+
+test('JS: showDemo, CSS nhúng nguyên văn, xử lý lỗi, tự co giãn chiều cao', () => {
+  assert.match(inlineScripts, /function\s+showDemo\s*\(/, 'cần hàm showDemo(mechId, mode)');
+  assert.match(inlineScripts, /window\.showDemo\s*=\s*showDemo/, 'cần gán window.showDemo');
   assert.match(inlineScripts, /embed-style/);
+  assert.match(inlineScripts, /scrollHeight/, 'iframe phải co theo chiều cao nội dung');
+  assert.match(inlineScripts, /ResizeObserver/, 'theo dõi đổi kích thước nội dung iframe');
   for (const rule of ['header.topbar{display:none!important}', 'main{padding-top:12px!important}', 'main>*:not(']) {
     assert.ok(inlineScripts.replace(/\s+/g, '').includes(rule), `thiếu CSS nhúng: ${rule}`);
   }
@@ -73,7 +97,7 @@ test('JS: openViewer, CSS nhúng nguyên văn, xử lý lỗi, dọn iframe khi 
   assert.match(inlineScripts, /contentDocument/);
   assert.match(inlineScripts, /try\s*{[\s\S]*contentDocument[\s\S]*}\s*catch/, 'truy cập contentDocument phải nằm trong try/catch');
   assert.match(html, /node tools\/serve\.mjs/, 'cần dòng nhắc chạy node tools/serve.mjs');
-  assert.match(inlineScripts, /about:blank/, 'đóng dialog phải đặt iframe về about:blank');
+  assert.match(inlineScripts, /about:blank/, 'phải bỏ qua iframe đang ở about:blank');
   assert.match(inlineScripts, /aria-pressed/);
 });
 
