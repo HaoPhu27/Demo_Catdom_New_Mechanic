@@ -12,4 +12,4 @@ _Chưa có._
 _Chưa có._
 
 ## Quyết định gần nhất quan trọng
-_Chưa có._ (chi tiết đầy đủ ở decisions.md)
+- 2026-10-23: `selfish-cat.html` là file mẫu chuẩn (đúng gameplay). Prompt cho worker phải trỏ tới file này. Luật chi tiết ở `docs/business-rules.md`. (chi tiết đầy đủ ở decisions.md)
