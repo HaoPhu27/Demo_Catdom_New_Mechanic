@@ -1,15 +1,23 @@
-# Tóm tắt dự án (cập nhật lần cuối: chưa có)
+# Tóm tắt dự án (cập nhật lần cuối: 2026-10-23)
 
 > File nén, đọc ĐẦU TIÊN mỗi phiên. Giữ trong khoảng 40–60 dòng; ghi đè phần liên quan, không append vô hạn.
 
 ## Kiến trúc hiện tại
-_Chưa có quyết định._
+- Trang demo mechanic CatDom dạng HTML tĩnh, mở qua `node tools/serve.mjs` (http://127.0.0.1:5173/).
+- `selfish-cat.html`: file mẫu chuẩn (độc lập, không dùng kit).
+- `weed.html`, `sick-cat.html`, `couple-cat.html`: dùng `assets/catdom-kit.css/js` (Stage, catSVG, demo tự lặp, playground) cùng `logic/<tên>.js`.
+- Logic thuần UMD theo `docs/logic-contract.md`. Test: `node --test tests/weed.test.mjs tests/sick.test.mjs tests/couple.test.mjs`.
+- Luật: `docs/business-rules.md` (Mèo Ích Kỷ) và `design/quick-specs/` (3 mechanic mới).
+- Game gốc (chỉ đọc): `D:/Xgame/CatDom_NoTime`.
 
 ## Phase hiện tại
-_Chưa có._
+- Feature `mechanics` xong: MW-1, MS-1, MC-1 approved. Nhánh cuối `feature/MC-1` chứa toàn bộ, chưa merge vào `main` (chờ Lead review).
 
 ## Rủi ro đang mở
-_Chưa có._
+- Điều kiện thua của Mèo bệnh (1/2) chưa được playtest.
+- Worker agy chạy `-p` không có quyền shell nên không tự test được. Luôn để orchestrator chạy `checks`.
 
 ## Quyết định gần nhất quan trọng
-- 2026-10-23: `selfish-cat.html` là file mẫu chuẩn (đúng gameplay). Prompt cho worker phải trỏ tới file này. Luật chi tiết ở `docs/business-rules.md`. (chi tiết đầy đủ ở decisions.md)
+- 2026-10-23: `selfish-cat.html` là file mẫu chuẩn.
+- 2026-10-23: Tách UI (Claude) và logic (worker) qua hợp đồng và test nghiệm thu.
+- 2026-10-23: Luật chốt cho 3 mechanic (chi tiết ở decisions.md).
