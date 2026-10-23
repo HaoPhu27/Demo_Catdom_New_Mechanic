@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mèo Ích Kỷ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --bg:#f5f2fb; --card:#ffffff; --ink:#2a2340; --muted:#6d6585; --line:#e6e0f2;
+  --accent:#7b4dff; --accent-soft:#efe8ff; --ok:#1f9d55; --ok-soft:#e3f7ea; --bad:#e0263b; --bad-soft:#fde6e9; --warn:#f08a00;
+  --board:#353d5e; --tile:#4a5274; --tile-hi:#566086;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 "Be Vietnam Pro",system-ui,sans-serif}
+a{color:var(--accent)}
+.topbar{background:#2a2340;color:#fff}
+.topbar .in{max-width:980px;margin:auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.logo{font:800 20px/1 "Baloo 2",sans-serif;display:flex;align-items:center;gap:8px}
+.logo span{background:#ffb02e;color:#2a2340;border-radius:10px;padding:4px 8px}
+.topbar nav{margin-left:auto;display:flex;gap:16px;font-size:14px;opacity:.8}
+main{max-width:980px;margin:auto;padding:16px 16px 64px}
+.crumb{font-size:14px;color:var(--muted);margin:8px 0 4px}
+h1{font:800 clamp(30px,5vw,44px)/1.1 "Baloo 2",sans-serif;margin:8px 0 4px}
+h2{font:800 26px/1.2 "Baloo 2",sans-serif;margin:40px 0 12px}
+h3{font:700 19px/1.3 "Baloo 2",sans-serif;margin:0 0 4px}
+.meta{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 2px 0 rgba(42,35,64,.04)}
+.lead{font-size:17px;max-width:720px}
+.entry{font-size:17px;margin:20px 0 14px}
+.entry b{font-weight:700}
+
+/* ---------- demo "GIF" ---------- */
+.demos{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.demo{background:#231d38;border-radius:20px;padding:12px;color:#fff;overflow:hidden}
+.demo-head{display:flex;align-items:center;justify-content:space-between;font:700 15px "Baloo 2",sans-serif;margin:0 4px 8px}
+.pill{font:700 12px "Be Vietnam Pro",sans-serif;padding:3px 10px;border-radius:99px}
+.pill.ok{background:var(--ok);color:#fff}.pill.bad{background:var(--bad);color:#fff}
+.caption{min-height:44px;margin:8px 4px 0;font-size:14px;color:#d9d2f0;display:flex;align-items:center}
+.stage-wrap{position:relative;width:100%;margin:0 auto}
+.stage{position:absolute;left:0;top:0;transform-origin:0 0;border-radius:16px;background:var(--board);overflow:hidden;user-select:none}
+.board,.lyr{position:absolute;inset:0}
+.tile{position:absolute;width:52px;height:52px;margin:2px;border-radius:9px;background:var(--tile);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 2px 0 var(--tile-hi)}
+.hole{position:absolute;border-radius:11px}
+.cat{position:absolute;width:56px;height:56px;display:grid;place-items:center}
+.cat .body{width:52px;height:52px}
+.cat svg{width:100%;height:100%;overflow:visible;display:block}
+.cat.clickable{cursor:pointer}
+.cat.clickable:hover .body{transform:translateY(-3px);transition:transform .15s}
+.badge{position:absolute;top:-4px;right:-4px;min-width:24px;height:24px;padding:0 6px;border-radius:12px;background:#fff;color:#2a2340;
+  border:2.5px solid #2a2340;font:800 15px/19px "Baloo 2",sans-serif;text-align:center;z-index:2}
+.badge.warn{background:#ffb02e}
+.badge.danger{background:var(--bad);color:#fff;animation:pulse .6s ease-in-out infinite}
+.badge.ok{background:var(--ok);color:#fff}
+@keyframes pulse{50%{transform:scale(1.22)}}
+.selfish .body{animation:huff 2.4s ease-in-out infinite}
+.selfish.angry .body{animation:rage .18s linear infinite}
+@keyframes huff{0%,100%{transform:scale(1)}45%{transform:scale(1.04,.97)}55%{transform:scale(.98,1.03)}}
+@keyframes rage{0%{transform:translate(-1.5px,0) rotate(-2deg)}50%{transform:translate(1.5px,0) rotate(2deg)}100%{transform:translate(-1.5px,0) rotate(-2deg)}}
+.bubble{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#fff;color:#2a2340;
+  font:700 12px "Be Vietnam Pro",sans-serif;padding:4px 9px;border-radius:10px;opacity:0;z-index:3;pointer-events:none}
+.bubble:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:#fff;border-bottom:0}
+.claws{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.claws path{fill:none;stroke:#e0263b;stroke-width:4.5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;filter:drop-shadow(0 0 3px rgba(255,255,255,.7))}
+.flash{position:absolute;inset:0;background:#e0263b;opacity:0;pointer-events:none;z-index:4}
+.banner{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:6;opacity:0;pointer-events:none;
+  font:800 26px/1.1 "Baloo 2",sans-serif;color:#fff;padding:10px 20px;border-radius:16px;text-align:center;white-space:nowrap;border:3px solid #fff}
+.banner.ok{background:var(--ok)}.banner.bad{background:var(--bad)}
+.hand{position:absolute;font-size:34px;z-index:7;opacity:0;pointer-events:none;filter:drop-shadow(0 3px 2px rgba(0,0,0,.4))}
+
+/* ---------- rules ---------- */
+ul.rules{padding-left:20px;margin:0}
+ul.rules li{margin:0 0 12px}
+.formula{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:700 16px "Baloo 2",sans-serif;margin:14px 0 4px}
+.chip{background:var(--accent-soft);color:var(--accent);border-radius:10px;padding:4px 10px}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}.chip.ok{background:var(--ok-soft);color:var(--ok)}
+
+/* ---------- states ---------- */
+.states{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.state{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.state .mini{position:relative;width:76px;height:76px;margin:6px auto 10px}
+.state .mini .cat{transform:scale(1.3);transform-origin:0 0}
+.state p{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+
+/* ---------- playground ---------- */
+.play{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:18px;align-items:start}
+.panel{display:flex;flex-direction:column;gap:12px}
+.ctrl{display:flex;align-items:center;gap:10px;font-weight:600}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.step button{width:36px;height:36px;border:0;background:var(--accent-soft);color:var(--accent);font:800 20px "Baloo 2";cursor:pointer}
+.step output{width:40px;text-align:center;font:800 20px "Baloo 2"}
+.btn{border:0;border-radius:12px;padding:10px 14px;background:var(--accent);color:#fff;font:700 15px "Be Vietnam Pro";cursor:pointer}
+.btn:hover{filter:brightness(1.08)}
+.stat{display:flex;gap:10px}
+.stat div{flex:1;background:var(--bg);border-radius:12px;padding:8px 10px}
+.stat small{display:block;font-size:12px;color:var(--muted)}
+.stat strong{font:800 22px/1.1 "Baloo 2"}
+.log{background:var(--bg);border-radius:12px;padding:10px 12px;font-size:13.5px;height:180px;overflow:auto}
+.log div{padding:2px 0;border-bottom:1px dashed var(--line)}
+.log .b{color:var(--bad);font-weight:700}.log .g{color:var(--ok);font-weight:700}
+.hint{font-size:13.5px;color:var(--muted);margin:0}
+
+/* ---------- spec ---------- */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{width:30%;color:var(--muted);font-weight:600}
+.tag{display:inline-block;font-size:12px;font-weight:700;background:#fff3d6;color:#9a5b00;border-radius:8px;padding:2px 8px;margin-left:6px}
+.tip{background:#fff8e6;border:1px solid #ffe2a3;border-radius:16px;padding:16px 18px;margin-top:28px}
+
+@media (max-width:760px){
+  .play{grid-template-columns:1fr}
+  .topbar nav{display:none}
+  th{width:38%}
+}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><span>Home</span><span>Games</span><span>Mechanics</span></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements (Obstacles) › Mèo Ích Kỷ</div>
+  <h1>😾 Mèo Ích Kỷ là gì?</h1>
+  <div class="meta">Mechanic mới · Bản visualize để review</div>
+
+  <p class="lead">Mèo Ích Kỷ là một con mèo đanh đá, lúc nào cũng muốn <b>được về trước</b>. Trên đầu nó có một con số <b>N</b>, mỗi khi bạn clear một con mèo khác thì số này giảm đi. Nếu số về <b>0</b> mà nó vẫn còn trên bàn, nó sẽ <b>cào</b> và bạn thua màn.</p>
+
+  <p class="entry">😾 <b>Mèo Ích Kỷ</b> – Phải clear nó <b>trước hoặc trong khi</b> clear N con mèo. Ví dụ số là 5: nó phải nằm trong 5 con được clear đầu tiên, để quá là bị cào.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">Clear kịp <span class="pill ok">✓ AN TOÀN</span></div>
+      <div class="stage-wrap"><div id="demoWin"></div></div>
+      <div class="caption" id="capWin"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">Để quá lâu <span class="pill bad">✗ BỊ CÀO</span></div>
+      <div class="stage-wrap"><div id="demoFail"></div></div>
+      <div class="caption" id="capFail"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li><b>Bộ đếm N</b> hiện trên đầu Mèo Ích Kỷ ngay từ đầu màn.</li>
+      <li>Mỗi <b>con mèo khác</b> bị clear thì bộ đếm giảm <b>1</b>. Một hole nuốt 3 con cùng lúc thì giảm 3.</li>
+      <li>Clear Mèo Ích Kỷ (bằng hole cùng màu) <b>trước khi</b> bộ đếm về 0 thì nó hài lòng, bộ đếm biến mất.</li>
+      <li>Nếu Mèo Ích Kỷ nằm <b>trong cùng lượt thả</b> với những con khác, nó vẫn tính là an toàn (đây là phần “trong khi”).</li>
+      <li>Bộ đếm về <b>0</b> mà nó còn trên bàn thì nó <b>nhảy ra cào</b>: thua màn.</li>
+    </ul>
+    <div class="formula">
+      <span class="chip">Số mèo khác đã clear</span><span>&lt;</span><span class="chip">N</span><span>→</span><span class="chip ok">An toàn</span>
+      <span style="width:16px"></span>
+      <span class="chip">Số mèo khác đã clear</span><span>≥</span><span class="chip">N</span><span>→</span><span class="chip bad">Bị cào</span>
+    </div>
+  </div>
+
+  <h2>🎭 Trạng thái visual</h2>
+  <div class="states" id="states"></div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div>
+      <div class="stage-wrap"><div id="playStage"></div></div>
+    </div>
+    <div class="panel">
+      <p class="hint">Bấm vào một con mèo: một hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Tìm cách clear Mèo Ích Kỷ (có vương miện) trước khi số về 0.</p>
+      <div class="ctrl">Bộ đếm N
+        <div class="step"><button id="nMinus" aria-label="Giảm N">−</button><output id="nVal">5</output><button id="nPlus" aria-label="Tăng N">+</button></div>
+      </div>
+      <div class="stat">
+        <div><small>Còn lại</small><strong id="sLeft">5</strong></div>
+        <div><small>Mèo đã clear</small><strong id="sDone">0</strong></div>
+      </div>
+      <button class="btn" id="reset">↻ Chơi lại</button>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec gợi ý cho Dev / Level Design <span class="tag">Đề xuất, cần chốt</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>selfishCount</code> (N) đặt trên từng con mèo. Gợi ý khoảng 3–12.</td></tr>
+      <tr><th>Cái gì làm giảm đếm</th><td>Mỗi con mèo khác rời bàn (vào hole, booster, nổ bom…). Mèo Ích Kỷ khác cũng tính là 1 con.</td></tr>
+      <tr><th>Cùng lượt thả</th><td>Nếu nhóm bị nuốt có chứa Mèo Ích Kỷ thì nó được tính an toàn, dù cả nhóm làm vượt N.</td></tr>
+      <tr><th>Nhiều Mèo Ích Kỷ</th><td>Mỗi con có bộ đếm riêng, chạy độc lập.</td></tr>
+      <tr><th>Combo với mechanic khác</th><td>Nếu Mèo Ích Kỷ bị băng hay nằm trong hộp, bộ đếm vẫn chạy. Level Design cần kiểm solver để không tạo màn không giải được.</td></tr>
+      <tr><th>Khi thua</th><td>Anim cào (3 vết cào đỏ, rung màn hình), sau đó vào popup Lose / Continue như các kiểu thua khác.</td></tr>
+      <tr><th>Visual theo đếm</th><td>≥ 3: khó chịu · 2: cảnh cáo (badge cam, gân 💢) · 1: nổi điên (badge đỏ nhấp nháy, rung) · 0: cào.</td></tr>
+    </table>
+  </div>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Nhìn số trên đầu Mèo Ích Kỷ trước khi kéo hole lớn. Một hole nuốt cả nhóm đông có thể làm bộ đếm tụt về 0 chỉ trong một lần kéo, nên hãy mở đường cho hole cùng màu với nó trước.</div>
+</main>
+
+<script>
+const CELL = 56, PAD = 8, OL = '#3b2417';
+const PAL = {
+  blue:  {f:'#5b9bff', d:'#2456c7', l:'#a9c9ff', vi:'xanh dương'},
+  green: {f:'#63d26b', d:'#23853a', l:'#b5f0b4', vi:'xanh lá'},
+  orange:{f:'#ffa53a', d:'#c7620f', l:'#ffd59a', vi:'cam'},
+  purple:{f:'#b07cff', d:'#6531c9', l:'#dcc4ff', vi:'tím'},
+  pink:  {f:'#ff7fb0', d:'#c22f6a', l:'#ffc2d9', vi:'hồng'},
+  yellow:{f:'#ffd84a', d:'#b8900a', l:'#fff0a6', vi:'vàng'}
+};
+
+/* ---------- cat art ---------- */
+function catSVG(c, mood = 'happy', selfish = false) {
+  const p = PAL[c];
+  const s = `stroke="${OL}" stroke-linecap="round" stroke-linejoin="round"`;
+  let face = '', extra = '';
+  const cheeks = (o) => `<ellipse cx="28" cy="60" rx="5.5" ry="3.2" fill="#ff6f8f" opacity="${o}"/><ellipse cx="72" cy="60" rx="5.5" ry="3.2" fill="#ff6f8f" opacity="${o}"/>`;
+  const nose = `<path d="M47.5 53.5h5l-2.5 3z" fill="#ff7c96"/>`;
+  const vein = `<g transform="translate(76 34)" stroke="#e0263b" stroke-width="3" stroke-linecap="round" fill="none"><path d="M-6-2q4 0 4-4M6-2q-4 0-4-4M-6 2q4 0 4 4M6 2q-4 0-4 4"/></g>`;
+  if (mood === 'happy') {
+    face = `<ellipse cx="38" cy="47" rx="4.5" ry="5.5" fill="${OL}"/><ellipse cx="62" cy="47" rx="4.5" ry="5.5" fill="${OL}"/>
+      <circle cx="39.6" cy="45" r="1.7" fill="#fff"/><circle cx="63.6" cy="45" r="1.7" fill="#fff"/>
+      ${nose}<path d="M44 58q3 4 6 0q3 4 6 0" ${s} stroke-width="2.6" fill="none"/>${cheeks(.55)}`;
+  } else if (mood === 'annoyed' || mood === 'mad') {
+    face = `<path d="M28 36l15 6M72 36l-15 6" ${s} stroke-width="4"/>
+      <path d="M32 46h12a6 6 0 0 1-12 0z" fill="${OL}"/><path d="M56 46h12a6 6 0 0 1-12 0z" fill="${OL}"/>
+      <circle cx="35.5" cy="48" r="1.6" fill="#fff"/><circle cx="59.5" cy="48" r="1.6" fill="#fff"/>
+      ${nose}<path d="M43 63q7-6 14 0" ${s} stroke-width="2.8" fill="none"/>${cheeks(.45)}${mood === 'mad' ? vein : ''}`;
+  } else if (mood === 'angry' || mood === 'scratch') {
+    face = `<path d="M27 33l17 9M73 33l-17 9" ${s} stroke-width="4.6"/>
+      <circle cx="38" cy="48" r="5.5" fill="#fff" ${s} stroke-width="2.5"/><circle cx="62" cy="48" r="5.5" fill="#fff" ${s} stroke-width="2.5"/>
+      <circle cx="39" cy="49" r="2.6" fill="#c4122a"/><circle cx="61" cy="49" r="2.6" fill="#c4122a"/>
+      ${nose}<path d="M40 60q10-6 20 0q-10 11-20 0z" fill="${OL}"/><path d="M43.5 60.5l2 4 2-4zM52.5 60.5l2 4 2-4z" fill="#fff"/>
+      ${cheeks(.8)}${vein}`;
+  } else if (mood === 'smug') {
+    face = `<path d="M32 48q6-6 12 0M56 48q6-6 12 0" ${s} stroke-width="3.4" fill="none"/>
+      ${nose}<path d="M43 58q3.5 5 7 0q3.5 5 7 0" ${s} stroke-width="2.6" fill="none"/>${cheeks(.75)}
+      <path d="M84 20l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#ffd23f"/>`;
+  }
+  if (selfish) {
+    extra += `<path d="M35 18l3-13 7 8 5-11 5 11 7-8 3 13z" fill="#ffd23f" ${s} stroke-width="3"/><circle cx="50" cy="13" r="2.4" fill="#e0263b"/>`;
+    if (mood === 'scratch') {
+      extra += `<g ${s} stroke-width="3"><circle cx="11" cy="58" r="9" fill="${p.f}"/><circle cx="89" cy="58" r="9" fill="${p.f}"/></g>
+        <path d="M4 50l-4-6M10 48l-1-7M16 50l3-6M84 50l-3-6M90 48l1-7M96 50l4-6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>`;
+    } else if (mood !== 'smug') {
+      extra += `<rect x="27" y="70" width="32" height="11" rx="5.5" fill="${p.f}" ${s} stroke-width="3" transform="rotate(-10 43 75)"/>
+        <rect x="41" y="70" width="32" height="11" rx="5.5" fill="${p.f}" ${s} stroke-width="3" transform="rotate(10 57 75)"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <path d="M18 40L21 6 46 22z" fill="${p.f}" ${s} stroke-width="4"/><path d="M82 40L79 6 54 22z" fill="${p.f}" ${s} stroke-width="4"/>
+    <path d="M24 30l1.5-15 12 8z" fill="#ffb3c1"/><path d="M76 30l-1.5-15-12 8z" fill="#ffb3c1"/>
+    <rect x="11" y="18" width="78" height="76" rx="32" fill="${p.f}" ${s} stroke-width="4"/>
+    <ellipse cx="50" cy="77" rx="25" ry="15" fill="#fff" opacity=".5"/>
+    <path d="M37 93q4-7 8 0M55 93q4-7 8 0" ${s} stroke-width="3" fill="none"/>
+    ${face}${extra}</svg>`;
+}
+const moodFor = n => n >= 3 ? 'annoyed' : n === 2 ? 'mad' : n === 1 ? 'angry' : 'scratch';
+
+/* ---------- stage ---------- */
+class Stage {
+  constructor(el, cols, rows) {
+    Object.assign(this, {el, cols, rows});
+    el.className = 'stage';
+    this.w = cols * CELL + PAD * 2; this.h = rows * CELL + PAD * 2;
+    el.style.width = this.w + 'px'; el.style.height = this.h + 'px';
+    el.innerHTML = `<div class="board"></div><div class="lyr holes"></div><div class="lyr cats"></div><div class="flash"></div>
+      <svg class="claws" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path pathLength="1" d="M18 12Q48 42 80 86"/><path pathLength="1" d="M30 8Q60 38 90 78"/><path pathLength="1" d="M8 22Q36 54 66 94"/></svg>
+      <div class="banner"></div><div class="hand">👆</div>`;
+    const board = el.querySelector('.board');
+    for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+      const t = document.createElement('div'); t.className = 'tile';
+      Object.assign(t.style, {left: PAD + x * CELL + 'px', top: PAD + y * CELL + 'px'});
+      board.appendChild(t);
+    }
+    this.holesL = el.querySelector('.holes'); this.catsL = el.querySelector('.cats');
+    this.banner = el.querySelector('.banner'); this.hand = el.querySelector('.hand');
+    this.flash = el.querySelector('.flash'); this.claws = el.querySelectorAll('.claws path');
+    el.parentNode.style.maxWidth = this.w + 'px';
+    const fit = () => {
+      const s = Math.min(1, el.parentNode.clientWidth / this.w);
+      gsap.set(el, {scale: s});
+      el.parentNode.style.height = this.h * s + 'px';
+    };
+    new ResizeObserver(fit).observe(el.parentNode); fit();
+  }
+  px(x, y) { return {left: PAD + x * CELL, top: PAD + y * CELL}; }
+  reset() {
+    this.holesL.innerHTML = ''; this.catsL.innerHTML = ''; this.cats = {}; this.holes = {};
+    gsap.set(this.banner, {opacity: 0}); gsap.set(this.flash, {opacity: 0});
+    gsap.set(this.claws, {strokeDashoffset: 1, opacity: 0});gsap.set(this.hand, {opacity: 0, scale: 1});
+    gsap.set(this.el, {x: 0});
+  }
+  addCat(id, c, x, y, selfish, onClick) {
+    const d = document.createElement('div');
+    d.className = 'cat' + (selfish ? ' selfish' : '');
+    Object.assign(d.style, {left: this.px(x, y).left + 'px', top: this.px(x, y).top + 'px'});
+    d.innerHTML = `<div class="body">${catSVG(c, selfish ? 'annoyed' : 'happy', selfish)}</div>` +
+      (selfish ? `<div class="badge"></div><div class="bubble"></div>` : '');
+    if (onClick) { d.classList.add('clickable'); d.addEventListener('click', () => onClick(id)); }
+    this.catsL.appendChild(d);
+    this.cats[id] = {el: d, c, x, y, selfish};
+    return d;
+  }
+  addHole(id, c, x, y, w = 1, h = 1) {
+    const p = PAL[c], d = document.createElement('div');
+    d.className = 'hole';
+    Object.assign(d.style, {
+      left: this.px(x, y).left + 3 + 'px', top: this.px(x, y).top + 3 + 'px',
+      width: w * CELL - 6 + 'px', height: h * CELL - 6 + 'px', background: p.f,
+      boxShadow: `0 0 0 2px ${p.d}, inset 0 0 0 3px ${p.l}, inset 0 0 14px 7px ${p.d}`
+    });
+    this.holesL.appendChild(d);
+    this.holes[id] = {el: d, c, x, y};
+    return d;
+  }
+  setCounter(id, n) {
+    const cat = this.cats[id], b = cat.el.querySelector('.badge');
+    b.textContent = Math.max(0, n);
+    b.className = 'badge' + (n <= 1 ? ' danger' : n === 2 ? ' warn' : '');
+    cat.el.classList.toggle('angry', n <= 1);
+    cat.el.querySelector('.body').innerHTML = catSVG(cat.c, moodFor(n), true);
+    gsap.fromTo(b, {scale: 1.7}, {scale: 1, duration: .35, ease: 'back.out(3)'});
+  }
+  say(id, text, dur = 1.4) {
+    const b = this.cats[id].el.querySelector('.bubble');
+    b.textContent = text;
+    gsap.killTweensOf(b);
+    gsap.timeline().fromTo(b, {opacity: 0, y: 6}, {opacity: 1, y: 0, duration: .2}).to(b, {opacity: 0, duration: .2}, '+=' + dur);
+  }
+  markSaved(id) {
+    const cat = this.cats[id], b = cat.el.querySelector('.badge');
+    cat.el.classList.remove('angry');
+    cat.el.querySelector('.body').innerHTML = catSVG(cat.c, 'smug', true);
+    b.textContent = '✓'; b.className = 'badge ok';
+    this.say(id, 'Hứ, vậy mới được!', 1.2);
+  }
+  eatTl(ids) {
+    const tl = gsap.timeline();
+    ids.forEach((id, i) => {
+      tl.to(this.cats[id].el, {y: -10, duration: .14, ease: 'power1.out'}, i * .1)
+        .to(this.cats[id].el, {y: 10, scale: .25, opacity: 0, duration: .3, ease: 'power2.in'}, i * .1 + .14);
+    });
+    return tl;
+  }
+  scratchTl(id) {
+    const cat = this.cats[id];
+    const tl = gsap.timeline();
+    tl.call(() => { this.setCounter(id, 0); this.say(id, 'MEOOO!! 😾', 1.6); })
+      .to(cat.el, {scale: 1.6, y: -8, duration: .25, ease: 'back.out(3)', zIndex: 9}, '+=.15')
+      .set(this.claws, {opacity: 1})
+      .to(this.claws, {strokeDashoffset: 0,duration: .16, stagger: .09, ease: 'power2.in'})
+      .to(this.flash, {opacity: .35, duration: .06, yoyo: true, repeat: 3}, '<')
+      .fromTo(this.el, {x: -8}, {x: 8, duration: .05, repeat: 7, yoyo: true, clearProps: 'x'}, '<')
+      .call(() => this.showBanner('BỊ CÀO! THUA 😿', 'bad'));
+    return tl;
+  }
+  showBanner(text, kind) {
+    this.banner.textContent = text; this.banner.className = 'banner ' + kind;
+    gsap.fromTo(this.banner, {opacity: 0, scale: .4, xPercent: -50, yPercent: -50, left: '50%', top: '50%', x: 0, y: 0},
+      {opacity: 1, scale: 1, duration: .45, ease: 'back.out(2.2)'});
+  }
+}
+
+/* ---------- looping demos ---------- */
+const LAYOUT = {
+  N: 3,
+  cats: [['b1','blue',0,0],['b2','blue',1,0],['s','purple',3,1,true],['g1','green',1,3],['g2','green',2,3],['o1','orange',4,4],['o2','orange',3,4]],
+  holes: [['hb','blue',0,2,2,1],['hp','purple',4,2,1,1],['hg','green',1,4,2,1],['ho','orange',3,3,2,1]]
+};
+const SCENES = {
+  win: [
+    {hole:'hb', path:[[0,0]], eat:['b1','b2'], say:'Kéo hole xanh: clear 2 mèo → số giảm từ 3 xuống 1'},
+    {hole:'hp', path:[[3,2],[3,1]], eat:['s'], say:'Kịp lúc! Clear Mèo Ích Kỷ khi số vẫn còn 1'},
+    {hole:'hg', path:[[1,3]], eat:['g1','g2'], say:'Giờ clear thoải mái, nó không còn đếm nữa'},
+    {hole:'ho', path:[[3,4]], eat:['o2','o1'], say:'Bàn sạch!'}
+  ],
+  fail: [
+    {hole:'hb', path:[[0,0]], eat:['b1','b2'], say:'Clear 2 mèo xanh → số còn 1'},
+    {hole:'hg', path:[[1,3]], eat:['g1','g2'], say:'Clear thêm mèo xanh lá → số về 0…'}
+  ]
+};
+
+function runDemo(el, capEl, steps) {
+  const st = new Stage(el, 5, 5);
+  const cap = t => { capEl.textContent = t; gsap.fromTo(capEl, {opacity: 0, y: 4}, {opacity: 1, y: 0, duration: .25}); };
+  const loop = () => {
+    st.reset();
+    LAYOUT.cats.forEach(([id, c, x, y, sf]) => st.addCat(id, c, x, y, sf));
+    LAYOUT.holes.forEach(([id, c, x, y, w, h]) => st.addHole(id, c, x, y, w, h));
+    let n = LAYOUT.N, saved = false;
+    st.setCounter('s', n);
+    const tl = gsap.timeline({onComplete: () => gsap.delayedCall(2.2, loop)});
+    tl.call(() => { cap(`Mèo Ích Kỷ đòi được clear trong ${LAYOUT.N} con đầu tiên`); st.say('s', `Tớ trước! Trong ${LAYOUT.N} con!`, 1.6); })
+      .to({}, {duration: 1.8});
+    for (const step of steps) {
+      const hole = st.holes[step.hole];
+      const at = (x, y) => ({left: st.px(x, y).left + 3, top: st.px(x, y).top + 3});
+      const handAt = (x, y) => ({left: st.px(x, y).left + 18, top: st.px(x, y).top + 22});
+      tl.call(() => cap(step.say))
+        .set(st.hand, handAt(hole.x, hole.y))
+        .to(st.hand, {opacity: 1, duration: .25})
+        .to(st.hand, {scale: .82, duration: .12});
+      for (const [x, y] of step.path) {
+        tl.to(hole.el, {...at(x, y), duration: .45, ease: 'power2.inOut'})
+          .to(st.hand, {...handAt(x, y), duration: .45, ease: 'power2.inOut'}, '<');
+      }
+      tl.to(st.hand, {scale: 1, opacity: 0, duration: .2});
+      const hasSelfish = step.eat.includes('s');
+      if (hasSelfish) { saved = true; tl.call(() => st.markSaved('s')).to({}, {duration: .5}); }
+      const lbl = 'eat_' + step.hole;
+      tl.add(st.eatTl(step.eat), lbl);
+      if (!saved) {
+        step.eat.forEach((id, i) => {
+          const v = n - (i + 1);
+          if (v > 0) tl.call(() => st.setCounter('s', v), null, `${lbl}+=${i * .1 + .35}`);
+        });
+        n -= step.eat.length;
+      }
+      tl.to(hole.el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'}, '+=.15');
+      if (!saved && n <= 0) { tl.add(st.scratchTl('s')).to({}, {duration: 1}); return; }
+      tl.to({}, {duration: .5});
+    }
+    tl.call(() => st.showBanner('AN TOÀN ✓', 'ok')).to({}, {duration: 1});
+  };
+  loop();
+}
+runDemo(document.getElementById('demoWin'), document.getElementById('capWin'), SCENES.win);
+runDemo(document.getElementById('demoFail'), document.getElementById('capFail'), SCENES.fail);
+
+/* ---------- state strip ---------- */
+const STATES = [
+  [4, 'Đếm ≥ 3', 'Khó chịu, khoanh tay, liếc xéo.'],
+  [2, 'Đếm 2', 'Cảnh cáo: badge cam, nổi gân 💢.'],
+  [1, 'Đếm 1', 'Nổi điên: badge đỏ nhấp nháy, rung người.'],
+  [0, 'Đếm 0', 'Giơ móng cào → thua màn.'],
+  [-1, 'Được clear kịp', 'Hài lòng, “Hứ, vậy mới được!”.']
+];
+document.getElementById('states').innerHTML = STATES.map(([n, t, d]) => {
+  const mood = n < 0 ? 'smug' : moodFor(n);
+  const badge = n < 0 ? '<div class="badge ok">✓</div>' : `<div class="badge${n <= 1 ? ' danger' : n === 2 ? ' warn' : ''}">${n}</div>`;
+  return `<div class="state"><div class="mini"><div class="cat selfish${n === 1 || n === 0 ? ' angry' : ''}" style="left:0;top:0">
+    <div class="body">${catSVG('purple', mood, true)}</div>${badge}</div></div><h3>${t}</h3><p>${d}</p></div>`;
+}).join('');
+
+/* ---------- playground ---------- */
+const GRID = [
+  'BBxGGP',
+  'BxSxGP',
+  'OOxYxP',
+  'xYYYxx',
+  'GxOOxB',
+  'GGxxBB'
+];
+const CODE = {B:'blue', G:'green', P:'purple', O:'orange', Y:'yellow', S:'orange'};
+const play = new Stage(document.getElementById('playStage'), 6, 6);
+const ui = {n: document.getElementById('nVal'), left: document.getElementById('sLeft'), done: document.getElementById('sDone'), log: document.getElementById('log')};
+let N = 5, game;
+
+function log(html, cls = '') {
+  const d = document.createElement('div'); d.className = cls; d.innerHTML = html;
+  ui.log.prepend(d);
+}
+function newGame() {
+  play.reset(); ui.log.innerHTML = '';
+  game = {left: N, done: 0, saved: false, over: false, busy: false, alive: {}};
+  GRID.forEach((row, y) => [...row].forEach((ch, x) => {
+    if (ch === 'x') return;
+    const id = `${x}_${y}`;
+    play.addCat(id, CODE[ch], x, y, ch === 'S', onPick);
+    game.alive[id] = true;
+  }));
+  play.setCounter('2_1', N);
+  ui.n.textContent = N; ui.left.textContent = N; ui.done.textContent = 0;
+  log(`Bắt đầu: Mèo Ích Kỷ phải nằm trong <b>${N}</b> con đầu tiên.`);
+}
+function groupOf(id) {
+  const c = play.cats[id].c, out = [], seen = {[id]: 1}, q = [id];
+  while (q.length) {
+    const cur = q.shift(); out.push(cur);
+    const {x, y} = play.cats[cur];
+    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+      const nid = `${x + dx}_${y + dy}`;
+      if (game.alive[nid] && !seen[nid] && play.cats[nid].c === c) { seen[nid] = 1; q.push(nid); }
+    }
+  }
+  return out;
+}
+function onPick(id) {
+  if (game.over || game.busy || !game.alive[id]) return;
+  game.busy = true;
+  const grp = groupOf(id), c = play.cats[id].c, hasS = grp.includes('2_1');
+  grp.forEach(g => game.alive[g] = false);
+  const holes = grp.map(g => play.addHole('h' + g, c, play.cats[g].x, play.cats[g].y));
+  const tl = gsap.timeline({onComplete: () => { game.busy = false; checkWin(); }});
+  tl.from(holes, {scale: 0, duration: .25, ease: 'back.out(2)', stagger: .04});
+  if (hasS && !game.saved) { game.saved = true; tl.call(() => play.markSaved('2_1')).to({}, {duration: .45}); }
+  tl.add(play.eatTl(grp));
+  game.done += grp.length; ui.done.textContent = game.done;
+  const others = grp.filter(g => g !== '2_1').length;
+  if (hasS) log(`Clear ${grp.length} mèo ${PAL[c].vi}, có Mèo Ích Kỷ → <span class="g">an toàn!</span>`, 'g');
+  else if (!game.saved) {
+    game.left -= others;
+    const v = game.left;
+    tl.call(() => { ui.left.textContent = Math.max(0, v); if (v > 0) play.setCounter('2_1', v); }, null, '<');
+    log(`Clear ${others} mèo ${PAL[c].vi} → còn <b>${Math.max(0, v)}</b>`);
+    if (v <= 0) {
+      game.over = true;
+      tl.add(play.scratchTl('2_1'));
+      log('Bộ đếm về 0 → <span class="b">Mèo Ích Kỷ cào! Thua.</span>', 'b');
+    }
+  } else log(`Clear ${others} mèo ${PAL[c].vi}`);
+  tl.to(holes, {scale: 0, opacity: 0, duration: .25, ease: 'back.in(2)'}, game.over ? 0.9 : '+=.1');
+}
+function checkWin() {
+  if (!game.over && Object.values(game.alive).every(a => !a)) {
+    game.over = true;
+    play.showBanner('BÀN SẠCH ✓', 'ok');
+    log('Clear hết bàn mà không bị cào!', 'g');
+  }
+}
+document.getElementById('reset').onclick = newGame;
+document.getElementById('nMinus').onclick = () => { N = Math.max(1, N - 1); newGame(); };
+document.getElementById('nPlus').onclick = () => { N = Math.min(20, N + 1); newGame(); };
+newGame();
+</script>
+</body>
+</html>
