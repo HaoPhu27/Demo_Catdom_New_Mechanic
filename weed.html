@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cây Dại</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/catdom-kit.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="logic/weed.js" onerror="this.remove()"></script>
+<script src="assets/catdom-kit.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><a href="selfish-cat.html">Mèo Ích Kỷ</a><a href="weed.html">Cây Dại</a><a href="sick-cat.html">Mèo Bệnh</a><a href="couple-cat.html">Couple Mèo</a></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements (Obstacles) › Cây Dại</div>
+  <h1>🌿 Cây Dại là gì?</h1>
+  <div class="meta">Mechanic mới · Cơ chế giống Special Hole · Bản visualize để review</div>
+
+  <p class="lead">Trên map có một <b>khu vực cây dại</b> được khoanh viền. Mỗi con mèo lọt hố làm cây dại <b>mọc thêm 1 ô</b>. Nếu cây dại <b>phủ kín</b> khu vực thì bạn thua. Lối thoát là kéo <b>Special Hole</b> tới nhặt <b>thuốc sâu</b>: cây dại bị xoá sạch và không mọc lại nữa.</p>
+
+  <p class="entry">🌿 <b>Cây Dại</b> – Mỗi mèo lọt hố làm cây dại mọc 1 ô. Phủ kín khu vực là thua, trừ khi Special Hole kịp nhặt thuốc sâu để diệt sạch.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">Nhặt thuốc sâu kịp <span class="pill ok">✓ AN TOÀN</span></div>
+      <div class="stage-wrap"><div id="demoWin"></div></div>
+      <div class="caption" id="capWin"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">Quên thuốc sâu <span class="pill bad">✗ PHỦ KÍN</span></div>
+      <div class="stage-wrap"><div id="demoFail"></div></div>
+      <div class="caption" id="capFail"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li><b>Khu vực cây dại</b> là hình chữ nhật có viền nét đứt. Lúc đầu đã có ít nhất 1 ô cây. Hole không đi vào được khu vực này.</li>
+      <li>Mỗi <b>con mèo</b> lọt hố làm cây mọc thêm <b>1 ô</b>, tính theo từng con: hole nuốt 3 con thì mọc 3 ô.</li>
+      <li>Cây mọc lan sang ô kề với ô đã có cây. Có nhiều ô kề thì ô ở hàng trên mọc trước, cùng hàng thì ô bên trái trước.</li>
+      <li><b>Special Hole</b> (viền vàng, có ổ hình mèo) không nuốt mèo. Nó chỉ nhặt được <b>thuốc sâu</b>, giống plug hole trong game.</li>
+      <li>Nhặt được thuốc sâu thì <b>toàn bộ cây dại bị xoá</b> và không mọc lại. Special Hole thành hole thường.</li>
+      <li>Thuốc sâu <b>không bao giờ</b> nằm trong khu vực cây dại (luật thiết kế màn).</li>
+    </ul>
+    <div class="formula">
+      <span class="chip">Số ô cây</span><span>=</span><span class="chip">Ô ban đầu</span><span>+</span><span class="chip">Số mèo đã lọt hố</span>
+      <span style="width:16px"></span>
+      <span class="chip">Số ô cây</span><span>=</span><span class="chip">Diện tích khu vực</span><span>→</span><span class="chip bad">Thua</span>
+    </div>
+  </div>
+
+  <h2>🎭 Trạng thái visual</h2>
+  <div class="states" id="states"></div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div><div class="stage-wrap"><div id="playStage"></div></div></div>
+    <div class="panel">
+      <p class="hint">Bấm vào một con mèo: hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Bấm vào <b>lọ thuốc sâu</b> để Special Hole tới nhặt.</p>
+      <div class="stat">
+        <div><small>Cây dại</small><strong id="sWeed">–</strong></div>
+        <div><small>Mèo đã clear</small><strong id="sDone">0</strong></div>
+      </div>
+      <div class="stat"><div><small>Thuốc sâu</small><strong id="sPest">–</strong></div></div>
+      <button class="btn" id="reset">↻ Chơi lại</button>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec cho Dev / Level Design <span class="tag">Theo quick spec 2026-10-23</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>weedArea {x,y,w,h}</code>, <code>weedStart [[x,y]…]</code> (≥ 1 ô), <code>pesticide {x,y}</code> nằm ngoài khu vực.</td></tr>
+      <tr><th>Tham chiếu game</th><td>Special Hole = hole <code>isPlug</code> nhặt <code>PlugCat</code> cùng màu (<code>Hole.CheckDropCat</code>, <code>DropPlugCat</code>). Khu vực cấm hole tham chiếu <code>CurtainAreaInfo</code>.</td></tr>
+      <tr><th>Đếm mọc</th><td>Mỗi mèo lọt hố mọc 1 ô, nhặt thuốc sâu không tính. Phủ kín giữa lượt thì dừng mọc và thua ngay.</td></tr>
+      <tr><th>Thứ tự mọc</th><td>Chọn ô chưa phủ, kề 4 hướng với ô đã phủ. Ưu tiên <code>y</code> nhỏ rồi <code>x</code> nhỏ.</td></tr>
+      <tr><th>Sau khi nhặt thuốc</th><td>Xoá sạch, khu vực chuyển trạng thái “sạch”, không mọc lại.</td></tr>
+      <tr><th>Validate màn</th><td>Báo lỗi khi thuốc sâu nằm trong khu vực, có mèo trong khu vực, <code>weedStart</code> rỗng / ngoài khu vực / đã phủ kín.</td></tr>
+    </table>
+  </div>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Đếm số ô còn trống trước khi kéo hole lớn. Nếu đường tới thuốc sâu bị mèo chặn, hãy mở đường bằng những nhóm mèo nhỏ nhất.</div>
+</main>
+
+<script>
+const LEVEL_DEMO = {
+  cols: 5, rows: 5,
+  cats: [
+    {id:'g1', color:'green', x:0, y:0}, {id:'g2', color:'green', x:0, y:1},
+    {id:'o1', color:'orange', x:2, y:2}, {id:'o2', color:'orange', x:2, y:3},
+    {id:'b1', color:'blue', x:0, y:3}, {id:'b2', color:'blue', x:1, y:3},
+    {id:'y1', color:'yellow', x:4, y:3}
+  ],
+  weedArea: {x:2, y:0, w:3, h:2}, weedStart: [[4, 0]], pesticide: {x:1, y:1}
+};
+const SPECIAL_DEMO = {id:'sp', color:'yellow', x:1, y:2};
+
+const LEVEL_PLAY = {
+  cols: 6, rows: 6,
+  grid: ['BBG...', 'B.G...', 'OO.YYP', '.PP.GG', 'Y.OO.G', '...BB.'],
+  weedArea: {x:3, y:0, w:3, h:2}, weedStart: [[5, 0]], pesticide: {x:0, y:5}
+};
+const SPECIAL_PLAY = {id:'sp', color:'pink', x:1, y:5};
+const CODE = {B:'blue', G:'green', O:'orange', Y:'yellow', P:'purple', K:'pink'};
+
+function levelFromGrid(l) {
+  const cats = [];
+  l.grid.forEach((row, y) => [...row].forEach((ch, x) => { if (CODE[ch]) cats.push({id: `${x}_${y}`, color: CODE[ch], x, y}); }));
+  return {cols: l.cols, rows: l.rows, cats, weedArea: l.weedArea, weedStart: l.weedStart, pesticide: l.pesticide};
+}
+
+const catById = (game, id) => game.getState().cats.find(c => c.id === id);
+const cellOf = (game, id) => { const c = catById(game, id); return [c.x, c.y]; };
+const colorOf = (game, id) => catById(game, id).color;
+
+function zoneState(st, weed) {
+  const left = weed.total - weed.cells.length;
+  if (weed.cleared) st.zoneLabel('✨ Đã diệt sạch', 'clean');
+  else if (left <= 0) st.zoneLabel(`🌿 ${weed.cells.length}/${weed.total} · KÍN`, 'full');
+  else st.zoneLabel(`🌿 ${weed.cells.length}/${weed.total}`, left <= 2 ? 'danger' : '');
+}
+
+/* Vẽ trạng thái đầu từ getState(). game = null khi chưa có logic: vẽ từ level. */
+function buildBoard(st, game, level, special, api) {
+  const s = game ? game.getState() : {cats: level.cats.map(c => ({...c, alive: true})),
+    weed: {area: level.weedArea, cells: level.weedStart, total: level.weedArea.w * level.weedArea.h, cleared: false},
+    pesticide: {...level.pesticide, picked: false}};
+  const a = s.weed.area;
+  st.addZone(a.x, a.y, a.w, a.h, '');
+  s.weed.cells.forEach(([x, y]) => st.setWeed(x, y, true));
+  zoneState(st, s.weed);
+  st.addHole(special.id, special.color, special.x, special.y, 1, 1, {special: true});
+  if (!s.pesticide.picked) st.addItem('pest', s.pesticide.x, s.pesticide.y, api && (() => api.pick()));
+  s.cats.filter(c => c.alive).forEach(c => st.addCat(c.id, c.color, c.x, c.y, api ? {onClick: () => api.eat(c.x, c.y)} : {}));
+}
+
+function handlers(special) {
+  return {
+    eat(st, ev, tl, ctx) {
+      tl.add(st.eatTl(ev.ids));
+      if (ctx.log) ctx.log(`Clear ${ev.ids.length} mèo ${CatDom.PAL[colorOf(ctx.game, ev.ids[0])].vi}`);
+    },
+    weedGrow(st, ev, tl, ctx) {
+      tl.call(() => {
+        const el = st.setWeed(ev.cell[0], ev.cell[1], true);
+        gsap.fromTo(el, {scale: 0, rotation: -25}, {scale: 1, rotation: 0, duration: .35, ease: 'back.out(2.4)'});
+        const w = {cells: Array(ev.covered).fill(0), total: ev.total, cleared: false};
+        zoneState(st, w);
+      }).to({}, {duration: .28});
+      if (ctx.log) ctx.log(`🌿 Cây dại mọc → <b>${ev.covered}/${ev.total}</b>`, ev.covered >= ev.total - 1 ? 'b' : '');
+    },
+    pick(st, ev, tl, ctx) {
+      tl.call(() => {
+        const item = st.items.pest, hole = st.holes[special.id];
+        gsap.timeline()
+          .to(item.el, {y: -26, duration: .2, ease: 'power2.out'})
+          .to(item.el, {left: hole.el.offsetLeft - 3, top: hole.el.offsetTop - 3, y: 0, scale: .55, duration: .35, ease: 'power2.in'})
+          .to(item.el, {opacity: 0, duration: .2})
+          .to(hole.el, {scale: 1.15, duration: .12, yoyo: true, repeat: 1}, '<')
+          .call(() => st.styleHole(special.id, special.color, false));
+      }).to({}, {duration: .9});
+      if (ctx.log) ctx.log('🧪 Special Hole nhặt được thuốc sâu!', 'g');
+    },
+    weedClear(st, ev, tl, ctx) {
+      tl.call(() => {
+        const a = st.zone;
+        for (let i = 0; i < 14; i++) {
+          const d = st.dot({x: a.offsetLeft + Math.random() * a.offsetWidth, y: a.offsetTop + a.offsetHeight + 10}, 4, '#9dffb8');
+          gsap.to(d, {attr: {cy: a.offsetTop + Math.random() * a.offsetHeight}, opacity: 0, duration: .7 + Math.random() * .4, delay: i * .03, onComplete: () => d.remove()});
+        }
+        ev.cells.forEach(([x, y], i) => {
+          const el = st.setWeed(x, y, false);
+          if (el) gsap.to(el, {scale: 0, rotation: 30, opacity: 0, duration: .3, delay: .3 + i * .06, onComplete: () => el.remove()});
+        });
+        st.zoneLabel('✨ Đã diệt sạch', 'clean');
+      }).to({}, {duration: .9});
+      if (ctx.log) ctx.log(`✨ Diệt sạch ${ev.cells.length} ô cây dại. Khu vực an toàn.`, 'g');
+    },
+    lose(st, ev, tl, ctx) {
+      tl.call(() => {
+        st.zoneLabel(st.zone.querySelector('.zone-label').textContent, 'full');
+        ctx.game.getState().cats.filter(c => c.alive).forEach(c => st.setCat(c.id, {mood: 'scared'}));
+      })
+        .add(st.flashTl('#2f7a2c')).add(st.shakeTl(), '<')
+        .call(() => st.showBanner('CÂY DẠI PHỦ KÍN! 🌿', 'bad'));
+      if (ctx.log) ctx.log('Cây dại phủ kín khu vực → <b>Thua.</b>', 'b');
+    },
+    win(st, ev, tl, ctx) {
+      tl.call(() => st.showBanner('BÀN SẠCH ✓', 'ok'));
+      if (ctx.log) ctx.log('Clear hết bàn mà không bị cây dại phủ kín!', 'g');
+    }
+  };
+}
+
+/* ---------- demos ---------- */
+CatDom.demo({
+  el: document.getElementById('demoWin'), cap: document.getElementById('capWin'),
+  name: 'weed', file: 'logic/weed.js', level: LEVEL_DEMO, cellOf, colorOf, on: handlers(SPECIAL_DEMO),
+  build: (st, game) => buildBoard(st, game, LEVEL_DEMO, SPECIAL_DEMO),
+  intro: (st, tl, ctx) => tl.call(() => ctx.cap('Khu vực cây dại có 6 ô, đã mọc 1 ô. Mỗi mèo lọt hố làm mọc thêm 1 ô.')).to({}, {duration: 1.8}),
+  steps: [
+    {eat: [0, 3], from: [0, 4], say: 'Clear 2 mèo xanh → cây dại mọc 2 ô (3/6)'},
+    {pick: true, hole: 'sp', path: [[1, 2], [1, 1]], say: 'Kéo Special Hole tới nhặt thuốc sâu!'},
+    {eat: [2, 2], from: [3, 2], say: 'Cây dại đã bị diệt, giờ clear thoải mái'},
+    {eat: [0, 0], from: [1, 0], say: 'Không còn mọc thêm ô nào'},
+    {eat: [4, 3], from: [3, 3], say: 'Bàn sạch!'}
+  ]
+});
+CatDom.demo({
+  el: document.getElementById('demoFail'), cap: document.getElementById('capFail'),
+  name: 'weed', file: 'logic/weed.js', level: LEVEL_DEMO, cellOf, colorOf, on: handlers(SPECIAL_DEMO),
+  build: (st, game) => buildBoard(st, game, LEVEL_DEMO, SPECIAL_DEMO),
+  intro: (st, tl, ctx) => tl.call(() => ctx.cap('Cùng màn chơi, nhưng lần này bỏ quên thuốc sâu…')).to({}, {duration: 1.8}),
+  steps: [
+    {eat: [0, 3], from: [0, 4], say: 'Clear 2 mèo xanh → 3/6'},
+    {eat: [0, 0], from: [1, 0], say: 'Clear 2 mèo xanh lá → 5/6, chỉ còn 1 ô trống!'},
+    {eat: [2, 2], from: [3, 2], say: 'Thêm một con lọt hố → cây dại phủ kín'}
+  ]
+});
+
+/* ---------- states ---------- */
+const mini = inner => `<div class="mini">${inner}</div>`;
+document.getElementById('states').innerHTML = [
+  [mini(`<div class="weed" style="left:0;top:0;transform:scale(1.3);transform-origin:0 0">${CatDom.weedSVG()}</div>`), 'Ô cây dại', 'Mọc lan từng ô, kề ô đã có cây.'],
+  [mini(`<div style="position:absolute;inset:6px;border:3px dashed #ffb02e;border-radius:12px;background:rgba(255,176,46,.12)"></div>`), 'Sắp kín', 'Còn ≤ 2 ô trống: viền chuyển cam để cảnh báo.'],
+  [mini(`<div style="position:absolute;inset:6px;border:3px dashed #e0263b;border-radius:12px;background:rgba(224,38,59,.18)"></div>`), 'Phủ kín', 'Viền đỏ, màn hình rung → thua.'],
+  [mini(`<div class="item" style="left:0;top:0;transform:scale(1.3);transform-origin:0 0"><div class="body">${CatDom.pesticideSVG()}</div></div>`), 'Thuốc sâu', 'Nằm ngoài khu vực, chỉ Special Hole nhặt được.'],
+  [mini(`<div class="hole" style="left:6px;top:6px;width:64px;height:64px;background:radial-gradient(circle at 50% 40%,#5a3413,#3a1f08 70%);box-shadow:0 0 0 2px #7a4a12,inset 0 0 0 3px #ffd36b,0 0 14px 2px rgba(255,211,107,.7)"><svg viewBox="0 0 56 56" style="width:100%;height:100%"><path d="M16 46V22l-2-12 9 7h10l9-7-2 12v24q0 4-4 4H20q-4 0-4-4z" fill="#a8642c" stroke="#ffd36b" stroke-width="3" stroke-linejoin="round"/></svg></div>`), 'Special Hole', 'Nhặt thuốc sâu → diệt sạch cây dại, thành hole thường.']
+].map(([art, t, d]) => `<div class="state">${art}<h3>${t}</h3><p>${d}</p></div>`).join('');
+
+/* ---------- playground ---------- */
+const ui = {weed: document.getElementById('sWeed'), done: document.getElementById('sDone'), pest: document.getElementById('sPest')};
+const play = CatDom.playground({
+  el: document.getElementById('playStage'), logEl: document.getElementById('log'),
+  name: 'weed', file: 'logic/weed.js', level: () => levelFromGrid(LEVEL_PLAY), cellOf, colorOf, on: handlers(SPECIAL_PLAY),
+  build: (st, game, api) => buildBoard(st, game, levelFromGrid(LEVEL_PLAY), SPECIAL_PLAY, api),
+  startText: () => 'Bắt đầu: khu vực 6 ô, đã mọc 1 ô. Còn 5 con mèo nữa là kín!',
+  update: api => {
+    if (!api.game) return;
+    const s = api.game.getState();
+    ui.weed.textContent = s.weed.cleared ? '✨ Sạch' : `${s.weed.cells.length}/${s.weed.total}`;
+    ui.done.textContent = s.clearedCount;
+    ui.pest.textContent = s.pesticide.picked ? '✓ Đã nhặt' : 'Chưa nhặt';
+  }
+});
+play.pick = () => {
+  if (play.busy || !play.game) return;
+  const s = play.game.getState();
+  const res = play.game.pickPesticide();
+  if (!res.ok) return;
+  play.busy = true;
+  gsap.timeline().add(play.st.moveHoleTl(SPECIAL_PLAY.id, s.pesticide.x, s.pesticide.y, .5)).call(() => play.run(res));
+};
+document.getElementById('reset').onclick = play.reset;
+</script>
+</body>
+</html>

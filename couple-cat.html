@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Couple Mèo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/catdom-kit.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="logic/couple.js" onerror="this.remove()"></script>
+<script src="assets/catdom-kit.js"></script>
+<style>
+.couples{display:flex;flex-direction:column;gap:8px}
+.couple-row{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:12px;padding:6px 10px;font-size:14px}
+.couple-row svg{width:22px;height:22px;flex:none}
+.couple-row b{margin-left:auto;font:800 15px "Baloo 2"}
+.flyheart{position:absolute;width:30px;height:30px;z-index:6;pointer-events:none}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><a href="selfish-cat.html">Mèo Ích Kỷ</a><a href="weed.html">Cây Dại</a><a href="sick-cat.html">Mèo Bệnh</a><a href="couple-cat.html">Couple Mèo</a></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements (Obstacles) › Couple Mèo</div>
+  <h1>💘 Couple Mèo là gì?</h1>
+  <div class="meta">Mechanic mới · Biến thể của Mèo Ích Kỷ · Bản visualize để review</div>
+
+  <p class="lead">Hai con mèo gắn <b>mũi tên tình yêu</b> cùng màu là một cặp. Lúc đầu chúng chưa đếm gì. Ngay khi bạn cho <b>một con lọt hố</b>, con còn lại nhớ người yêu và <b>bắt đầu đếm ngược N</b>, giống hệt <a href="selfish-cat.html">Mèo Ích Kỷ</a>. Đưa nó về với người yêu trước khi số về 0, nếu không nó sẽ cào bạn.</p>
+
+  <p class="entry">💘 <b>Couple Mèo</b> – Ăn một con mang mũi tên tình yêu thì con còn lại đếm ngược N con mèo. Phải đưa nó lọt hố trước khi đếm về 0.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">Đoàn tụ kịp lúc <span class="pill ok">✓ AN TOÀN</span></div>
+      <div class="stage-wrap"><div id="demoWin"></div></div>
+      <div class="caption" id="capWin"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">Để nó chờ quá lâu <span class="pill bad">✗ CHIA TAY</span></div>
+      <div class="stage-wrap"><div id="demoFail"></div></div>
+      <div class="caption" id="capFail"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li>Mỗi cặp có <b>màu mũi tên</b> riêng và một <b>số N</b>. Hai con nối với nhau bằng đường chấm cùng màu.</li>
+      <li>Trước khi ăn con nào trong cặp: <b>không đếm</b>.</li>
+      <li>Ăn được <b>một con</b> (con nào trước cũng được): con còn lại bắt đầu đếm từ N. Mèo khác lọt hố cùng lượt kích hoạt <b>không bị trừ</b>.</li>
+      <li>Từ lượt sau, mỗi con mèo khác lọt hố trừ 1. Hole nuốt 3 con thì trừ 3.</li>
+      <li>Cho con còn lại lọt hố trước khi về 0 thì <b>đoàn tụ, an toàn</b>. Về 0 thì nó <b>cào</b> và bạn thua.</li>
+      <li>Ăn <b>cả hai</b> trong cùng một lượt thì an toàn ngay, không đếm. Nhiều cặp trên map đếm độc lập với nhau.</li>
+    </ul>
+    <div class="formula">
+      <span class="chip">Mèo khác lọt hố sau khi kích hoạt</span><span>≥</span><span class="chip">N</span><span>→</span><span class="chip bad">Bị cào</span>
+    </div>
+  </div>
+
+  <h2>🎭 Trạng thái visual</h2>
+  <div class="states" id="states"></div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div><div class="stage-wrap"><div id="playStage"></div></div></div>
+    <div class="panel">
+      <p class="hint">Bấm vào một con mèo: hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Map có 2 cặp: 💗 hồng và 💙 xanh.</p>
+      <div class="ctrl">N của mỗi cặp
+        <div class="step"><button id="nMinus" aria-label="Giảm N">−</button><output id="nVal">4</output><button id="nPlus" aria-label="Tăng N">+</button></div>
+      </div>
+      <div class="couples" id="couples"></div>
+      <div class="stat"><div><small>Mèo đã clear</small><strong id="sDone">0</strong></div></div>
+      <button class="btn" id="reset">↻ Chơi lại</button>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec cho Dev / Level Design <span class="tag">Theo quick spec 2026-10-23</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>couples [{id, n, mark}]</code>, mỗi mèo trong cặp có <code>couple: '&lt;id&gt;'</code>. Đúng 2 con mỗi cặp, <code>mark</code> khác nhau.</td></tr>
+      <tr><th>Trạng thái cặp</th><td><code>idle → counting → safe | broken</code></td></tr>
+      <tr><th>Kích hoạt</th><td>Con nào lọt hố trước cũng kích hoạt con còn lại. Lượt kích hoạt không trừ.</td></tr>
+      <tr><th>Đếm</th><td>Giống <code>selfishCount</code>: trừ đúng số mèo lọt hố mỗi lượt. <code>remaining ≤ 0</code> thì thua.</td></tr>
+      <tr><th>Visual theo đếm</th><td>Trước kích hoạt: mắt trái tim. ≥ 3: buồn · 2: cáu (badge cam) · 1: nổi điên (badge đỏ nhấp nháy) · 0: cào, tim vỡ.</td></tr>
+    </table>
+  </div>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Đừng vội ăn con đầu tiên. Hãy dọn đường cho cả hai trước, rồi ăn hai con liên tiếp, hoặc tốt nhất là trong cùng một lượt.</div>
+</main>
+
+<script>
+const LEVEL_DEMO = {
+  cols: 5, rows: 5,
+  cats: [
+    {id:'c1', color:'blue', x:0, y:0, couple:'A'}, {id:'g1', color:'green', x:2, y:0}, {id:'g2', color:'green', x:3, y:0},
+    {id:'o1', color:'orange', x:0, y:2}, {id:'o2', color:'orange', x:1, y:2}, {id:'y1', color:'yellow', x:3, y:2},
+    {id:'c2', color:'purple', x:4, y:4, couple:'A'}
+  ],
+  couples: [{id:'A', n:3, mark:'pink'}]
+};
+const PLAY_CATS = [
+  [0,0,'blue'], [2,0,'green'], [3,0,'green'], [5,0,'orange','A'],
+  [0,1,'blue'], [1,1,'yellow'], [4,1,'orange'], [5,1,'orange'],
+  [1,2,'yellow'], [2,2,'purple','B'],
+  [0,3,'green'], [2,3,'purple'], [4,3,'blue'], [5,3,'blue'],
+  [0,4,'green'], [3,4,'yellow'],
+  [0,5,'orange','A'], [1,5,'orange'], [3,5,'yellow'], [5,5,'purple','B']
+];
+let N = 4;
+const playLevel = () => ({
+  cols: 6, rows: 6,
+  cats: PLAY_CATS.map(([x, y, color, couple]) => ({id: `${x}_${y}`, color, x, y, ...(couple ? {couple} : {})})),
+  couples: [{id: 'A', n: N, mark: 'pink'}, {id: 'B', n: N, mark: 'blue'}]
+});
+
+const catById = (game, id) => game.getState().cats.find(c => c.id === id);
+const cellOf = (game, id) => { const c = catById(game, id); return [c.x, c.y]; };
+const colorOf = (game, id) => catById(game, id).color;
+const coupleMood = n => n >= 3 ? 'sad' : CatDom.moodFor(n);
+const badgeCls = n => n <= 1 ? 'danger' : n === 2 ? 'warn' : '';
+
+function buildBoard(st, game, level, api) {
+  const s = game ? game.getState() : {cats: level.cats.map(c => ({...c, alive: true})),
+    couples: level.couples.map(c => ({...c, cats: level.cats.filter(k => k.couple === c.id).map(k => k.id), state: 'idle', target: null, remaining: null}))};
+  s.cats.filter(c => c.alive).forEach(c => st.addCat(c.id, c.color, c.x, c.y, api ? {onClick: () => api.eat(c.x, c.y)} : {}));
+  st.coupleLines = {};
+  s.couples.forEach(cp => {
+    const [a, b] = cp.cats.map(id => st.cats[id]);
+    cp.cats.forEach(id => { st.setMark(id, cp.mark); st.setCat(id, {mood: 'love'}); });
+    st.coupleLines[cp.id] = st.line(st.center(a.x, a.y), st.center(b.x, b.y), CatDom.MARK[cp.mark]);
+  });
+}
+
+function flyHeart(st, fromId, toId, mark) {
+  const a = st.cats[fromId], b = st.cats[toId];
+  const h = document.createElement('div'); h.className = 'flyheart'; h.innerHTML = CatDom.heartMarkSVG(CatDom.MARK[mark]);
+  const p = st.px(a.x, a.y), q = st.px(b.x, b.y);
+  Object.assign(h.style, {left: p.left + 13 + 'px', top: p.top + 13 + 'px'});
+  st.el.appendChild(h);
+  return gsap.timeline().to(h, {left: q.left + 13, top: q.top + 13, rotation: 360, duration: .6, ease: 'power1.inOut'})
+    .to(h, {scale: 1.8, opacity: 0, duration: .25}).call(() => h.remove());
+}
+
+const handlers = {
+  eat(st, ev, tl, ctx) {
+    tl.add(st.eatTl(ev.ids));
+    if (ctx.log) ctx.log(`Clear ${ev.ids.length} mèo ${CatDom.PAL[colorOf(ctx.game, ev.ids[0])].vi}`);
+  },
+  coupleTrigger(st, ev, tl, ctx) {
+    const mark = ctx.game.getState().couples.find(c => c.id === ev.couple).mark;
+    tl.call(() => {
+      const line = st.coupleLines[ev.couple]; if (line) gsap.to(line, {opacity: 0, duration: .4});
+      flyHeart(st, ev.by, ev.target, mark);
+    }).to({}, {duration: .7}).call(() => {
+      st.setCat(ev.target, {mood: coupleMood(ev.remaining), huff: true});
+      st.setBadge(ev.target, ev.remaining, badgeCls(ev.remaining));
+      st.say(ev.target, `Đợi em với! (${ev.remaining})`, 1.4);
+    }).to({}, {duration: .5});
+    if (ctx.log) ctx.log(`💘 Cặp ${ev.couple} kích hoạt: còn lại phải lọt hố trong <b>${ev.remaining}</b> con`);
+  },
+  coupleCount(st, ev, tl, ctx) {
+    const n = Math.max(0, ev.remaining);
+    if (n > 0) tl.call(() => { st.setCat(ev.target, {mood: coupleMood(n), shake: n <= 1}); st.setBadge(ev.target, n, badgeCls(n)); });
+    if (ctx.log) ctx.log(`Cặp ${ev.couple}: còn <b>${n}</b>`, n <= 1 ? 'b' : '');
+  },
+  coupleSafe(st, ev, tl, ctx) {
+    const cp = ctx.game.getState().couples.find(c => c.id === ev.couple);
+    tl.call(() => {
+      const line = st.coupleLines[ev.couple]; if (line) gsap.to(line, {opacity: 0, duration: .4});
+      if (cp.target) {
+        st.setCat(cp.target, {mood: 'love', huff: false, shake: false});
+        st.setBadge(cp.target, '♥', 'ok');
+        st.say(cp.target, 'Đoàn tụ rồi! 💕', 1.2);
+      }
+    });
+    if (ctx.log) ctx.log(`💕 Cặp ${ev.couple} đoàn tụ an toàn!`, 'g');
+  },
+  lose(st, ev, tl, ctx) {
+    const cp = ctx.game.getState().couples.find(c => c.id === ev.couple);
+    const id = cp.target;
+    tl.call(() => {
+      st.setCat(id, {mood: 'scratch', arms: 'claws', shake: true});
+      st.setBadge(id, '💔', 'danger');
+      st.say(id, 'Chia tay! 😾', 1.6);
+    }).to(st.cats[id].el, {scale: 1.6, y: -8, duration: .25, ease: 'back.out(3)', zIndex: 9}, '+=.15')
+      .add(st.clawsTl()).add(st.flashTl(), '<').add(st.shakeTl(), '<')
+      .call(() => st.showBanner('CHIA TAY! THUA 💔', 'bad'));
+    if (ctx.log) ctx.log(`Cặp ${ev.couple} đếm về 0 → <b>bị cào, thua.</b>`, 'b');
+  },
+  win(st, ev, tl, ctx) {
+    tl.call(() => st.showBanner('BÀN SẠCH ✓', 'ok'));
+    if (ctx.log) ctx.log('Clear hết bàn, mọi cặp đều đoàn tụ!', 'g');
+  }
+};
+
+function demoCfg(el, cap, intro, steps, outro) {
+  return {el: document.getElementById(el), cap: document.getElementById(cap), name: 'couple', file: 'logic/couple.js',
+    level: LEVEL_DEMO, cellOf, colorOf, on: handlers, steps, outro,
+    build: (st, game) => buildBoard(st, game, LEVEL_DEMO),
+    intro: (st, tl, ctx) => tl.call(() => ctx.cap(intro)).to({}, {duration: 1.8})};
+}
+CatDom.demo(demoCfg('demoWin', 'capWin', 'Hai con mèo có mũi tên 💘 hồng là một cặp, N = 3.', [
+  {eat: [0, 0], from: [0, 1], say: 'Ăn mèo xanh → mèo tím bắt đầu đếm 3'},
+  {eat: [2, 0], from: [2, 1], say: 'Clear 2 mèo xanh lá → còn 1'},
+  {eat: [4, 4], from: [4, 3], say: 'Đưa mèo tím về với người yêu kịp lúc!'}
+], (st, tl) => tl.call(() => st.showBanner('ĐOÀN TỤ ✓', 'ok'))));
+CatDom.demo(demoCfg('demoFail', 'capFail', 'Cùng cặp đôi, nhưng lần này mải ăn mèo khác…', [
+  {eat: [0, 0], from: [0, 1], say: 'Ăn mèo xanh → mèo tím đếm 3'},
+  {eat: [2, 0], from: [2, 1], say: 'Clear 2 mèo xanh lá → còn 1'},
+  {eat: [0, 2], from: [0, 3], say: 'Thêm 2 mèo cam → đếm về 0, mèo tím nổi giận!'}
+]));
+
+/* ---------- states ---------- */
+const miniCat = (mood, extra = '', o = {}) => `<div class="mini"><div class="cat${o.shake ? ' angry' : ''}" style="left:0;top:0"><div class="body">${CatDom.catSVG('purple', mood, o)}</div><div class="mark">${CatDom.heartMarkSVG(CatDom.MARK.pink)}</div>${extra}</div></div>`;
+document.getElementById('states').innerHTML = [
+  [miniCat('love'), 'Chưa kích hoạt', 'Mắt trái tim, mũi tên cùng màu, đường chấm nối hai con.'],
+  [miniCat('sad', '<div class="badge">3</div>'), 'Đếm ≥ 3', 'Người yêu đã đi, buồn rơi nước mắt.'],
+  [miniCat('mad', '<div class="badge warn">2</div>'), 'Đếm 2', 'Cáu, badge cam, nổi gân 💢.'],
+  [miniCat('angry', '<div class="badge danger">1</div>', {shake: true}), 'Đếm 1', 'Nổi điên, badge đỏ nhấp nháy, rung.'],
+  [miniCat('scratch', '<div class="badge danger">💔</div>', {arms: 'claws'}), 'Đếm 0', 'Tim vỡ, giơ móng cào → thua.'],
+  [miniCat('love', '<div class="badge ok">♥</div>'), 'Đoàn tụ', 'Lọt hố kịp: an toàn.']
+].map(([art, t, d]) => `<div class="state">${art}<h3>${t}</h3><p>${d}</p></div>`).join('');
+
+/* ---------- playground ---------- */
+const STATE_VI = {idle: 'Chưa kích hoạt', counting: 'Đang đếm', safe: 'Đoàn tụ ✓', broken: 'Chia tay 💔'};
+function renderCouples(game) {
+  const box = document.getElementById('couples');
+  if (!game) { box.innerHTML = ''; return; }
+  box.innerHTML = game.getState().couples.map(c => `<div class="couple-row">${CatDom.heartMarkSVG(CatDom.MARK[c.mark])}
+    Cặp ${c.id}: ${STATE_VI[c.state]}<b>${c.state === 'counting' ? Math.max(0, c.remaining) : c.state === 'idle' ? 'N = ' + c.n : ''}</b></div>`).join('');
+}
+const play = CatDom.playground({
+  el: document.getElementById('playStage'), logEl: document.getElementById('log'),
+  name: 'couple', file: 'logic/couple.js', level: playLevel, cellOf, colorOf, on: handlers,
+  build: (st, game, api) => buildBoard(st, game, playLevel(), api),
+  startText: () => `Bắt đầu: 2 cặp đôi, mỗi cặp N = ${N}.`,
+  update: api => { renderCouples(api.game); if (api.game) document.getElementById('sDone').textContent = api.game.getState().clearedCount; }
+});
+document.getElementById('reset').onclick = play.reset;
+const setN = v => { N = Math.max(1, Math.min(12, v)); document.getElementById('nVal').textContent = N; play.reset(); };
+document.getElementById('nMinus').onclick = () => setN(N - 1);
+document.getElementById('nPlus').onclick = () => setN(N + 1);
+</script>
+</body>
+</html>

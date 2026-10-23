@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mèo Bệnh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/catdom-kit.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="logic/sick.js" onerror="this.remove()"></script>
+<script src="assets/catdom-kit.js"></script>
+<style>
+.cat.is-sick::after{content:"🦠";position:absolute;top:-8px;left:-4px;font-size:15px;animation:germ 1.8s ease-in-out infinite;pointer-events:none}
+@keyframes germ{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(3px,-4px) rotate(20deg)}}
+.hud{display:inline-block;margin:8px 4px 0;background:rgba(20,16,36,.85);color:#fff;border:2px solid #9be15d;border-radius:10px;
+  padding:0 10px;font:800 13px/24px "Baloo 2",sans-serif}
+.hud.danger{border-color:#ffb02e}.hud.bad{border-color:#e0263b;background:#e0263b}
+.meter{height:10px;border-radius:5px;background:var(--line);overflow:hidden;position:relative}
+.meter i{position:absolute;left:0;top:0;bottom:0;background:#7fcf5a;border-radius:5px;transition:width .3s}
+.meter b{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--bad)}
+select{font:600 15px "Be Vietnam Pro";padding:6px 8px;border-radius:10px;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><a href="selfish-cat.html">Mèo Ích Kỷ</a><a href="weed.html">Cây Dại</a><a href="sick-cat.html">Mèo Bệnh</a><a href="couple-cat.html">Couple Mèo</a></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements (Obstacles) › Mèo Bệnh</div>
+  <h1>🤒 Mèo Bệnh là gì?</h1>
+  <div class="meta">Mechanic mới · Bản visualize để review · Điều kiện thua cần kiểm chứng thêm</div>
+
+  <p class="lead">Đầu màn có <b>một con mèo ngẫu nhiên bị bệnh</b>. Mỗi khi bạn cho một con mèo <b>khoẻ</b> lọt hố, bệnh lại <b>lây sang con khoẻ gần ổ bệnh nhất</b>. Mèo trong <b>box/tower</b> thì miễn nhiễm. Khi mèo bệnh chiếm <b>từ 1/2 số mèo còn trên map</b> trở lên thì bạn thua.</p>
+
+  <p class="entry">🤒 <b>Mèo Bệnh</b> – Mỗi mèo khoẻ lọt hố làm bệnh lây thêm 1 con. Hãy dập ổ bệnh bằng cách cho mèo bệnh lọt hố trước khi một nửa map nhiễm bệnh.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">Dập ổ bệnh trước <span class="pill ok">✓ AN TOÀN</span></div>
+      <div class="stage-wrap"><div id="demoWin"></div></div><div class="hud"></div>
+      <div class="caption" id="capWin"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">Để bệnh lây lan <span class="pill bad">✗ ĐẠI DỊCH</span></div>
+      <div class="stage-wrap"><div id="demoFail"></div></div><div class="hud"></div>
+      <div class="caption" id="capFail"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li>Đầu màn, <b>1 con mèo ngẫu nhiên</b> trên bàn bị bệnh (người thiết kế màn có thể chỉ định con nào). Mèo trong box/tower không bao giờ là con được chọn.</li>
+      <li>Mỗi con mèo <b>khoẻ</b> lọt hố gây <b>1 ca lây</b>, tính theo từng con: hole nuốt 3 con khoẻ thì lây 3 ca. Mèo trong box lọt hố cũng tính là mèo khoẻ.</li>
+      <li>Mỗi ca lây chọn con mèo khoẻ <b>gần ổ bệnh nhất</b>, tính theo số ô đi ngang + dọc. Bằng nhau thì con ở hàng trên trước, cùng hàng thì con bên trái trước.</li>
+      <li>Mèo trong <b>box/tower</b> 🛡️ không bao giờ bị lây.</li>
+      <li>Cho <b>mèo bệnh</b> lọt hố thì loại được nó khỏi map, và lượt đó không gây lây.</li>
+      <li>Mèo bệnh ≥ <b>50%</b> số mèo còn lại (tính cả mèo trong box) thì <b>thua</b>.</li>
+    </ul>
+    <div class="formula">
+      <span class="chip">Mèo bệnh</span><span>≥</span><span class="chip">50% × Mèo còn trên map</span><span>→</span><span class="chip bad">Thua</span>
+    </div>
+  </div>
+
+  <h2>🎭 Trạng thái visual</h2>
+  <div class="states" id="states"></div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div><div class="stage-wrap"><div id="playStage"></div></div></div>
+    <div class="panel">
+      <p class="hint">Bấm vào một con mèo: hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Bấm vào <b>box</b> để lấy con mèo đầu hàng. Mỗi lần chơi lại, mèo bệnh ban đầu được chọn ngẫu nhiên.</p>
+      <div class="ctrl">Ngưỡng thua
+        <select id="ratio"><option value="0.3">30%</option><option value="0.4">40%</option><option value="0.5" selected>50% (đề xuất)</option><option value="0.6">60%</option></select>
+      </div>
+      <div class="stat">
+        <div><small>Mèo bệnh / còn lại</small><strong id="sSick">–</strong></div>
+        <div><small>Mèo đã clear</small><strong id="sDone">0</strong></div>
+      </div>
+      <div class="meter" title="Tỉ lệ mèo bệnh, vạch đỏ là ngưỡng thua"><i id="mFill"></i><b id="mMark"></b></div>
+      <button class="btn" id="reset">↻ Chơi lại</button>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec cho Dev / Level Design <span class="tag">Theo quick spec 2026-10-23</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>initialSick</code> (tuỳ chọn), <code>seed</code> (mặc định 1), <code>loseRatio</code> (mặc định 0.5), <code>boxes [{id,x,y,cats}]</code>.</td></tr>
+      <tr><th>Tham chiếu game</th><td>Box/Tower = <code>BoxCats</code>, <code>TowerCat</code>: một hàng mèo, chỉ con đầu lộ ra. Mèo trong box có <code>Cat.isOnBox</code> → miễn nhiễm.</td></tr>
+      <tr><th>Số ca lây</th><td>Bằng số mèo khoẻ bị ăn trong lượt. Dừng khi hết mèo bệnh hoặc hết mục tiêu.</td></tr>
+      <tr><th>Chọn mục tiêu</th><td>Khoảng cách Manhattan nhỏ nhất tới một mèo bệnh bất kỳ. Bằng nhau thì xét <code>y</code> rồi <code>x</code>. Nguồn lây là mèo bệnh gần mục tiêu nhất (cùng quy tắc).</td></tr>
+      <tr><th>Điều kiện thua</th><td><code>sickCount ≥ loseRatio × totalRemaining</code>, kiểm sau mỗi lượt. <b>Cần playtest</b>: chỉnh ngưỡng ngay trong playground.</td></tr>
+      <tr><th>Validate màn</th><td>Trạng thái đầu phải chưa thua. <code>initialSick</code> phải là mèo trên bàn.</td></tr>
+    </table>
+  </div>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Mở đường cho hole cùng màu với mèo bệnh trước tiên. Nếu buộc phải ăn mèo khoẻ, hãy chọn nhóm nhỏ: mỗi con khoẻ lọt hố là thêm một ca lây.</div>
+</main>
+
+<script>
+const LEVEL_DEMO = {
+  cols: 5, rows: 5,
+  cats: [
+    {id:'b1', color:'blue', x:0, y:0}, {id:'b2', color:'blue', x:1, y:0}, {id:'g1', color:'green', x:4, y:0},
+    {id:'o1', color:'orange', x:1, y:2}, {id:'p1', color:'pink', x:2, y:2}, {id:'o2', color:'orange', x:3, y:2},
+    {id:'u1', color:'purple', x:0, y:4}, {id:'u2', color:'purple', x:1, y:4}, {id:'y1', color:'yellow', x:2, y:4}
+  ],
+  boxes: [{id:'bx', x:4, y:4, cats:[{id:'bx1', color:'green'}]}],
+  initialSick: 'p1'
+};
+const PLAY_GRID = ['BB.GGY', '.K..G.', 'OOP..Y', '..PB..', 'Y..B.O', '..GG..'];
+const PLAY_BOXES = [{id:'bxA', x:0, y:5, cats:['orange', 'blue']}, {id:'bxB', x:5, y:5, cats:['yellow', 'green', 'pink']}];
+const CODE = {B:'blue', G:'green', O:'orange', Y:'yellow', P:'purple', K:'pink'};
+
+function playLevel() {
+  const cats = [];
+  PLAY_GRID.forEach((row, y) => [...row].forEach((ch, x) => { if (CODE[ch]) cats.push({id: `${x}_${y}`, color: CODE[ch], x, y}); }));
+  const boxes = PLAY_BOXES.map(b => ({id: b.id, x: b.x, y: b.y, cats: b.cats.map((color, i) => ({id: `${b.id}_${i}`, color}))}));
+  return {cols: 6, rows: 6, cats, boxes, seed: Math.floor(Math.random() * 1e9), loseRatio: Number(document.getElementById('ratio').value)};
+}
+
+/* Mèo box không nằm trong state.cats: tra trong boxes. */
+function findCat(game, id) {
+  const s = game.getState();
+  const c = s.cats.find(c => c.id === id);
+  if (c) return {x: c.x, y: c.y, color: c.color};
+  for (const b of s.boxes) { const q = b.queue.find(q => q.id === id); if (q) return {x: b.x, y: b.y, color: q.color}; }
+  return null;
+}
+const cellOf = (game, id) => { const c = findCat(game, id); return [c.x, c.y]; };
+const colorOf = (game, id) => findCat(game, id).color;
+
+function hud(st, sick, total, ratio) {
+  const h = st.el.closest('.demo')?.querySelector('.hud');
+  if (!h) return;
+  h.textContent = `🤒 ${sick}/${total} · thua khi ≥ ${Math.round(ratio * 100)}%`;
+  h.className = 'hud' + (total && sick >= ratio * total ? ' bad' : total && sick + 1 >= ratio * total ? ' danger' : '');
+}
+function markSick(st, id, on) {
+  st.setCat(id, on ? {mood: 'sick', sick: true} : {mood: 'happy', sick: false});
+  st.cats[id]?.el.classList.toggle('is-sick', on);
+}
+
+function buildBoard(st, game, level, api) {
+  const s = game ? game.getState() : {cats: level.cats.map(c => ({...c, alive: true, sick: c.id === level.initialSick})),
+    boxes: (level.boxes || []).map(b => ({id: b.id, x: b.x, y: b.y, queue: b.cats})), sickCount: level.initialSick ? 1 : 0,
+    totalRemaining: level.cats.length + (level.boxes || []).reduce((n, b) => n + b.cats.length, 0), loseRatio: level.loseRatio ?? .5};
+  s.cats.filter(c => c.alive).forEach(c => {
+    st.addCat(c.id, c.color, c.x, c.y, api ? {onClick: () => api.eat(c.x, c.y)} : {});
+    if (c.sick) markSick(st, c.id, true);
+  });
+  s.boxes.forEach(b => st.addBox(b.id, b.x, b.y, b.queue[0]?.color, b.queue.length, api && (() => api.eat(b.x, b.y))));
+  hud(st, s.sickCount, s.totalRemaining, s.loseRatio);
+}
+
+/* ctx.sickSet/ctx.total: đếm chạy theo event (demo khởi tạo trong intro). Playground không có thì HUD cập nhật trong update(). */
+function stepHud(st, tl, ctx) {
+  if (!ctx.sickSet) return;
+  const sick = ctx.sickSet.size, total = ctx.total;
+  tl.call(() => hud(st, sick, total, .5));
+}
+const handlers = {
+  eat(st, ev, tl, ctx) {
+    const s = ctx.game.getState();
+    const boxEat = ev.ids.length === 1 && !s.cats.some(c => c.id === ev.ids[0]);
+    const sickEaten = ev.ids.filter(id => s.cats.find(c => c.id === id)?.sick).length;
+    if (!boxEat) tl.add(st.eatTl(ev.ids));
+    if (ctx.sickSet) { ev.ids.forEach(id => ctx.sickSet.delete(id)); ctx.total -= ev.ids.length; stepHud(st, tl, ctx); }
+    if (ctx.log) ctx.log(boxEat ? 'Lấy 1 mèo từ box 🛡️' : `Clear ${ev.ids.length} mèo${sickEaten ? ` (có ${sickEaten} mèo bệnh 💊)` : ''}`, sickEaten ? 'g' : '');
+  },
+  boxNext(st, ev, tl, ctx) {
+    const left = ctx.game.getState().boxes.find(b => b.id === ev.boxId).queue.length;
+    tl.call(() => {
+      const cat = st.boxes[ev.boxId].el.querySelector('.cat');
+      gsap.timeline().to(cat, {y: -14, scale: .3, opacity: 0, duration: .3, ease: 'power2.in'})
+        .call(() => st.setBox(ev.boxId, ev.next?.color, left))
+        .set(cat, {y: 0, scale: 1, opacity: 1}).from(cat, {y: 12, opacity: 0, duration: .25});
+    }).to({}, {duration: .6});
+  },
+  infect(st, ev, tl, ctx) {
+    tl.call(() => {
+      const a = st.cats[ev.from], b = st.cats[ev.to];
+      const from = st.center(a.x, a.y), to = st.center(b.x, b.y);
+      const d = st.dot(from, 6, '#7fff5a');
+      gsap.timeline().to(d, {attr: {cx: to.x, cy: to.y}, duration: .45, ease: 'power1.inOut'})
+        .call(() => { d.remove(); markSick(st, ev.to, true); })
+        .fromTo(b.el, {scale: 1.35}, {scale: 1, duration: .3, ease: 'back.out(3)'});
+    }).to({}, {duration: .65});
+    if (ctx.sickSet) { ctx.sickSet.add(ev.to); stepHud(st, tl, ctx); }
+    if (ctx.log) ctx.log(`🦠 Lây bệnh → mèo ${CatDom.PAL[st.cats[ev.to].c].vi} ở ô (${st.cats[ev.to].x},${st.cats[ev.to].y})`, 'b');
+  },
+  lose(st, ev, tl, ctx) {
+    tl.call(() => {
+      const h = st.el.closest('.demo')?.querySelector('.hud'); if (h) { h.textContent = `🤒 ${ev.sick}/${ev.total} · ĐẠI DỊCH`; h.className = 'hud bad'; }
+      Object.keys(st.cats).forEach(id => { if (st.cats[id].el.classList.contains('is-sick')) gsap.to(st.cats[id].el, {y: -6, duration: .12, yoyo: true, repeat: 3}); });
+    }).add(st.flashTl('#5fbf3a')).add(st.shakeTl(), '<')
+      .call(() => st.showBanner('ĐẠI DỊCH! THUA 🤒', 'bad'));
+    if (ctx.log) ctx.log(`${ev.sick}/${ev.total} mèo bị bệnh → <b>Thua.</b>`, 'b');
+  },
+  win(st, ev, tl, ctx) {
+    tl.call(() => st.showBanner('BÀN SẠCH ✓', 'ok'));
+    if (ctx.log) ctx.log('Clear hết bàn trước khi dịch bùng phát!', 'g');
+  }
+};
+
+function demoCfg(el, cap, intro, steps, outro) {
+  return {el: document.getElementById(el), cap: document.getElementById(cap), name: 'sick', file: 'logic/sick.js',
+    level: LEVEL_DEMO, cellOf, colorOf, on: handlers, steps, outro,
+    build: (st, game) => buildBoard(st, game, LEVEL_DEMO),
+    intro: (st, tl, ctx) => {
+      const s = ctx.game.getState();
+      ctx.sickSet = new Set(s.cats.filter(c => c.sick).map(c => c.id));
+      ctx.total = s.totalRemaining;
+      tl.call(() => ctx.cap(intro)).to({}, {duration: 1.8});
+    }};
+}
+CatDom.demo({...demoCfg('demoWin', 'capWin', 'Mèo hồng ở giữa đang bệnh. Ổ bệnh chỉ có 1 con.', [
+    {eat: [2, 2], from: [2, 3], say: 'Cho mèo bệnh lọt hố trước → không ai bị lây'},
+    {eat: [0, 0], from: [0, 1], say: 'Hết ổ bệnh, giờ ăn mèo khoẻ cũng không lây nữa'},
+    {eat: [4, 4], from: [3, 4], say: 'Mèo trong box 🛡️ luôn an toàn'}
+  ], (st, tl) => tl.call(() => st.showBanner('ĐÃ DẬP Ổ BỆNH ✓', 'ok')))});
+CatDom.demo({...demoCfg('demoFail', 'capFail', 'Cùng màn chơi, nhưng lần này ăn mèo khoẻ trước…', [
+    {eat: [0, 0], from: [0, 1], say: 'Ăn 2 mèo khoẻ → 2 ca lây sang 2 mèo cam sát bên'},
+    {eat: [0, 4], from: [0, 3], say: 'Ăn thêm 2 mèo khoẻ → lây tiếp, 5/6 mèo còn lại bị bệnh'}
+  ])});
+
+/* ---------- states ---------- */
+const miniCat = (mood, o = {}, extra = '') => `<div class="mini"><div class="cat${o.sick ? ' is-sick' : ''}" style="left:0;top:0"><div class="body">${CatDom.catSVG('pink', mood, o)}</div>${extra}</div></div>`;
+document.getElementById('states').innerHTML = [
+  [miniCat('happy'), 'Mèo khoẻ', 'Có thể bị lây nếu đứng gần ổ bệnh.'],
+  [miniCat('sick', {sick: true}), 'Mèo bệnh', 'Người xanh, mắt lừ đừ, cặp nhiệt kế, vi khuẩn bay quanh.'],
+  [`<div class="mini"><div class="box" style="left:0;top:10px;transform:scale(1.3);transform-origin:0 0">${CatDom.boxSVG()}<div class="cat" style="left:6px;top:-12px;width:44px;height:44px"><div class="body" style="width:42px;height:42px">${CatDom.catSVG('green', 'happy')}</div></div><span class="count">×3</span><span class="shield">🛡️</span></div></div>`, 'Box / Tower', 'Miễn nhiễm 🛡️: mèo trong box không bao giờ bị lây.'],
+  [`<div class="mini"><svg viewBox="0 0 76 76" style="width:76px;height:76px"><circle cx="14" cy="38" r="9" fill="#9be15d"/><circle cx="62" cy="38" r="9" fill="#ffb3c1"/><path d="M26 38h24" stroke="#7fff5a" stroke-width="4" stroke-dasharray="3 6" stroke-linecap="round"/><circle cx="40" cy="38" r="6" fill="#7fff5a" style="filter:drop-shadow(0 0 6px #7fff5a)"/></svg></div>`, 'Ca lây', 'Hạt bệnh bay từ mèo bệnh sang con khoẻ gần nhất.'],
+  [miniCat('scared', {}, '<div class="badge danger">50%</div>'), 'Ngưỡng thua', 'HUD chuyển cam khi chỉ còn 1 ca nữa, đỏ khi chạm ngưỡng.']
+].map(([art, t, d]) => `<div class="state">${art}<h3>${t}</h3><p>${d}</p></div>`).join('');
+
+/* ---------- playground ---------- */
+const ui = {sick: document.getElementById('sSick'), done: document.getElementById('sDone'), fill: document.getElementById('mFill'), mark: document.getElementById('mMark')};
+const play = CatDom.playground({
+  el: document.getElementById('playStage'), logEl: document.getElementById('log'),
+  name: 'sick', file: 'logic/sick.js', level: playLevel, cellOf, colorOf, on: handlers,
+  build: (st, game, api) => buildBoard(st, game, game ? null : {...playLevel(), initialSick: '1_1'}, api),
+  startText: game => {
+    const s = game.getState(), c = s.cats.find(c => c.sick);
+    return `Bắt đầu: mèo ${CatDom.PAL[c.color].vi} ở ô (${c.x},${c.y}) bị bệnh. Thua khi ≥ ${Math.round(s.loseRatio * 100)}% mèo bệnh.`;
+  },
+  update: api => {
+    if (!api.game) return;
+    const s = api.game.getState();
+    ui.sick.textContent = `${s.sickCount}/${s.totalRemaining}`;
+    ui.done.textContent = s.clearedCount;
+    ui.fill.style.width = (s.totalRemaining ? s.sickCount / s.totalRemaining * 100 : 0) + '%';
+    ui.mark.style.left = s.loseRatio * 100 + '%';
+    hud(api.st, s.sickCount, s.totalRemaining, s.loseRatio);
+    s.boxes.forEach(b => api.st.setBox(b.id, b.queue[0]?.color, b.queue.length));
+  }
+});
+document.getElementById('reset').onclick = play.reset;
+document.getElementById('ratio').onchange = play.reset;
+</script>
+</body>
+</html>
