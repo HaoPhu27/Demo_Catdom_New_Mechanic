@@ -4,6 +4,7 @@
 
 ## Kiến trúc hiện tại
 - Trang demo mechanic CatDom dạng HTML tĩnh, mở qua `node tools/serve.mjs` (http://127.0.0.1:5173/).
+- `index.html`: trang demo tổng 4 mechanic. Mỗi mechanic có nút "Xem GIF gameplay" và "Chơi thử ngay", mở trang chi tiết trong dialog + iframe.
 - `selfish-cat.html`: file mẫu chuẩn (độc lập, không dùng kit).
 - `weed.html`, `sick-cat.html`, `couple-cat.html`: dùng `assets/catdom-kit.css/js` (Stage, catSVG, demo tự lặp, playground) cùng `logic/<tên>.js`.
 - Logic thuần UMD theo `docs/logic-contract.md`. Test: `node --test tests/weed.test.mjs tests/sick.test.mjs tests/couple.test.mjs`.
@@ -12,6 +13,7 @@
 
 ## Phase hiện tại
 - Feature `mechanics` xong: MW-1, MS-1, MC-1 approved. Lead đã review và merge vào `main` (2026-10-23).
+- Feature `landing` xong: LP-1 approved sau 1 vòng fix, nằm trên nhánh `feature/LP-1`, chờ Lead review trước khi merge.
 
 ## Rủi ro đang mở
 - Điều kiện thua của Mèo bệnh (1/2) chưa được playtest.

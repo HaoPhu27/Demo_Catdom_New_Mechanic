@@ -16,3 +16,8 @@
 - **Quyết định:** Mèo bệnh: mỗi con khoẻ bị ăn tạo 1 ca lây. Couple: con nào ăn trước cũng kích hoạt. Cây dại: nhặt thuốc sâu thì xoá sạch, không mọc lại. Chi tiết ở `design/quick-specs/*-2026-10-23.md`.
 - **Lý do:** Lead chọn qua câu hỏi chốt luật. Ngưỡng thua 1/2 của Mèo bệnh cần playtest, nên để thành tham số `loseRatio` (chỉnh được trong playground).
 - **Trạng thái:** Đang áp dụng.
+
+## 2026-10-23 — Trang demo tổng nhúng lại trang chi tiết bằng iframe
+- **Quyết định:** `index.html` (phong cách dreamcoffee.homes) mở trang chi tiết trong `<dialog>` + `<iframe>`, rồi chèn CSS để chỉ hiện `main > .demos` (nút "Xem GIF gameplay") hoặc `main > .card.play` (nút "Chơi thử ngay"). "GIF" là demo chạy trực tiếp, không phải file `.gif`.
+- **Lý do:** Không sửa 4 trang đã duyệt, gameplay giữ đúng bản Lead đã review, không cần công cụ quay GIF. Mọi trang mechanic về sau phải giữ `.demos` và `.card.play` là con trực tiếp của `<main>` (`tests/index.test.mjs` kiểm tra điều này).
+- **Trạng thái:** Đang áp dụng (LP-1 duyệt sau 1 vòng fix).
