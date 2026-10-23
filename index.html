@@ -524,110 +524,31 @@ footer.site-footer {
   font-size: 13.5px;
 }
 
-/* ---------- Dialog (Viewer) ---------- */
-dialog#viewer {
-  border: var(--border);
-  border-radius: var(--radius-card);
-  box-shadow: 8px 8px 0 var(--ink);
-  background: var(--bg-card);
+/* ---------- Visual Embed & Demo Frame ---------- */
+.card-art.is-embed {
   padding: 0;
-  width: 92vw;
-  max-width: 980px;
-  height: 86vh;
-  max-height: 850px;
-  overflow: hidden;
+  display: block;
+  min-height: 0;
 }
 
-dialog#viewer::backdrop {
-  background: rgba(42, 35, 64, 0.65);
-  backdrop-filter: blur(4px);
-}
-
-.viewer-window {
+.art-illus {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.art-embed {
   width: 100%;
 }
 
-.viewer-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 14px 20px;
-  background: var(--bg-card);
-  border-bottom: var(--border);
-  flex-shrink: 0;
-}
-
-#viewer-title {
-  font-family: 'Baloo 2', cursive, sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0;
-  color: var(--ink);
-}
-
-.viewer-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.mode-switch {
-  display: inline-flex;
-  background: var(--bg-page);
-  border: var(--border-sm);
-  border-radius: 12px;
-  padding: 3px;
-  gap: 4px;
-}
-
-.btn-mode {
-  border: none;
+.art-frame {
+  display: block;
+  width: 100%;
+  height: 560px;
+  border: 0;
   background: transparent;
-  color: var(--ink);
-  font-family: 'Baloo 2', cursive, sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-  padding: 6px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.btn-mode[aria-pressed="true"] {
-  background: var(--accent);
-  color: #ffffff;
-  box-shadow: 2px 2px 0 var(--ink);
-}
-
-.btn-close {
-  width: 36px;
-  height: 36px;
-  border: 2.5px solid var(--ink);
-  border-radius: 10px;
-  background: var(--bg-card);
-  color: var(--ink);
-  font-size: 16px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 2px 2px 0 var(--ink);
-  transition: transform 0.1s, box-shadow 0.1s;
-}
-
-.btn-close:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 var(--ink);
-}
-
-.btn-close:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 var(--ink);
 }
 
 .serve-notice {
@@ -646,19 +567,29 @@ dialog#viewer::backdrop {
   font-weight: 700;
 }
 
-.viewer-body {
-  flex: 1;
-  width: 100%;
-  position: relative;
-  background: #f5f2fb;
-  overflow: hidden;
+.btn-group .btn[aria-pressed="true"] {
+  background: var(--accent);
+  color: #ffffff;
 }
 
-#viewer-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: block;
+.btn-group:has([aria-pressed="true"]) .btn[aria-pressed="false"] {
+  background: var(--bg-card);
+  color: var(--ink);
+}
+
+.btn-group .btn[aria-pressed="true"]:hover {
+  background: #6c3ce8;
+}
+
+.btn-group:has([aria-pressed="true"]) .btn[aria-pressed="false"]:hover {
+  background: #fff6ec;
+}
+
+@media (min-width: 761px) {
+  .mech-grid:has(.card-art.is-embed) {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
 }
 
 /* ---------- Responsive (Mobile <= 760px) ---------- */
@@ -726,35 +657,6 @@ dialog#viewer::backdrop {
     min-height: 220px;
   }
 
-  dialog#viewer {
-    width: 96vw;
-    height: 94vh;
-    max-height: 96vh;
-    border-radius: 16px;
-  }
-
-  .viewer-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-    padding: 10px 14px;
-  }
-
-  .viewer-toolbar {
-    justify-content: space-between;
-  }
-
-  .mode-switch {
-    flex: 1;
-  }
-
-  .btn-mode {
-    flex: 1;
-    text-align: center;
-    padding: 6px 8px;
-    font-size: 13px;
-  }
-
   .footer-inner {
     grid-template-columns: 1fr;
     gap: 32px;
@@ -817,14 +719,18 @@ dialog#viewer::backdrop {
           <li>Bộ đếm về <b>0</b> mà nó còn trên bàn thì nó <b>nhảy ra cào</b>: thua màn (clear nó trước khi về 0 để an toàn).</li>
         </ul>
         <div class="btn-group">
-          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
-          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-selfish" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-selfish" aria-pressed="false">Chơi thử ngay</button>
         </div>
         <a href="selfish-cat.html" class="link-detail">Xem trang chi tiết →</a>
       </div>
       <div class="mech-art-col">
         <div class="card-art" id="art-selfish">
-          <!-- Rendered via JS -->
+          <div class="art-illus" id="illus-selfish"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-selfish" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-selfish" title="Demo Mèo Ích Kỷ" src="about:blank"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -850,14 +756,18 @@ dialog#viewer::backdrop {
           <li><b>Special Hole</b> không nuốt mèo, chỉ nhặt được <b>thuốc sâu</b> để xoá sạch toàn bộ cây dại vĩnh viễn.</li>
         </ul>
         <div class="btn-group">
-          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
-          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-weed" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-weed" aria-pressed="false">Chơi thử ngay</button>
         </div>
         <a href="weed.html" class="link-detail">Xem trang chi tiết →</a>
       </div>
       <div class="mech-art-col">
         <div class="card-art" id="art-weed">
-          <!-- Rendered via JS -->
+          <div class="art-illus" id="illus-weed"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-weed" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-weed" title="Demo Cây Dại" src="about:blank"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -883,14 +793,18 @@ dialog#viewer::backdrop {
           <li>Cho <b>mèo bệnh</b> lọt hố để dập ổ bệnh; nếu mèo bệnh chiếm <b>≥ 50%</b> số mèo còn lại thì thua.</li>
         </ul>
         <div class="btn-group">
-          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
-          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-sick" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-sick" aria-pressed="false">Chơi thử ngay</button>
         </div>
         <a href="sick-cat.html" class="link-detail">Xem trang chi tiết →</a>
       </div>
       <div class="mech-art-col">
         <div class="card-art" id="art-sick">
-          <!-- Rendered via JS -->
+          <div class="art-illus" id="illus-sick"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-sick" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-sick" title="Demo Mèo Bệnh" src="about:blank"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -916,14 +830,18 @@ dialog#viewer::backdrop {
           <li>Đưa con còn lại lọt hố trước khi về 0 để <b>đoàn tụ an toàn</b>; đếm về 0 thì nó cào và thua màn.</li>
         </ul>
         <div class="btn-group">
-          <button type="button" class="btn btn-primary" data-action="gif">Xem GIF gameplay</button>
-          <button type="button" class="btn btn-secondary" data-action="play">Chơi thử ngay</button>
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-couple" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-couple" aria-pressed="false">Chơi thử ngay</button>
         </div>
         <a href="couple-cat.html" class="link-detail">Xem trang chi tiết →</a>
       </div>
       <div class="mech-art-col">
         <div class="card-art" id="art-couple">
-          <!-- Rendered via JS -->
+          <div class="art-illus" id="illus-couple"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-couple" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-couple" title="Demo Couple Mèo" src="about:blank"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -965,154 +883,115 @@ dialog#viewer::backdrop {
   </div>
 </footer>
 
-<!-- Viewer Dialog -->
-<dialog id="viewer">
-  <div class="viewer-window">
-    <div class="viewer-header">
-      <h2 id="viewer-title">Mechanic Review</h2>
-      <div class="viewer-toolbar">
-        <div class="mode-switch" role="group" aria-label="Chế độ xem">
-          <button type="button" class="btn-mode" data-mode="gif" aria-pressed="true">Xem GIF gameplay</button>
-          <button type="button" class="btn-mode" data-mode="play" aria-pressed="false">Chơi thử ngay</button>
-        </div>
-        <button type="button" class="btn-close" data-action="close" aria-label="Đóng hộp xem">✕</button>
-      </div>
-    </div>
-    <p id="serve-notice" class="serve-notice" hidden>
-      ⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> trong iframe (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem chế độ rút gọn.
-    </p>
-    <div class="viewer-body">
-      <iframe id="viewer-frame" title="Hộp xem chi tiết mechanic CatDom" src="about:blank"></iframe>
-    </div>
-  </div>
-</dialog>
-
 <!-- Inline Script -->
 <script>
-let currentMech = null;
-let currentMode = null;
-
-const MECH_CONFIG = {
-  selfish: { title: '😾 Mèo Ích Kỷ', page: 'selfish-cat.html' },
-  weed:    { title: '🌿 Cây Dại', page: 'weed.html' },
-  sick:    { title: '🤒 Mèo Bệnh', page: 'sick-cat.html' },
-  couple:  { title: '💘 Couple Mèo', page: 'couple-cat.html' }
+const VALID_MECHS = {
+  selfish: 'selfish-cat.html',
+  weed:    'weed.html',
+  sick:    'sick-cat.html',
+  couple:  'couple-cat.html'
 };
 
-function openViewer(mechId, mode) {
-  if (!MECH_CONFIG[mechId] || (mode !== 'gif' && mode !== 'play')) {
-    return;
-  }
+const currentModes = {};
+const observers = {};
 
-  currentMech = mechId;
-  currentMode = mode;
+function applyEmbedStyle(mechId) {
+  const iframe = document.getElementById('frame-' + mechId);
+  const embedEl = document.getElementById('embed-' + mechId);
+  const noticeEl = embedEl ? embedEl.querySelector('.serve-notice') : null;
+  if (!iframe) return;
 
-  const cfg = MECH_CONFIG[mechId];
-  const dialog = document.getElementById('viewer');
-  const titleEl = document.getElementById('viewer-title');
-  const iframe = document.getElementById('viewer-frame');
-  const noticeEl = document.getElementById('serve-notice');
-  const btnGif = dialog.querySelector('button[data-mode="gif"]');
-  const btnPlay = dialog.querySelector('button[data-mode="play"]');
-
-  // Đặt tiêu đề theo tên mechanic
-  if (titleEl) {
-    titleEl.textContent = cfg.title;
-  }
-
-  // Cập nhật trạng thái nút chuyển chế độ
-  if (btnGif) btnGif.setAttribute('aria-pressed', mode === 'gif' ? 'true' : 'false');
-  if (btnPlay) btnPlay.setAttribute('aria-pressed', mode === 'play' ? 'true' : 'false');
-
-  function applyEmbedStyle() {
-    try {
-      if (iframe.getAttribute('src') === 'about:blank') {
-        return;
-      }
-      const doc = iframe.contentDocument;
-      if (doc && doc.URL === 'about:blank') {
-        return;
-      }
-      if (!doc || !doc.head) {
-        if (noticeEl) noticeEl.hidden = false;
-        return;
-      }
-      const sel = currentMode === 'gif' ? '.demos' : '.card.play';
-      let style = doc.getElementById('embed-style');
-      if (!style) {
-        style = doc.createElement('style');
-        style.id = 'embed-style';
-        doc.head.appendChild(style);
-      }
-      style.textContent = `header.topbar{display:none!important}
+  try {
+    if (iframe.getAttribute('src') === 'about:blank') return;
+    const doc = iframe.contentDocument;
+    if (doc && doc.URL === 'about:blank') return;
+    if (!doc || !doc.head) {
+      iframe.style.height = '560px';
+      if (noticeEl) noticeEl.hidden = false;
+      return;
+    }
+    const currentMode = currentModes[mechId] || 'gif';
+    const sel = currentMode === 'gif' ? '.demos' : '.card.play';
+    let style = doc.getElementById('embed-style');
+    if (!style) {
+      style = doc.createElement('style');
+      style.id = 'embed-style';
+      doc.head.appendChild(style);
+    }
+    style.textContent = `header.topbar{display:none!important}
 main{padding-top:12px!important}
 main>*:not(${sel}){display:none!important}`;
-      if (noticeEl) noticeEl.hidden = true;
-    } catch (e) {
-      if (noticeEl) noticeEl.hidden = false;
+    if (noticeEl) noticeEl.hidden = true;
+
+    iframe.style.height = doc.documentElement.scrollHeight + 'px';
+
+    if (observers[mechId]) {
+      observers[mechId].disconnect();
+      delete observers[mechId];
     }
-  }
-
-  // Khi iframe load, chèn CSS nhúng nguyên văn vào contentDocument
-  iframe.onload = function() {
-    applyEmbedStyle();
-  };
-
-  const targetPage = cfg.page;
-  const currentSrc = iframe.getAttribute('src');
-  if (currentSrc === targetPage) {
-    applyEmbedStyle();
-  } else {
-    iframe.src = targetPage;
-  }
-
-  // Mở dialog nếu chưa mở
-  if (!dialog.open) {
-    dialog.showModal();
+    if (typeof ResizeObserver !== 'undefined' && doc.body) {
+      const ro = new ResizeObserver(function() {
+        try {
+          if (doc.documentElement) {
+            iframe.style.height = doc.documentElement.scrollHeight + 'px';
+          }
+        } catch (e) {}
+      });
+      ro.observe(doc.body);
+      observers[mechId] = ro;
+    }
+  } catch (e) {
+    iframe.style.height = '560px';
+    if (noticeEl) noticeEl.hidden = false;
   }
 }
 
-window.openViewer = openViewer;
+function showDemo(mechId, mode) {
+  if (!VALID_MECHS[mechId] || (mode !== 'gif' && mode !== 'play')) {
+    return;
+  }
+  const sec = document.getElementById(mechId);
+  if (!sec) return;
+
+  currentModes[mechId] = mode;
+
+  const illusEl = document.getElementById('illus-' + mechId);
+  const embedEl = document.getElementById('embed-' + mechId);
+  const artEl = document.getElementById('art-' + mechId);
+  const iframe = document.getElementById('frame-' + mechId);
+
+  if (illusEl) illusEl.hidden = true;
+  if (embedEl) embedEl.hidden = false;
+  if (artEl) artEl.classList.add('is-embed');
+
+  const btnGif = sec.querySelector('button[data-action="gif"]');
+  const btnPlay = sec.querySelector('button[data-action="play"]');
+  if (btnGif) btnGif.setAttribute('aria-pressed', mode === 'gif' ? 'true' : 'false');
+  if (btnPlay) btnPlay.setAttribute('aria-pressed', mode === 'play' ? 'true' : 'false');
+
+  if (!iframe) return;
+
+  const targetPage = sec.dataset.page || VALID_MECHS[mechId];
+  const currentSrc = iframe.getAttribute('src');
+
+  if (currentSrc !== targetPage) {
+    if (observers[mechId]) {
+      observers[mechId].disconnect();
+      delete observers[mechId];
+    }
+    iframe.onload = function() {
+      applyEmbedStyle(mechId);
+    };
+    iframe.src = targetPage;
+  } else {
+    applyEmbedStyle(mechId);
+  }
+}
+
+window.showDemo = showDemo;
 
 // Khởi tạo các sự kiện và vẽ ảnh minh hoạ khi DOM sẵn sàng
 document.addEventListener('DOMContentLoaded', function() {
-  const dialog = document.getElementById('viewer');
-  const iframe = document.getElementById('viewer-frame');
-  const btnClose = dialog.querySelector('button[data-action="close"]');
-  const btnModeGif = dialog.querySelector('button[data-mode="gif"]');
-  const btnModePlay = dialog.querySelector('button[data-mode="play"]');
-
-  // Đóng dialog khi bấm nút close
-  if (btnClose) {
-    btnClose.addEventListener('click', function() {
-      dialog.close();
-    });
-  }
-
-  // Dọn dẹp iframe về about:blank khi đóng dialog (nút close, Esc, backdrop)
-  dialog.addEventListener('close', function() {
-    iframe.src = 'about:blank';
-  });
-
-  // Đóng dialog khi bấm vào nền ngoài khung
-  dialog.addEventListener('click', function(event) {
-    if (event.target === dialog) {
-      dialog.close();
-    }
-  });
-
-  // Chuyển chế độ xem trong dialog
-  if (btnModeGif) {
-    btnModeGif.addEventListener('click', function() {
-      if (currentMech) openViewer(currentMech, 'gif');
-    });
-  }
-  if (btnModePlay) {
-    btnModePlay.addEventListener('click', function() {
-      if (currentMech) openViewer(currentMech, 'play');
-    });
-  }
-
   // Gắn sự kiện cho các nút trong từng section mechanic
   document.querySelectorAll('section.mech').forEach(function(sec) {
     const id = sec.id;
@@ -1120,12 +999,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const playBtn = sec.querySelector('button[data-action="play"]');
     if (gifBtn) {
       gifBtn.addEventListener('click', function() {
-        openViewer(id, 'gif');
+        showDemo(id, 'gif');
       });
     }
     if (playBtn) {
       playBtn.addEventListener('click', function() {
-        openViewer(id, 'play');
+        showDemo(id, 'play');
       });
     }
   });
@@ -1154,9 +1033,9 @@ function renderIllustrations() {
   }
 
   // Mechanic 01: Mèo Ích Kỷ
-  const artSelfish = document.getElementById('art-selfish');
-  if (artSelfish) {
-    artSelfish.innerHTML = `
+  const illusSelfish = document.getElementById('illus-selfish');
+  if (illusSelfish) {
+    illusSelfish.innerHTML = `
       <div class="art-stage">
         <div class="art-cat-single">
           ${CatDom.catSVG('purple', 'annoyed', {crown: true, arms: 'crossed'})}
@@ -1168,9 +1047,9 @@ function renderIllustrations() {
   }
 
   // Mechanic 02: Cây Dại
-  const artWeed = document.getElementById('art-weed');
-  if (artWeed) {
-    artWeed.innerHTML = `
+  const illusWeed = document.getElementById('illus-weed');
+  if (illusWeed) {
+    illusWeed.innerHTML = `
       <div class="art-stage">
         <div class="art-row">
           <div class="art-cat-item">${CatDom.catSVG('green', 'scared')}</div>
@@ -1183,9 +1062,9 @@ function renderIllustrations() {
   }
 
   // Mechanic 03: Mèo Bệnh
-  const artSick = document.getElementById('art-sick');
-  if (artSick) {
-    artSick.innerHTML = `
+  const illusSick = document.getElementById('illus-sick');
+  if (illusSick) {
+    illusSick.innerHTML = `
       <div class="art-stage">
         <div class="art-row">
           <div class="art-cat-item">${CatDom.catSVG('pink', 'sick', {sick: true})}<span class="art-germ">🦠</span></div>
@@ -1197,9 +1076,9 @@ function renderIllustrations() {
   }
 
   // Mechanic 04: Couple Mèo
-  const artCouple = document.getElementById('art-couple');
-  if (artCouple) {
-    artCouple.innerHTML = `
+  const illusCouple = document.getElementById('illus-couple');
+  if (illusCouple) {
+    illusCouple.innerHTML = `
       <div class="art-stage">
         <div class="art-row">
           <div class="art-cat-item">${CatDom.catSVG('pink', 'love')}</div>
