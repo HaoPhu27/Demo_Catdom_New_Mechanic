@@ -33,8 +33,9 @@
     }
   },
   "checks": [
-    { "name": "test-weed", "command": "node --test tests/weed.test.mjs", "timeout_sec": 120 },
-    { "name": "html-weed", "command": "node tools/check-html.mjs weed.html", "timeout_sec": 60 }
+    { "name": "test-sick", "command": "node --test tests/sick.test.mjs", "timeout_sec": 120 },
+    { "name": "html-sick", "command": "node tools/check-html.mjs sick-cat.html", "timeout_sec": 60 },
+    { "name": "test-weed (hồi quy)", "command": "node --test tests/weed.test.mjs", "timeout_sec": 120 }
   ],
   "checks_example": [
     { "name": "lint",  "command": "npm run lint",     "timeout_sec": 300 },
