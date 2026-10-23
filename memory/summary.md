@@ -13,7 +13,7 @@
 
 ## Phase hiện tại
 - Feature `mechanics` xong: MW-1, MS-1, MC-1 approved. Lead đã review và merge vào `main` (2026-10-23).
-- Feature `landing` xong: LP-1 approved sau 1 vòng fix, nằm trên nhánh `feature/LP-1`, chờ Lead review trước khi merge.
+- Feature `landing` xong: LP-1 approved sau 1 vòng fix. Lead đã review và merge vào `main` (2026-10-23).
 
 ## Rủi ro đang mở
 - Điều kiện thua của Mèo bệnh (1/2) chưa được playtest.
