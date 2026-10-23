@@ -89,6 +89,10 @@ test('JS: showDemo, CSS nhúng nguyên văn, xử lý lỗi, tự co giãn chi�
   assert.match(inlineScripts, /embed-style/);
   assert.match(inlineScripts, /scrollHeight/, 'iframe phải co theo chiều cao nội dung');
   assert.match(inlineScripts, /ResizeObserver/, 'theo dõi đổi kích thước nội dung iframe');
+  // LP-3: 2 bảng GIF nằm ngang, cột visual rộng hơn khi đang hiện demo
+  assert.ok(inlineScripts.replace(/\s+/g, '').includes('.demos{grid-template-columns:repeat(2,minmax(0,1fr))!important}'), 'CSS nhúng phải ép .demos thành 2 cột ngang');
+  assert.match(html, /\.mech-grid:has\(\.card-art\.is-embed\)\s*{\s*grid-template-columns:\s*minmax\(0,\s*0\.8fr\)\s+minmax\(0,\s*1\.2fr\)/, 'cột visual rộng 1.2fr khi hiện demo');
+  assert.match(html, /\.mech-reverse:has\(\.card-art\.is-embed\)\s*{\s*grid-template-columns:\s*minmax\(0,\s*1\.2fr\)\s+minmax\(0,\s*0\.8fr\)/, 'section đảo chiều: cột visual (bên trái) rộng 1.2fr');
   for (const rule of ['header.topbar{display:none!important}', 'main{padding-top:12px!important}', 'main>*:not(']) {
     assert.ok(inlineScripts.replace(/\s+/g, '').includes(rule), `thiếu CSS nhúng: ${rule}`);
   }
