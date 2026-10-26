@@ -176,10 +176,12 @@
     return errors;
   }
 
-  function fits(cols, rows, state, hIndex, targetX, targetY) {
+  function fits(cols, rows, state, hIndex, targetX, targetY, oldX, oldY, ignoreMovable) {
     const hole = state.holes[hIndex];
+    const fromX = oldX !== undefined ? oldX : hole.x;
+    const fromY = oldY !== undefined ? oldY : hole.y;
     const targetCells = hole.shape.map(([dx, dy]) => [targetX + dx, targetY + dy]);
-    const oldCells = hole.shape.map(([dx, dy]) => [hole.x + dx, hole.y + dy]);
+    const oldCells = hole.shape.map(([dx, dy]) => [fromX + dx, fromY + dy]);
 
     for (let i = 0; i < targetCells.length; i++) {
       const [cx, cy] = targetCells[i];
@@ -199,24 +201,58 @@
         return false;
       }
 
-      // Hố khác còn hoạt động
-      for (let oIdx = 0; oIdx < state.holes.length; oIdx++) {
-        if (oIdx !== hIndex && !state.holes[oIdx].done) {
-          const other = state.holes[oIdx];
-          const otherCells = other.shape.map(([dx, dy]) => [other.x + dx, other.y + dy]);
-          if (otherCells.some(([ox, oy]) => ox === cx && oy === cy)) {
-            return false;
+      if (!ignoreMovable) {
+        // Hố khác còn hoạt động
+        for (let oIdx = 0; oIdx < state.holes.length; oIdx++) {
+          if (oIdx !== hIndex && !state.holes[oIdx].done) {
+            const other = state.holes[oIdx];
+            const otherCells = other.shape.map(([dx, dy]) => [other.x + dx, other.y + dy]);
+            if (otherCells.some(([ox, oy]) => ox === cx && oy === cy)) {
+              return false;
+            }
           }
         }
-      }
 
-      // Mèo khác màu còn trên bàn
-      if (state.cats.some(c => c.alive && c.color !== hole.color && c.x === cx && c.y === cy)) {
-        return false;
+        // Mèo khác màu còn trên bàn
+        if (state.cats.some(c => c.alive && c.color !== hole.color && c.x === cx && c.y === cy)) {
+          return false;
+        }
       }
     }
 
     return true;
+  }
+
+  function canReach(cols, rows, state, hIndex, cat) {
+    if (cat === undefined) {
+      cat = state;
+      hIndex = rows;
+      state = cols;
+      cols = state.cols;
+      rows = state.rows;
+    }
+    const hole = state.holes[hIndex];
+    const queue = [[hole.x, hole.y]];
+    const seen = new Set([hole.x + ',' + hole.y]);
+
+    for (let i = 0; i < queue.length; i++) {
+      const [x, y] = queue[i];
+      if (hole.shape.some(([dx, dy]) => x + dx === cat.x && y + dy === cat.y)) {
+        return true;
+      }
+      for (let d = 0; d < UNIT_DIRS.length; d++) {
+        const [ddx, ddy] = UNIT_DIRS[d];
+        const nx = x + ddx;
+        const ny = y + ddy;
+        const k = nx + ',' + ny;
+        if (!seen.has(k) && fits(cols, rows, state, hIndex, nx, ny, x, y, true)) {
+          seen.add(k);
+          queue.push([nx, ny]);
+        }
+      }
+    }
+
+    return false;
   }
 
   function createGame(level, hooks = {}) {
@@ -229,6 +265,8 @@
     const rows = level.rows;
 
     const state = {
+      cols,
+      rows,
       status: 'playing',
       loseReason: null,
       turn: 0,
@@ -398,6 +436,7 @@
     validateLevel,
     createGame,
     fits,
+    canReach,
     VALID_COLORS,
     UNIT_DIRS
   };
