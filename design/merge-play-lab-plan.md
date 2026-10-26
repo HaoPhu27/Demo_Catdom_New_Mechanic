@@ -1,6 +1,7 @@
 # Kế hoạch hợp nhất: Demo CatDom + Play Lab (clone từ site GPT)
 
-> Ngày lập: 2026-10-26. Chỉ là kế hoạch, chưa sửa code.
+> Ngày lập: 2026-10-26.
+> Tiến độ: Bước 0 đã chốt theo đề xuất (ghi ở `memory/decisions.md`). Bước 1 xong trên nhánh `feature/import-lab`, chờ Lead duyệt quick spec.
 > Thực hiện theo quy trình `/feature` của repo này (mode `lean`): mỗi giai đoạn dưới đây là một feature, mỗi mục `Task` là một task cho worker, test nghiệm thu do orchestrator viết trước.
 
 ## 1. Hiện trạng hai bản
@@ -33,7 +34,7 @@ Ghi kết quả vào `memory/decisions.md` trước khi sang Bước 1.
 
 ### Bước 1 — Nhập nguồn tham chiếu (feature `import-lab`)
 - Copy Play Lab vào `reference/play-lab/` (chỉ đọc, ghi vào `do-not-modify` của mọi task). Không copy các file `.gif` nếu Lead chọn bỏ ở mục 2.3; thêm chúng vào `.gitignore`.
-- Viết `design/quick-specs/<tên>-2026-10-26.md` cho 6 mechanic: luật, điều kiện thua/thắng, kịch bản sai và đúng, bảng fixture — trích từ `mechanics-core.js`, `review.js`, `lab.js` (bảng `legend`).
+- Viết `design/quick-specs/<tên>-2026-10-26.md` cho 6 mechanic, cộng một spec luật nền `hole-move-board-2026-10-26.md`: luật, điều kiện thua/thắng, kịch bản sai và đúng, bảng fixture — trích từ `mechanics-core.js`, `review.js`, `lab.js` (bảng `legend`).
 - Đặt tên file/slug: `magnet`, `fragile-floor`, `stripe-cat`, `alarm-zone`, `teleport-cat`, `electric-link`.
 - Bảng đổi màu: `xanhduong → blue`, `vang → yellow`, `hong → pink`.
 - **Xong khi:** 6 quick spec được Lead duyệt.

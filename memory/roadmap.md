@@ -7,3 +7,6 @@
 - [x] Lead review trang demo tổng, đã merge `feature/LP-1` vào `main` (2026-10-23)
 - [ ] Playtest ngưỡng thua của Mèo bệnh (`loseRatio`), chốt giá trị
 - [ ] (Đang dở, 2026-10-23) Board thật từ tool `D:/Xgame/Generate VIPPRO` + đặt mechanic mới: `tools/place-mechanics.mjs` + `tools/solvecli` (gọi IndependentSolver). Đã có `boards/selfish.json`, `couple.json`, `sick.json`. Còn thiếu: Cây Dại (solver trả NoNextCatReachable khi thêm plug hole + obstacle, đang gỡ lỗi), trang `boards.html` hiển thị/replay witness. Preset dùng: `PRESETS/VIS_BOARD.json`, `PRESETS/VIS_WEED.json` trong thư mục tool.
+- [x] Hợp nhất Play Lab — Bước 0: Lead chốt 5 điểm (2026-10-26, xem decisions.md)
+- [ ] Hợp nhất Play Lab — Bước 1 (`feature/import-lab`): `reference/play-lab/` + 7 quick spec (luật nền + 6 mechanic). **Chờ Lead duyệt quick spec.**
+- [ ] Hợp nhất Play Lab — Bước 2–7: xem `design/merge-play-lab-plan.md`
