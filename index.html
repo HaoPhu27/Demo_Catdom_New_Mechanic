@@ -110,6 +110,49 @@ nav.main-nav a:hover {
   border-color: var(--ink);
 }
 
+.nav-group { position: relative; }
+
+.nav-toggle {
+  font-family: 'Baloo 2', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  background: none;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.nav-group:hover .nav-toggle, .nav-group:focus-within .nav-toggle {
+  background: var(--accent-soft);
+  border-color: var(--ink);
+}
+
+.nav-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  padding: 8px;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-card);
+  border: var(--border-sm);
+  border-radius: 14px;
+  box-shadow: var(--shadow-chip);
+}
+
+.nav-group:hover .nav-menu, .nav-group:focus-within .nav-menu { display: flex; }
+
+.art-emoji {
+  font-size: 52px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
 /* ---------- Buttons ---------- */
 .btn {
   font-family: 'Baloo 2', cursive, sans-serif;
@@ -323,7 +366,7 @@ nav.main-nav a:hover {
 
 .hero-cats-cluster {
   display: grid;
-  grid-template-columns: repeat(2, 95px);
+  grid-template-columns: repeat(3, 95px);
   gap: 16px;
   justify-content: center;
   margin-bottom: 12px;
@@ -349,6 +392,12 @@ section#selfish { background: var(--bg-page); }
 section#weed { background: var(--bg-alt); }
 section#sick { background: var(--bg-page); }
 section#couple { background: var(--bg-alt); }
+section#magnet { background: var(--bg-page); }
+section#fragile-floor { background: var(--bg-alt); }
+section#stripe-cat { background: var(--bg-page); }
+section#alarm-zone { background: var(--bg-alt); }
+section#teleport-cat { background: var(--bg-page); }
+section#electric-link { background: var(--bg-alt); }
 
 .mech-grid {
   max-width: 1140px;
@@ -611,6 +660,23 @@ footer.site-footer {
     gap: 6px;
   }
 
+  .nav-group { display: contents; }
+
+  .nav-toggle { display: none; }
+
+  .nav-menu {
+    display: flex;
+    position: static;
+    flex-direction: row;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+    background: none;
+  }
+
+  .hero-cats-cluster { grid-template-columns: repeat(3, 80px); }
+
   nav.main-nav a {
     font-size: 13.5px;
     padding: 4px 10px;
@@ -673,11 +739,27 @@ footer.site-footer {
 <header class="topbar">
   <div class="header-inner">
     <a href="#" class="logo"><span>🐱</span> CatDom Mechanics</a>
-    <nav class="main-nav">
-      <a href="#selfish">Mèo Ích Kỷ</a>
-      <a href="#weed">Cây Dại</a>
-      <a href="#sick">Mèo Bệnh</a>
-      <a href="#couple">Couple Mèo</a>
+    <nav class="main-nav" aria-label="Các mechanic">
+      <div class="nav-group">
+        <button type="button" class="nav-toggle">Bộ 1 · 4 mechanic ▾</button>
+        <div class="nav-menu">
+          <a href="#selfish">Mèo Ích Kỷ</a>
+          <a href="#weed">Cây Dại</a>
+          <a href="#sick">Mèo Bệnh</a>
+          <a href="#couple">Couple Mèo</a>
+        </div>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="nav-toggle">Bộ 2 · 6 mechanic ▾</button>
+        <div class="nav-menu">
+          <a href="#magnet">Mèo Nam Châm</a>
+          <a href="#fragile-floor">Sàn Dễ Vỡ</a>
+          <a href="#stripe-cat">Mèo Sọc</a>
+          <a href="#alarm-zone">Vùng Báo Động</a>
+          <a href="#teleport-cat">Mèo Dịch Chuyển</a>
+          <a href="#electric-link">Liên Kết Điện</a>
+        </div>
+      </div>
     </nav>
   </div>
 </header>
@@ -689,10 +771,10 @@ footer.site-footer {
       <div class="hero-text">
         <div class="chip">✨ CatDom Game Mechanics</div>
         <h1>Bộ Sưu Tập Mechanic Mới Của CatDom</h1>
-        <p class="hero-desc">Trang demo tổng hợp trực quan 4 cơ chế chướng ngại vật độc đáo giúp Lead review gameplay dễ dàng: xem hoạt cảnh tự lặp hoặc chơi thử tương tác ngay trên trang.</p>
+        <p class="hero-desc">Trang demo tổng hợp trực quan 10 cơ chế chướng ngại vật giúp Lead review gameplay dễ dàng: xem hoạt cảnh tự lặp hoặc chơi thử tương tác ngay trên trang.</p>
         <div class="hero-btns">
           <a href="#selfish" class="btn btn-primary">Xem mechanic đầu tiên</a>
-          <a href="#weed" class="btn btn-secondary">Khám phá Cây Dại</a>
+          <a href="#magnet" class="btn btn-secondary">Xem bộ 2 · 6 mechanic mới</a>
         </div>
       </div>
       <div class="hero-visual">
@@ -851,7 +933,229 @@ footer.site-footer {
     </div>
   </section>
 
-  <!-- Drip divider from Section 4 (#f3ecff) to Footer (#2a2340) -->
+  <!-- Drip divider vào Section 5 -->
+  <div class="drip-wrap" style="background: var(--bg-page);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-alt)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 5: Mèo Nam Châm -->
+  <section id="magnet" class="mech" data-page="magnet.html">
+    <div class="mech-grid">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 05</div>
+        <h2>🧲 Mèo Nam Châm</h2>
+        <p class="lead-desc">Thu nam châm quá sớm làm mất mèo của hố khác. Dọn vùng hút trước, ăn nam châm sau.</p>
+        <ul class="mech-rules">
+          <li>Mèo nam châm (badge 🧲) được hố <b>cùng màu</b> thu như mèo thường. Viền vàng nét đứt quanh nó là <b>vùng hút 3×3</b>.</li>
+          <li>Ngay sau khi thu nam châm, mọi mèo còn trên board trong vùng hút bị hút mất: <b>không</b> giảm số mèo hố còn cần.</li>
+          <li>Sau khi hút, nếu một hố còn cần nhiều mèo hơn số mèo cùng màu còn lại thì <b>thua STUCK</b> ngay.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-magnet" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-magnet" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <a href="magnet.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-magnet">
+          <div class="art-illus" id="illus-magnet"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-magnet" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-magnet" title="Demo Mèo Nam Châm" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider vào Section 6 -->
+  <div class="drip-wrap" style="background: var(--bg-alt);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-page)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 6: Sàn Dễ Vỡ -->
+  <section id="fragile-floor" class="mech" data-page="fragile-floor.html">
+    <div class="mech-grid mech-reverse">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 06</div>
+        <h2>🧊 Sàn Dễ Vỡ</h2>
+        <p class="lead-desc">Mỗi lượt qua cầu là tài nguyên chung. Tính trước số lần mỗi hố cần đi qua sàn.</p>
+        <ul class="mech-rules">
+          <li>Số trên ô sàn là độ bền còn lại / tối đa. Hố <b>đi vào</b> ô sàn (ô mới nằm trong hố) thì trừ 1.</li>
+          <li>Đứng yên, hoặc hố nhiều ô di chuyển mà ô sàn vẫn nằm trong hố, <b>không</b> trừ thêm.</li>
+          <li>Sàn về 0 thành ô sụp (✕): hố không đi vào được. Hố đang đứng trên đó vẫn đi ra được.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-fragile-floor" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-fragile-floor" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <a href="fragile-floor.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-fragile-floor">
+          <div class="art-illus" id="illus-fragile-floor"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-fragile-floor" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-fragile-floor" title="Demo Sàn Dễ Vỡ" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider vào Section 7 -->
+  <div class="drip-wrap" style="background: var(--bg-page);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-alt)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 7: Mèo Sọc -->
+  <section id="stripe-cat" class="mech" data-page="stripe-cat.html">
+    <div class="mech-grid">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 07</div>
+        <h2>🦓 Mèo Sọc</h2>
+        <p class="lead-desc">Mỗi hố nhận một trục. Chia mèo sọc cho đúng hố và đúng thứ tự.</p>
+        <ul class="mech-rules">
+          <li>Hố bắt đầu tự do (○). Ăn sọc ngang ↔ hoặc dọc ↕ thì hố mang trục đó; ký hiệu hiện cạnh số mèo còn cần.</li>
+          <li>Đi sai trục chỉ bị <b>chặn</b>, không thua. Mèo thường không đổi trục; sọc cùng trục không cộng dồn.</li>
+          <li>Sắp ăn sọc đối trục mà hố còn cần <b>hơn 1</b> mèo: <b>thua XUNG ĐỘT</b>. Còn đúng 1 thì mèo cuối hoàn thành hố, không xét xung đột.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-stripe-cat" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-stripe-cat" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <a href="stripe-cat.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-stripe-cat">
+          <div class="art-illus" id="illus-stripe-cat"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-stripe-cat" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-stripe-cat" title="Demo Mèo Sọc" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider vào Section 8 -->
+  <div class="drip-wrap" style="background: var(--bg-alt);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-page)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 8: Vùng Báo Động -->
+  <section id="alarm-zone" class="mech" data-page="alarm-zone.html">
+    <div class="mech-grid mech-reverse">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 08</div>
+        <h2>🚨 Vùng Báo Động</h2>
+        <p class="lead-desc">Một hố giữ cửa, một hố đi qua. Chỉ nhả công tắc khi vùng đã trống.</p>
+        <ul class="mech-rules">
+          <li>Bất kỳ hố nào còn hoạt động đứng trên S đều tắt toàn bộ vùng báo động.</li>
+          <li>Đi vào ô đỏ khi báo động đang bật: <b>thua ngay</b>.</li>
+          <li>Nhả S khi còn hố trong vùng: <b>thua</b>, kể cả hố đó không vừa di chuyển.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-alarm-zone" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-alarm-zone" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <a href="alarm-zone.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-alarm-zone">
+          <div class="art-illus" id="illus-alarm-zone"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-alarm-zone" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-alarm-zone" title="Demo Vùng Báo Động" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider vào Section 9 -->
+  <div class="drip-wrap" style="background: var(--bg-page);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-alt)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 9: Mèo Dịch Chuyển -->
+  <section id="teleport-cat" class="mech" data-page="teleport-cat.html">
+    <div class="mech-grid">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 09</div>
+        <h2>🌀 Mèo Dịch Chuyển</h2>
+        <p class="lead-desc">Dự đoán ô đích trước khi thu mèo mũi tên; dọn mèo dễ kẹt trước.</p>
+        <ul class="mech-rules">
+          <li>Badge mũi tên (→ ↑ ← ↓) trên mèo cho biết hướng dịch.</li>
+          <li>Các mèo cùng màu dịch <b>cùng lúc</b>, ô đích tính từ vị trí trước khi dịch.</li>
+          <li>Mèo đứng yên nếu ô đích ra ngoài board, là tường, đang có mèo, hoặc thuộc hố còn hoạt động.</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-teleport-cat" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-teleport-cat" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <a href="teleport-cat.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-teleport-cat">
+          <div class="art-illus" id="illus-teleport-cat"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-teleport-cat" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-teleport-cat" title="Demo Mèo Dịch Chuyển" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider vào Section 10 -->
+  <div class="drip-wrap" style="background: var(--bg-alt);" aria-hidden="true">
+    <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
+      <path fill="var(--bg-page)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
+    </svg>
+  </div>
+
+  <!-- Section 10: Liên Kết Điện -->
+  <section id="electric-link" class="mech" data-page="electric-link.html">
+    <div class="mech-grid mech-reverse">
+      <div class="mech-text-col">
+        <div class="chip">Mechanic 10</div>
+        <h2>⚡ Liên Kết Điện</h2>
+        <p class="lead-desc">Dọn đoạn nối trước, rồi mới cho hai hố đứng lên A và B. Nhả một công tắc để mở rào.</p>
+        <ul class="mech-rules">
+          <li>Đoạn nối là các ô <b>giữa</b> A và B, không gồm chính A và B. Một hố nhiều ô đứng trên cả A và B không bật điện.</li>
+          <li>Ngay khi điện bật: còn mèo hoặc bất kỳ ô nào của hố trên đoạn nối là <b>thua ngay</b>, không được đi thêm để thoát.</li>
+          <li>Đoạn nối trống: điện chỉ thành <b>rào chắn</b>, hố đi vào bị chặn (không thua).</li>
+        </ul>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary" data-action="gif" aria-controls="embed-electric-link" aria-pressed="false">Xem GIF gameplay</button>
+          <button type="button" class="btn btn-secondary" data-action="play" aria-controls="embed-electric-link" aria-pressed="false">Chơi thử ngay</button>
+        </div>
+        <a href="electric-link.html" class="link-detail">Xem trang chi tiết →</a>
+      </div>
+      <div class="mech-art-col">
+        <div class="card-art" id="art-electric-link">
+          <div class="art-illus" id="illus-electric-link"><!-- Rendered via JS --></div>
+          <div class="art-embed" id="embed-electric-link" hidden>
+            <p class="serve-notice" hidden>⚠️ Trình duyệt chặn truy cập <code>contentDocument</code> (thường khi mở trực tiếp file://). Hãy chạy <code>node tools/serve.mjs</code> và mở http://127.0.0.1:5173/ để xem bản rút gọn.</p>
+            <iframe class="art-frame" id="frame-electric-link" title="Demo Liên Kết Điện" src="about:blank"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Drip divider từ Section 10 (#f3ecff) tới Footer (#2a2340) -->
   <div class="drip-wrap" style="background: var(--ink);" aria-hidden="true">
     <svg class="drip-svg" viewBox="0 0 1440 48" preserveAspectRatio="none">
       <path fill="var(--bg-alt)" d="M0,0 L1440,0 L1440,16 C1380,16 1350,42 1290,42 C1230,42 1200,16 1140,16 C1080,16 1050,48 980,48 C910,48 880,16 800,16 C730,16 700,38 640,38 C580,38 550,16 480,16 C410,16 380,44 320,44 C260,44 230,16 160,16 C100,16 70,36 0,36 Z"></path>
@@ -873,6 +1177,13 @@ footer.site-footer {
         <a href="#weed">Cây Dại (Weed Obstacle)</a>
         <a href="#sick">Mèo Bệnh (Sick Cat)</a>
         <a href="#couple">Couple Mèo (Love Cats)</a>
+        <a href="#magnet">Mèo Nam Châm</a>
+        <a href="#fragile-floor">Sàn Dễ Vỡ</a>
+        <a href="#stripe-cat">Mèo Sọc</a>
+        <a href="#alarm-zone">Vùng Báo Động</a>
+        <a href="#teleport-cat">Mèo Dịch Chuyển</a>
+        <a href="#electric-link">Liên Kết Điện</a>
+        <a href="reference/play-lab/index.html">Tài liệu mechanic (Play Lab) ↗</a>
       </nav>
     </div>
     <div class="footer-col">
@@ -893,7 +1204,13 @@ const VALID_MECHS = {
   selfish: 'selfish-cat.html',
   weed:    'weed.html',
   sick:    'sick-cat.html',
-  couple:  'couple-cat.html'
+  couple:  'couple-cat.html',
+  'magnet': 'magnet.html',
+  'fragile-floor': 'fragile-floor.html',
+  'stripe-cat': 'stripe-cat.html',
+  'alarm-zone': 'alarm-zone.html',
+  'teleport-cat': 'teleport-cat.html',
+  'electric-link': 'electric-link.html'
 };
 
 const currentModes = {};
@@ -1042,8 +1359,10 @@ function renderIllustrations() {
           <div class="hero-cluster-cat">${CatDom.catSVG('green', 'happy')}</div>
           <div class="hero-cluster-cat">${CatDom.catSVG('pink', 'sick', {sick: true})}</div>
           <div class="hero-cluster-cat">${CatDom.catSVG('blue', 'love')}</div>
+          <div class="hero-cluster-cat">${CatDom.catSVG('yellow', 'scared')}</div>
+          <div class="hero-cluster-cat">${CatDom.catSVG('orange', 'smug')}</div>
         </div>
-        <div class="art-speech-bubble">🐱 4 Mechanic Đang Chờ Review!</div>
+        <div class="art-speech-bubble">🐱 10 Mechanic Đang Chờ Review!</div>
       </div>
     `;
   }
@@ -1105,6 +1424,29 @@ function renderIllustrations() {
       </div>
     `;
   }
+
+  // Mechanic 05–10: minh hoạ bằng mèo của kit + biểu tượng mechanic
+  const ILLUS = {
+    'magnet': [CatDom.catSVG('blue', 'scared'), '🧲', CatDom.catSVG('pink', 'scared'), "Ăn nam châm sau cùng nhé!"],
+    'fragile-floor': [CatDom.catSVG('blue', 'happy'), '🧊', CatDom.catSVG('pink', 'sad'), "Cầu chỉ chịu được 2 lượt!"],
+    'stripe-cat': [CatDom.catSVG('blue', 'smug'), '↔', CatDom.catSVG('blue', 'annoyed'), "Một hố, một trục thôi!"],
+    'alarm-zone': [CatDom.catSVG('blue', 'happy'), '🚨', CatDom.catSVG('pink', 'scared'), "Giữ công tắc S cho tớ qua!"],
+    'teleport-cat': [CatDom.catSVG('blue', 'smug'), '➡️', CatDom.catSVG('blue', 'scared'), "Cả nhóm dịch 1 ô!"],
+    'electric-link': [CatDom.catSVG('yellow', 'scared'), '⚡', CatDom.catSVG('blue', 'happy'), "Dọn dây trước khi bật điện!"]
+  };
+  Object.entries(ILLUS).forEach(function([id, [catA, emoji, catB, say]]) {
+    const el = document.getElementById('illus-' + id);
+    if (el) el.innerHTML = `
+      <div class="art-stage">
+        <div class="art-row">
+          <div class="art-cat-item">${catA}</div>
+          <div class="art-prop art-emoji">${emoji}</div>
+          <div class="art-cat-item">${catB}</div>
+        </div>
+        <div class="art-speech-bubble">"${say}"</div>
+      </div>
+    `;
+  });
 }
 </script>
 </body>

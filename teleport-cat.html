@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mèo Dịch Chuyển</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/catdom-kit.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="logic/_board-move.js" onerror="this.remove()"></script>
+<script src="logic/teleport-cat.js" onerror="this.remove()"></script>
+<script src="boards/lab-fixtures.js"></script>
+<script src="assets/catdom-kit.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><a href="index.html">Trang tổng</a><a href="magnet.html">Mèo Nam Châm</a><a href="fragile-floor.html">Sàn Dễ Vỡ</a><a href="stripe-cat.html">Mèo Sọc</a><a href="alarm-zone.html">Vùng Báo Động</a><a href="teleport-cat.html">Mèo Dịch Chuyển</a><a href="electric-link.html">Liên Kết Điện</a></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements › Bộ 2 · Mechanic 09 › Mèo Dịch Chuyển</div>
+  <h1>🌀 Mèo Dịch Chuyển là gì?</h1>
+  <div class="meta">Mechanic 09 · Board hố di chuyển (port từ Play Lab) · Bản visualize để review</div>
+
+  <p class="lead">Mèo mang <b>mũi tên</b>. Thu nó thì mọi mèo <b>cùng màu</b> còn trên board dịch 1 ô theo mũi tên. Đẩy mèo vào chỗ hố không tới được là mất màn.</p>
+
+  <p class="entry">🌀 <b>Mèo Dịch Chuyển</b> – Dự đoán ô đích trước khi thu mèo mũi tên; dọn mèo dễ kẹt trước.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">01 · Cách chơi sai <span class="pill bad">✗ STUCK</span></div>
+      <div class="stage-wrap"><div id="demoBad"></div></div>
+      <div class="caption" id="capBad"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">02 · Cách chơi đúng <span class="pill ok">✓ DỌN TRƯỚC</span></div>
+      <div class="stage-wrap"><div id="demoGood"></div></div>
+      <div class="caption" id="capGood"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li>Badge mũi tên (→ ↑ ← ↓) trên mèo cho biết hướng dịch.</li>
+      <li>Các mèo cùng màu dịch <b>cùng lúc</b>, ô đích tính từ vị trí trước khi dịch.</li>
+      <li>Mèo đứng yên nếu ô đích ra ngoài board, là tường, đang có mèo, hoặc thuộc hố còn hoạt động.</li>
+      <li>Có mèo mà không hố cùng màu nào tới được (tính cả hình dạng hố) thì <b>thua STUCK</b>.</li>
+      <li>Luật nền: chọn một hố, đi từng ô theo 4 hướng. Đi vào ô có mèo cùng màu thì thu mèo; số trên hố là số mèo còn cần. Mèo khác màu, tường và hố khác chặn đường. Mọi hố về 0 là thắng.</li>
+    </ul>
+  </div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div><div class="stage-wrap"><div id="playStage"></div></div></div>
+    <div class="panel">
+      <p class="hint">Bấm hoặc kéo một hố để chọn. Đi bằng phím mũi tên (bấm vào board trước), nút bên dưới, hoặc kéo hố. Phím 1–9 chọn hố theo thứ tự.</p>
+      <div class="ctrl"><label for="fixture">Màn</label><select id="fixture"></select></div>
+      <div class="stat">
+        <div><small>Hố đang chọn</small><strong id="sHole">–</strong></div>
+        <div><small>Lượt</small><strong id="sTurn">0</strong></div>
+      </div>
+      <div class="stat"><div><small>Trạng thái</small><strong id="sStatus">–</strong></div></div>
+      <div class="pad-ctrl" role="group" aria-label="Đi hố đang chọn">
+        <button type="button" data-dir="0,-1" aria-label="Lên">↑</button><button type="button" data-dir="-1,0" aria-label="Trái">←</button>
+        <button type="button" data-dir="0,1" aria-label="Xuống">↓</button><button type="button" data-dir="1,0" aria-label="Phải">→</button>
+      </div>
+      <div class="ctrl"><button class="btn" id="reset" type="button">↻ Làm lại</button><button class="btn ghost" id="hint" type="button">💡 Gợi ý</button></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec cho Dev / Level Design <span class="tag">Theo quick spec 2026-10-26</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>cats[i].arrow: [dx, dy]</code> (một trong 4 hướng đơn vị). Hố nhiều ô: <code>shape: [[0,0],[0,1]]</code>.</td></tr>
+      <tr><th>Event</th><td><code>eat</code> → <code>holeDone</code> → mỗi mèo cùng màu theo thứ tự level: <code>{type:'teleport', id, from, to}</code> hoặc <code>{type:'teleportBlocked', id}</code> → <code>lose stuck</code>.</td></tr>
+      <tr><th>Thua</th><td><code>loseReason: 'stuck'</code>, kiểm bằng tìm đường thật theo hình dạng hố.</td></tr>
+      <tr><th>Board mẫu</th><td>Sai: <code>xanh ↑→</code>. Đúng: <code>xanh →→↑↑←</code>.</td></tr>
+      <tr><th>Tài liệu</th><td><code>design/quick-specs/teleport-cat-2026-10-26.md</code>, hợp đồng <code>docs/logic-contract.md</code> mục 5, logic <code>logic/teleport-cat.js</code>.</td></tr>
+    </table>
+  </div>
+
+  <details class="review">
+    <summary>📋 Tiêu chí đánh giá · Stuck do vị trí mới của mèo</summary>
+    <div class="criteria">
+      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Đi lên rồi sang phải để ăn mèo mũi tên: mèo cùng màu dịch sang hốc bên phải.</p><p><b>Hỏi người chơi:</b> Mèo kia sẽ đến ô nào, và hình dạng hố có thu được nó ở đó không?</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Trong board mẫu, mèo vào hốc 1 ô nhưng hố cao 2 ô không thể lọt vào để thu. Màn mất cách hoàn thành.</p><p><b>Case an toàn:</b> Thu mèo dễ bị đẩy vào góc kẹt trước. Nếu ô đích có mèo hoặc hố thì mèo đó đứng yên.</p></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Badge mũi tên chỉ hướng; animation dịch đúng 1 ô; hình hố và tường giúp đọc được lý do hốc bị kẹt.</p><p><b>Cần quan sát:</b> Người xem có dự đoán đúng ô đích trước khi bấm, kể cả trường hợp ô đích bị chặn không?</p></article>
+      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi tính vị trí sau pickup, thay vì chỉ nhìn đường đi hiện tại.</p><p><b>Quyết định mới:</b> Kích hoạt dịch chuyển để đưa mèo vào vị trí thuận lợi hoặc trì hoãn khi nó có thể gây kẹt.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 mèo mũi tên, 1 mèo bị tác động. Màn sau: thêm mèo bị đẩy và ô đích bị chặn để tạo nhiều kết quả.</p><p><b>Rủi ro cần thử:</b> Nhiều hướng hoặc quá nhiều mèo dịch cùng lúc có thể khó theo dõi.</p></article>
+    </div>
+  </details>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Hố nhiều ô cần chỗ rộng: mèo bị đẩy vào hốc 1 ô coi như mất.</div>
+</main>
+
+<script>
+CatDom.labPage('teleport-cat', {
+  bad: "Cách chơi sai: hố cao 2 ô ăn mèo mũi tên trước, mèo còn lại bị đẩy vào hốc hẹp…",
+  good: "Cách chơi đúng: thu mèo thường trước, ăn mèo mũi tên sau cùng."
+});
+</script>
+</body>
+</html>

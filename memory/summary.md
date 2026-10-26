@@ -4,7 +4,7 @@
 
 ## Kiến trúc hiện tại
 - Trang demo mechanic CatDom dạng HTML tĩnh, mở qua `node tools/serve.mjs` (http://127.0.0.1:5173/).
-- `index.html`: trang demo tổng 4 mechanic. Mỗi mechanic có nút "Xem GIF gameplay" và "Chơi thử ngay", mở trang chi tiết trong dialog + iframe.
+- `index.html`: trang demo tổng 10 mechanic (header 2 nhóm: Bộ 1 · 4, Bộ 2 · 6). Mỗi mechanic có nút "Xem GIF gameplay" và "Chơi thử ngay", mở trang chi tiết trong dialog + iframe.
 - `selfish-cat.html`: file mẫu chuẩn (độc lập, không dùng kit).
 - `weed.html`, `sick-cat.html`, `couple-cat.html`: dùng `assets/catdom-kit.css/js` (Stage, catSVG, demo tự lặp, playground) cùng `logic/<tên>.js`.
 - Logic thuần UMD theo `docs/logic-contract.md`. Test: `node --test tests/weed.test.mjs tests/sick.test.mjs tests/couple.test.mjs`.

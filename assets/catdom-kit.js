@@ -435,5 +435,224 @@
     return api;
   }
 
-  window.CatDom = {CELL, PAD, OL, PAL, MARK, catSVG, moodFor, weedSVG, pesticideSVG, boxSVG, heartMarkSVG, Stage, loadLogic, rectOf, caption, demo, playground};
+  /* ---------- board hố di chuyển (mechanic 05–10, docs/logic-contract.md mục 5) ----------
+   * Vẽ hoàn toàn theo getState() + events của logic; board/chuỗi nước lấy từ boards/lab-fixtures.js. */
+  const DIR_ARROW = {'0,-1': '↑', '0,1': '↓', '-1,0': '←', '1,0': '→'};
+  const AXIS_MARK = {FREE: '○', HORIZONTAL: '↔', VERTICAL: '↕'};
+  const AXIS_VI = {FREE: 'TỰ DO', HORIZONTAL: 'NGANG', VERTICAL: 'DỌC'};
+  const LOSE_VI = {stuck: 'STUCK, không còn cách hoàn thành', stripe: 'xung đột sọc', alarm: 'báo động bật khi có hố trong vùng', electric: 'điện bật trúng mèo/hố'};
+  const LOSE_BANNER = {stuck: 'STUCK ✗', stripe: 'XUNG ĐỘT ✗', alarm: 'BÁO ĐỘNG ✗', electric: 'ĐIỆN GIẬT ✗'};
+  const REJECT_VI = {blocked: 'đường bị chặn', 'axis-locked': 'hố đang khoá trục, hướng này bị chặn (không thua)',
+    'electric-barrier': 'rào điện đang bật, không vào được đoạn nối', 'bad-move': 'hố đã xong hoặc nước không hợp lệ', 'not-playing': 'màn đã kết thúc, bấm Làm lại'};
+
+  function holeName(s, i) {
+    const h = s.holes[i], same = s.holes.filter(o => o.color === h.color);
+    return 'Hố ' + PAL[h.color].vi + (same.length > 1 ? ' ' + (same.indexOf(h) + 1) : '');
+  }
+  function moveEventText(ev, s) {
+    switch (ev.type) {
+      case 'eat': return `${holeName(s, ev.hole)} thu ${ev.ids.length} mèo`;
+      case 'holeDone': return `${holeName(s, ev.hole)} hoàn thành ✓`;
+      case 'crack': return ev.durability ? `sàn nứt, độ bền còn ${ev.durability}` : 'sàn sụp!';
+      case 'axis': return `nhận strict ${AXIS_VI[ev.axis]} ${AXIS_MARK[ev.axis]}`;
+      case 'alarmOn': return '🚨 báo động BẬT';
+      case 'alarmOff': return '✅ báo động TẮT';
+      case 'electricOn': return '⚡ điện BẬT';
+      case 'electricOff': return 'điện TẮT, đường mở';
+      case 'magnet': return `🧲 nam châm hút ${ev.ids.length} mèo`;
+      case 'teleport': return 'mèo cùng màu dịch 1 ô';
+      case 'teleportBlocked': return 'mèo bị chặn đứng yên';
+      case 'lose': return 'THUA: ' + LOSE_VI[ev.reason];
+      case 'win': return 'THẮNG: mọi hố hoàn thành';
+    }
+    return '';
+  }
+  const describe = (name, events, s) => [name, ...new Set(events.map(e => moveEventText(e, s)).filter(Boolean))].join(' · ');
+
+  class MoveView {
+    constructor(el, level) { this.st = new Stage(el, level.cols, level.rows); }
+    build(s) {
+      const st = this.st;
+      st.reset(); this.s = s; this.off = [];
+      this.overlay(s);
+      s.holes.forEach((h, i) => {
+        const r = rectOf(h.shape.map(([dx, dy]) => [h.x + dx, h.y + dy]));
+        this.off[i] = [r.x - h.x, r.y - h.y];
+        st.addHole('h' + i, h.color, r.x, r.y, r.w, r.h);
+        if (h.done) gsap.set(st.holes['h' + i].el, {scale: 0, opacity: 0});
+        this.label(i, h);
+      });
+      s.cats.filter(c => c.alive).forEach(c => {
+        st.addCat(c.id, c.color, c.x, c.y);
+        const mark = c.magnet ? '🧲' : c.arrow ? DIR_ARROW[c.arrow.join(',')] : c.kind === 'STRIPE_H' ? '↔' : c.kind === 'STRIPE_V' ? '↕' : null;
+        if (mark) st.setBadge(c.id, mark, 'mv');
+      });
+    }
+    label(i, h) {
+      const el = this.st.holes['h' + i].el;
+      el.querySelector('.hole-tag')?.remove();
+      el.insertAdjacentHTML('beforeend', `<span class="hole-tag">${h.remaining}${h.axis ? ' ' + AXIS_MARK[h.axis] : ''}</span>`);
+    }
+    overlay(s) {
+      const st = this.st, L = st.zonesL;
+      L.innerHTML = '';
+      const cell = (x, y, cls, text = '') => {
+        const d = document.createElement('div'); d.className = 'mv-cell ' + cls; d.textContent = text;
+        Object.assign(d.style, {left: st.px(x, y).left + 'px', top: st.px(x, y).top + 'px'});
+        L.appendChild(d);
+      };
+      s.walls.forEach(([x, y]) => cell(x, y, 'mv-wall'));
+      (s.floors || []).forEach(f => cell(f.x, f.y, 'mv-floor' + (f.durability ? '' : ' broken'), f.durability ? f.durability + '/' + f.max : '✕'));
+      (s.alarms || []).forEach(([x, y]) => cell(x, y, 'mv-alarm ' + (s.alarmOn ? 'on' : 'off'), s.alarmOn ? '!' : '✓'));
+      (s.alarmSwitches || []).forEach(([x, y]) => cell(x, y, 'mv-switch' + (s.alarmOn ? '' : ' held'), 'S'));
+      (s.barrier || []).forEach(([x, y]) => cell(x, y, 'mv-beam' + (s.electricOn ? ' on' : ''), s.electricOn ? '⚡' : ''));
+      (s.pads || []).forEach(([x, y], i) => cell(x, y, 'mv-pad', 'AB'[i]));
+      s.cats.filter(c => c.alive && c.magnet).forEach(c => {
+        const x0 = Math.max(0, c.x - 1), y0 = Math.max(0, c.y - 1), x1 = Math.min(st.cols - 1, c.x + 1), y1 = Math.min(st.rows - 1, c.y + 1);
+        const d = document.createElement('div'); d.className = 'mv-range';
+        Object.assign(d.style, {left: st.px(x0, y0).left + 'px', top: st.px(x0, y0).top + 'px', width: (x1 - x0 + 1) * CELL + 'px', height: (y1 - y0 + 1) * CELL + 'px'});
+        L.appendChild(d);
+      });
+    }
+    select(i) { Object.entries(this.st.holes).forEach(([id, h]) => h.el.classList.toggle('sel', id === 'h' + i)); }
+    rejectTl(i) { return gsap.timeline().fromTo(this.st.holes['h' + i].el, {x: -5}, {x: 5, duration: .05, repeat: 5, yoyo: true, clearProps: 'x'}); }
+    /* Timeline chuyển từ state hiện tại sang next theo events của một nước đi hợp lệ. */
+    step(next, events) {
+      const st = this.st, prev = this.s, tl = gsap.timeline();
+      this.s = next;
+      const mv = events.find(e => e.type === 'move'), o = this.off[mv.hole], at = st.px(mv.to[0] + o[0], mv.to[1] + o[1]);
+      tl.to(st.holes['h' + mv.hole].el, {left: at.left + 3, top: at.top + 3, duration: .32, ease: 'power2.inOut'});
+      tl.call(() => this.overlay(next));
+      const eaten = events.filter(e => e.type === 'eat').flatMap(e => e.ids);
+      if (eaten.length) tl.add(st.eatTl(eaten));
+      for (const e of events.filter(e => e.type === 'magnet')) {
+        const src = prev.cats.find(c => c.id === e.source), p = st.px(src.x, src.y);
+        tl.to(e.ids.map(id => st.cats[id].el), {left: p.left, top: p.top, scale: .3, opacity: 0, duration: .55, ease: 'power2.in', stagger: .06});
+      }
+      events.filter(e => e.type === 'teleport').forEach((e, k) => {
+        const p = st.px(...e.to);
+        tl.to(st.cats[e.id].el, {left: p.left, top: p.top, duration: .35, ease: 'back.out(1.6)'}, k ? '<' : '>');
+      });
+      tl.call(() => next.holes.forEach((h, i) => { if (!h.done) this.label(i, h); }));
+      events.filter(e => e.type === 'holeDone').forEach(e => tl.to(st.holes['h' + e.hole].el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'}));
+      const end = events[events.length - 1];
+      if (end.type === 'lose') tl.add(st.flashTl()).add(st.shakeTl(), '<').call(() => st.showBanner(LOSE_BANNER[end.reason], 'bad'));
+      if (end.type === 'win') tl.call(() => st.showBanner('THẮNG ✓', 'ok'));
+      return tl;
+    }
+  }
+
+  /* Demo tự lặp: phát chuỗi nước (dạng CatDomFixtures.seq) trên logic thật. cfg: {el, cap, slug, level, moves, intro} */
+  function moveDemo(cfg) {
+    const logic = loadLogic(cfg.slug), view = new MoveView(cfg.el, cfg.level);
+    if (!logic) { view.st.noLogic(`logic/${cfg.slug}.js`); caption(cfg.cap, 'Chưa có logic để chạy demo.'); return; }
+    const moves = window.CatDomFixtures.seq(cfg.moves);
+    const loop = () => {
+      const game = logic.createGame(cfg.level);
+      view.build(game.getState());
+      const tl = gsap.timeline({onComplete: () => gsap.delayedCall(2.2, loop)});
+      tl.call(() => caption(cfg.cap, cfg.intro)).to({}, {duration: 1.8});
+      for (const [h, dx, dy] of moves) {
+        const before = game.getState(), res = game.move(h, dx, dy), name = holeName(before, h) + ' ' + DIR_ARROW[dx + ',' + dy];
+        if (!res.ok) { tl.call(() => caption(cfg.cap, `${name} · ${REJECT_VI[res.reason]}`)).add(view.rejectTl(h)).to({}, {duration: 1.2}); continue; }
+        const next = game.getState(), text = describe(name, res.events, next);
+        tl.call(() => caption(cfg.cap, text)).add(view.step(next, res.events)).to({}, {duration: .35});
+      }
+      tl.to({}, {duration: 1.4});
+    };
+    loop();
+  }
+
+  /* Board chơi thử: chọn hố (bấm/kéo, phím 1–9), đi bằng phím mũi tên, nút data-dir hoặc kéo.
+   * cfg: {el, logEl, slug, list: fixtures[slug].list, key, onUpdate(api)} */
+  function movePlay(cfg) {
+    const logic = loadLogic(cfg.slug), view = new MoveView(cfg.el, cfg.list[cfg.key].level), st = view.st;
+    const api = {view, game: null, busy: false, sel: 0, key: cfg.key};
+    api.log = (html, cls = '') => { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; cfg.logEl.prepend(d); };
+    api.select = i => {
+      if (!api.game || !api.game.getState().holes[i] || api.game.getState().holes[i].done) return;
+      api.sel = i; view.select(i); cfg.onUpdate(api);
+    };
+    api.reset = key => {
+      if (key) api.key = key;
+      cfg.logEl.innerHTML = ''; api.busy = false;
+      if (!logic) { st.noLogic(`logic/${cfg.slug}.js`); return; }
+      api.game = logic.createGame(cfg.list[api.key].level);
+      view.build(api.game.getState());
+      api.select(0);
+      api.log('Chọn một hố rồi đi bằng phím mũi tên, nút ↑ ↓ ← → hoặc kéo hố.');
+    };
+    api.move = (dx, dy) => {
+      if (api.busy || !api.game) return;
+      const before = api.game.getState(), h = api.sel, res = api.game.move(h, dx, dy), name = holeName(before, h) + ' ' + DIR_ARROW[dx + ',' + dy];
+      if (!res.ok) { view.rejectTl(h); api.log(`${name} · ${REJECT_VI[res.reason]}`); return; }
+      const next = api.game.getState(), end = res.events[res.events.length - 1].type;
+      api.busy = true;
+      view.step(next, res.events).eventCallback('onComplete', () => {
+        api.busy = false;
+        if (next.holes[api.sel].done) api.select(next.holes.findIndex(o => !o.done));
+        cfg.onUpdate(api);
+      });
+      api.log(describe(name, res.events, next), end === 'lose' ? 'b' : end === 'win' ? 'g' : '');
+    };
+    const el = st.el, scale = () => el.getBoundingClientRect().width / st.w;
+    el.tabIndex = 0;
+    el.setAttribute('role', 'application');
+    el.setAttribute('aria-label', 'Board chơi thử: phím 1–9 chọn hố, phím mũi tên để đi');
+    el.style.touchAction = 'none';
+    let drag = null;
+    el.addEventListener('pointerdown', e => {
+      if (!api.game) return;
+      const r = el.getBoundingClientRect(), sc = scale();
+      const x = Math.floor(((e.clientX - r.left) / sc - PAD) / CELL), y = Math.floor(((e.clientY - r.top) / sc - PAD) / CELL);
+      const i = api.game.getState().holes.findIndex(h => !h.done && h.shape.some(([dx, dy]) => h.x + dx === x && h.y + dy === y));
+      if (i < 0) return;
+      api.select(i); drag = {x: e.clientX, y: e.clientY};
+      el.setPointerCapture(e.pointerId); el.focus({preventScroll: true});
+    });
+    el.addEventListener('pointermove', e => {
+      if (!drag || api.busy) return;
+      const sc = scale(), dx = (e.clientX - drag.x) / sc, dy = (e.clientY - drag.y) / sc;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < CELL * .6) return;
+      const hor = Math.abs(dx) > Math.abs(dy);
+      drag = {x: e.clientX, y: e.clientY};
+      api.move(hor ? Math.sign(dx) : 0, hor ? 0 : Math.sign(dy));
+    });
+    el.addEventListener('pointerup', () => { drag = null; });
+    el.addEventListener('pointercancel', () => { drag = null; });
+    el.addEventListener('keydown', e => {
+      const d = {ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0]}[e.key];
+      if (d) { e.preventDefault(); api.move(...d); }
+      else if (/^[1-9]$/.test(e.key)) api.select(+e.key - 1);
+    });
+    api.reset();
+    return api;
+  }
+
+  /* Nối các phần chuẩn của trang chi tiết mechanic 05–10 (id cố định trong khuôn trang). */
+  function labPage(slug, text) {
+    const $ = id => document.getElementById(id), set = window.CatDomFixtures.fixtures[slug], def = set.list[set.default];
+    moveDemo({el: $('demoBad'), cap: $('capBad'), slug, level: def.level, moves: def.bad.moves, intro: text.bad});
+    moveDemo({el: $('demoGood'), cap: $('capGood'), slug, level: def.level, moves: def.good, intro: text.good});
+    const STATUS = {playing: 'Đang chơi', won: 'Thắng ✓', lost: 'Thua ✗'};
+    const play = movePlay({el: $('playStage'), logEl: $('log'), slug, list: set.list, key: set.default, onUpdate: api => {
+      const s = api.game.getState(), h = s.holes[api.sel];
+      $('sHole').textContent = h && !h.done ? holeName(s, api.sel) + (h.axis ? ' ' + AXIS_MARK[h.axis] : '') : '–';
+      $('sTurn').textContent = s.turn;
+      $('sStatus').textContent = STATUS[s.status];
+    }});
+    const fx = $('fixture'), keys = Object.keys(set.list);
+    if (keys.length > 1) {
+      fx.innerHTML = keys.map(k => `<option value="${k}">${set.list[k].name}</option>`).join('');
+      fx.value = set.default;
+      fx.onchange = () => play.reset(fx.value);
+    } else fx.closest('.ctrl').hidden = true;
+    $('reset').onclick = () => play.reset();
+    $('hint').onclick = () => play.log('💡 ' + set.list[play.key].hint, 'g');
+    document.querySelectorAll('[data-dir]').forEach(b => { b.onclick = () => play.move(...b.dataset.dir.split(',').map(Number)); });
+    return play;
+  }
+
+  window.CatDom = {CELL, PAD, OL, PAL, MARK, catSVG, moodFor, weedSVG, pesticideSVG, boxSVG, heartMarkSVG, Stage, loadLogic, rectOf, caption, demo, playground,
+    MoveView, moveDemo, movePlay, labPage, holeName, moveEventText};
 })();

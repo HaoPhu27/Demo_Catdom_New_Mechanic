@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mèo Sọc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/catdom-kit.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="logic/_board-move.js" onerror="this.remove()"></script>
+<script src="logic/stripe-cat.js" onerror="this.remove()"></script>
+<script src="boards/lab-fixtures.js"></script>
+<script src="assets/catdom-kit.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><a href="index.html">Trang tổng</a><a href="magnet.html">Mèo Nam Châm</a><a href="fragile-floor.html">Sàn Dễ Vỡ</a><a href="stripe-cat.html">Mèo Sọc</a><a href="alarm-zone.html">Vùng Báo Động</a><a href="teleport-cat.html">Mèo Dịch Chuyển</a><a href="electric-link.html">Liên Kết Điện</a></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements › Bộ 2 · Mechanic 07 › Mèo Sọc</div>
+  <h1>🦓 Mèo Sọc là gì?</h1>
+  <div class="meta">Mechanic 07 · Board hố di chuyển (port từ Play Lab) · Bản visualize để review</div>
+
+  <p class="lead">Ăn mèo <b>sọc ngang</b> thì hố chỉ còn đi trái/phải; <b>sọc dọc</b> thì chỉ đi lên/xuống (strict). Ăn sọc đối trục khi hố còn cần hơn 1 mèo là <b>thua ngay</b>.</p>
+
+  <p class="entry">🦓 <b>Mèo Sọc</b> – Mỗi hố nhận một trục. Chia mèo sọc cho đúng hố và đúng thứ tự.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">01 · Cách chơi sai <span class="pill bad">✗ XUNG ĐỘT</span></div>
+      <div class="stage-wrap"><div id="demoBad"></div></div>
+      <div class="caption" id="capBad"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">02 · Cách chơi đúng <span class="pill ok">✓ MỖI HỐ MỘT TRỤC</span></div>
+      <div class="stage-wrap"><div id="demoGood"></div></div>
+      <div class="caption" id="capGood"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li>Hố bắt đầu tự do (○). Ăn sọc ngang ↔ hoặc dọc ↕ thì hố mang trục đó; ký hiệu hiện cạnh số mèo còn cần.</li>
+      <li>Đi sai trục chỉ bị <b>chặn</b>, không thua. Mèo thường không đổi trục; sọc cùng trục không cộng dồn.</li>
+      <li>Sắp ăn sọc đối trục mà hố còn cần <b>hơn 1</b> mèo: <b>thua XUNG ĐỘT</b>. Còn đúng 1 thì mèo cuối hoàn thành hố, không xét xung đột.</li>
+      <li>Nước đi làm mất mọi cách thu đủ mèo (xét cả các hố khác dọn đường) thì <b>thua STUCK</b> ngay ở nước đó.</li>
+      <li>Luật nền: chọn một hố, đi từng ô theo 4 hướng. Đi vào ô có mèo cùng màu thì thu mèo; số trên hố là số mèo còn cần. Mèo khác màu, tường và hố khác chặn đường. Mọi hố về 0 là thắng.</li>
+    </ul>
+  </div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div><div class="stage-wrap"><div id="playStage"></div></div></div>
+    <div class="panel">
+      <p class="hint">Bấm hoặc kéo một hố để chọn. Đi bằng phím mũi tên (bấm vào board trước), nút bên dưới, hoặc kéo hố. Phím 1–9 chọn hố theo thứ tự.</p>
+      <div class="ctrl"><label for="fixture">Màn</label><select id="fixture"></select></div>
+      <div class="stat">
+        <div><small>Hố đang chọn</small><strong id="sHole">–</strong></div>
+        <div><small>Lượt</small><strong id="sTurn">0</strong></div>
+      </div>
+      <div class="stat"><div><small>Trạng thái</small><strong id="sStatus">–</strong></div></div>
+      <div class="pad-ctrl" role="group" aria-label="Đi hố đang chọn">
+        <button type="button" data-dir="0,-1" aria-label="Lên">↑</button><button type="button" data-dir="-1,0" aria-label="Trái">←</button>
+        <button type="button" data-dir="0,1" aria-label="Xuống">↓</button><button type="button" data-dir="1,0" aria-label="Phải">→</button>
+      </div>
+      <div class="ctrl"><button class="btn" id="reset" type="button">↻ Làm lại</button><button class="btn ghost" id="hint" type="button">💡 Gợi ý</button></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec cho Dev / Level Design <span class="tag">Theo quick spec 2026-10-26</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>cats[i].kind: 'NORMAL'|'STRIPE_H'|'STRIPE_V'</code>. State hố có <code>axis: 'FREE'|'HORIZONTAL'|'VERTICAL'</code>.</td></tr>
+      <tr><th>Từ chối</th><td><code>'axis-locked'</code> khi đi sai trục: không tăng lượt, không thua.</td></tr>
+      <tr><th>Event</th><td><code>move</code> → <code>lose stripe</code> (xung đột, trước khi thu) hoặc <code>eat</code> → <code>{type:'axis', hole, axis}</code> → <code>holeDone</code> → <code>lose stuck</code>.</td></tr>
+      <tr><th>Fixture</th><td>SC-01…SC-05 (chọn ở board chơi thử). SC-05 đi <code>→</code> là thua STUCK ngay.</td></tr>
+      <tr><th>Tài liệu</th><td><code>design/quick-specs/stripe-cat-2026-10-26.md</code>, hợp đồng <code>docs/logic-contract.md</code> mục 5, logic <code>logic/stripe-cat.js</code>.</td></tr>
+    </table>
+  </div>
+
+  <details class="review">
+    <summary>📋 Tiêu chí đánh giá · Thua ngay khi ăn sọc đối trục</summary>
+    <div class="criteria">
+      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Cho Xanh 1 sang phải ăn mèo ngang: badge hố đổi từ ○ sang ↔. Hố còn cần 2 mèo, đi tiếp ăn mèo dọc: xung đột và thua.</p><p><b>Hỏi người chơi:</b> Hố này đang mang strict gì? Ăn mèo tiếp theo có gây xung đột không?</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Hố mang ngang ăn sọc dọc, hoặc hố mang dọc ăn sọc ngang: thua ngay nếu trước khi ăn hố còn cần hơn 1 mèo. Khi chỉ còn 1, thu mèo cuối và làm hố biến mất trước, không xét xung đột. Vuốt sai trục chỉ bị chặn. Nếu strict hoặc vật cản khiến không còn cách thu đủ mèo cho các hố thì thua STUCK ngay (thử SC-05: đi →).</p><p><b>Case an toàn:</b> Hố còn 1 có thể ăn sọc đối trục để hoàn thành (SC-04). Bị chặn tạm nhưng hố khác có thể mở đường thì chưa thua. Ở SC-05, thu mèo phía trên trước khi nhận strict ngang để tránh stuck. Dùng hai hố cùng màu để chia hai nhóm sọc. Mèo thường không đổi strict; thu sọc cùng trục vẫn an toàn. Hố tự do có thể ăn sọc từ bất kỳ hướng nào.</p></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Badge ○ / ↔ / ↕ cho biết strict từng hố. Xung đột hiện hai sọc đối trục cùng dấu × và màn thua. Xanh 1 và Xanh 2 được đánh số để dễ theo dõi.</p><p><b>Cần quan sát:</b> Người xem có phân biệt được hướng đi vào mèo với strict nhận sau khi ăn không?</p></article>
+      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi phân công mỗi hố cho một trục, cân nhắc thu mèo thường trước khi nhận giới hạn di chuyển.</p><p><b>Quyết định mới:</b> Ăn sọc sớm giúp thu mèo ngay nhưng khóa trục; để dành sọc giúp hố tự do đi dọn mèo ở vị trí khác trước.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 hố với 1 loại sọc và mèo thường. Màn sau: 2 hố cùng màu, hai loại sọc để người chơi chia nhiệm vụ.</p><p><b>Rủi ro cần thử:</b> Cần phân biệt rõ hố còn 1 và còn nhiều mèo: cùng một mèo sọc đối trục có thể kết thúc hố hoặc gây thua tùy quota còn lại.</p></article>
+    </div>
+  </details>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Thu mèo thường ở hướng khác trước khi nhận strict: hố tự do đi được mọi hướng.</div>
+</main>
+
+<script>
+CatDom.labPage('stripe-cat', {
+  bad: "Cách chơi sai (SC-02): Xanh 1 ăn sọc ngang, rồi đi tiếp vào sọc dọc khi còn cần 2 mèo…",
+  good: "Cách chơi đúng (SC-02): Xanh 1 thu hai mèo thường rồi sọc ngang; Xanh 2 nhận sọc dọc."
+});
+</script>
+</body>
+</html>
