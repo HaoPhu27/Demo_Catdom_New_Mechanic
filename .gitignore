@@ -4,3 +4,6 @@ tasks/
 reviews/
 tools/solvecli/bin/
 tools/solvecli/obj/
+
+# Play Lab: khung hình gốc chỉ dùng đối chiếu khi port, không commit (3,3 MB)
+reference/play-lab/assets/mechanic-frames.js

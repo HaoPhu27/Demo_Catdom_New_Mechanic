@@ -21,3 +21,13 @@
 - **Quyết định:** `index.html` (phong cách dreamcoffee.homes) mở trang chi tiết trong `<dialog>` + `<iframe>`, rồi chèn CSS để chỉ hiện `main > .demos` (nút "Xem GIF gameplay") hoặc `main > .card.play` (nút "Chơi thử ngay"). "GIF" là demo chạy trực tiếp, không phải file `.gif`.
 - **Lý do:** Không sửa 4 trang đã duyệt, gameplay giữ đúng bản Lead đã review, không cần công cụ quay GIF. Mọi trang mechanic về sau phải giữ `.demos` và `.card.play` là con trực tiếp của `<main>` (`tests/index.test.mjs` kiểm tra điều này).
 - **Trạng thái:** Đang áp dụng (LP-1 duyệt sau 1 vòng fix).
+
+## 2026-10-26 — Hợp nhất Play Lab (6 mechanic, clone từ site GPT) vào repo này
+- **Quyết định:** Lead chốt 5 điểm theo phương án đề xuất trong `design/merge-play-lab-plan.md`:
+  1. 6 mechanic mới giữ mô hình **hố di chuyển từng ô** của Play Lab (`move(h, dx, dy)`, hố có `remaining`, `shape`, tường, công tắc). Không ép về `eat(x, y)`.
+  2. Vẽ lại 6 mechanic bằng SVG `catdom-kit` cho đồng bộ với 4 mechanic cũ. Không dùng sprite PNG + canvas của Play Lab trên trang.
+  3. Bỏ file GIF thật (~49 MB) và `mechanic-frames.js`. "GIF" là demo tự lặp chạy logic thật, như 4 mechanic cũ. Khung hình gốc chỉ dùng để đối chiếu khi port.
+  4. Khối "Tiêu chí đánh giá" viết cho **cả 10 mechanic** (bổ sung cho 4 mechanic cũ) để trang đồng nhất.
+  5. Đánh số liên tục: 01–04 bộ cũ, 05–10 bộ mới.
+- **Lý do:** Luật Mèo sọc và Liên kết điện phụ thuộc hướng đi của hố; giữ format và hạ tầng (test, orchestrator) của Demo CatDom làm gốc.
+- **Trạng thái:** Đang áp dụng. Nguồn tham chiếu ở `reference/play-lab/` (chỉ đọc).
