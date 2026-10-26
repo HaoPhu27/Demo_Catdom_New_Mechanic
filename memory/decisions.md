@@ -31,3 +31,13 @@
   5. Đánh số liên tục: 01–04 bộ cũ, 05–10 bộ mới.
 - **Lý do:** Luật Mèo sọc và Liên kết điện phụ thuộc hướng đi của hố; giữ format và hạ tầng (test, orchestrator) của Demo CatDom làm gốc.
 - **Trạng thái:** Đang áp dụng. Nguồn tham chiếu ở `reference/play-lab/` (chỉ đọc).
+
+## 2026-10-26 — Hợp đồng hố di chuyển và fixture dùng chung
+- **Quyết định:** `docs/logic-contract.md` mục 5: `move(h, dx, dy)` với lý do từ chối `not-playing | bad-move | axis-locked | electric-barrier | blocked` (gộp "ngoài bàn" vào `blocked`), 12 bước event cố định, `loseReason` theo quick spec (`stuck | stripe | alarm | electric`) thay cho danh sách trong kế hoạch ban đầu. Board + chuỗi nước sai/đúng nằm trong một file UMD `boards/lab-fixtures.js` (không tách `boards/stripe-cat.json`, `electric-link.json`) để test và trang đọc cùng một nguồn. Mọi trường riêng của mechanic là tuỳ chọn ở mọi module.
+- **Lý do:** Một nguồn fixture tránh lệch giữa test và demo; đã đối chiếu 14/14 kịch bản với `reference/play-lab/mechanics-core.js`. Bỏ `validMoves()` vì UI chưa cần.
+- **Trạng thái:** Đang áp dụng.
+
+## 2026-10-26 — Worker agy cần câu dặn "không có quyền chạy lệnh"
+- **Quyết định:** Prompt cho agy chạy `-p` phải ghi rõ RunCommand luôn bị từ chối, chỉ dùng công cụ đọc/ghi file.
+- **Lý do:** Lần đầu PL-1 agy thử chạy lệnh, bị từ chối rồi dừng không trả lời (run-worker mã 8). Thêm câu dặn thì 6/6 task chạy trọn.
+- **Trạng thái:** Đang áp dụng.
