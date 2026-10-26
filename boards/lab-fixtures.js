@@ -118,7 +118,7 @@
       }
     } },
 
-    'stripe-cat': { default: 'SC-02', list: {
+    'stripe-cat': { default: 'SC-02', demo: 'demo', list: {
       'SC-01': { name: 'SC-01 · Làm quen khóa ngang', hint: '↑ ↓ → →. Thử → trước để thấy nhận ngang quá sớm gây stuck.',
         level: board({ cats: [N('normal-c2', 2, 1), H('h-d3', 3, 2), N('normal-e3', 4, 2)], holes: [hole('blue', 2, 2, 3)] }),
         bad: { moves: '0R', status: 'lost', loseReason: 'stuck' }, good: '0UDRR' },
@@ -134,21 +134,71 @@
         good: '0RR' },
       'SC-05': { name: 'SC-05 · Strict gây stuck', hint: 'Đúng: ↑ ↑ ↓ ↓ → →. Sai: → ăn sọc ngang trước, thua STUCK ngay.',
         level: board({ cats: [N('above', 2, 0), H('lock', 3, 2), N('right', 4, 2)], holes: [hole('blue', 2, 2, 3)] }),
-        bad: { moves: '0R', status: 'lost', loseReason: 'stuck' }, good: '0UUDDRR' }
+        bad: { moves: '0R', status: 'lost', loseReason: 'stuck' }, good: '0UUDDRR' },
+      demo: {
+        name: 'Board thật · Mèo sọc đổi trục',
+        hint: 'Hồng ăn cụm hồng dọn đường. Xanh ↑ ăn sọc ngang để khoá trục ngang, rồi sang phải ăn mèo thường trước khi qua trái ăn sọc dọc cuối. Cam, Xanh lá và Vàng dọn nốt cụm.',
+        level: board({
+          cols: 7, rows: 8,
+          holes: [
+            hole('blue', 1, 2, 3, [[0, 0], [1, 0], [2, 0]]),
+            hole('pink', 3, 0, 3, [[0, 0], [1, 0], [0, 1]]),
+            hole('orange', 5, 3, 4, [[0, 0], [0, 1], [0, 2], [1, 2]]),
+            hole('green', 0, 4, 4, [[0, 0], [1, 0], [0, 1], [1, 1]]),
+            hole('yellow', 2, 4, 4, [[0, 0], [1, 0], [2, 0], [1, 1]])
+          ],
+          cats: [
+            cat('b1', 'blue', 2, 1, { kind: 'STRIPE_H' }),
+            cat('b2', 'blue', 6, 1, { kind: 'NORMAL' }),
+            cat('b3', 'blue', 0, 1, { kind: 'STRIPE_V' }),
+            cat('p1', 'pink', 4, 1), cat('p2', 'pink', 4, 2), cat('p3', 'pink', 5, 2),
+            cat('o1', 'orange', 5, 6), cat('o2', 'orange', 6, 6), cat('o3', 'orange', 5, 7), cat('o4', 'orange', 6, 7),
+            cat('g1', 'green', 0, 6), cat('g2', 'green', 1, 6), cat('g3', 'green', 0, 7), cat('g4', 'green', 1, 7),
+            cat('y1', 'yellow', 2, 6), cat('y2', 'yellow', 3, 6), cat('y3', 'yellow', 4, 6), cat('y4', 'yellow', 3, 7)
+          ]
+        }),
+        bad: { moves: '1RDD 0U 0L', status: 'lost', loseReason: 'stripe' },
+        good: '1RDD 0URRRLLLL 2DD 3DD 4DD'
+      }
     } },
 
-    'alarm-zone': { default: 'main', list: { main: {
-      name: 'Vùng báo động',
-      hint: 'Xanh ↑ vào S và giữ. Hồng ↑ ↑ ↑ ← ↑. Cuối cùng Xanh ↑ ↑ ↑.',
-      level: board({
-        cats: [cat('b', 'blue', 0, 0), cat('p1', 'pink', 4, 1), cat('p2', 'pink', 3, 0)],
-        holes: [hole('blue', 0, 4), hole('pink', 4, 4, 2)],
-        alarmSwitches: [[0, 3]],
-        alarms: [[1, 2], [2, 2], [3, 2], [4, 2]]
-      }),
-      bad: { moves: '0U 1UU 0D', status: 'lost', loseReason: 'alarm' },
-      good: '0U 1UUULU 0UUU'
-    } } },
+    'alarm-zone': { default: 'main', demo: 'demo', list: {
+      main: {
+        name: 'Vùng báo động',
+        hint: 'Xanh ↑ vào S và giữ. Hồng ↑ ↑ ↑ ← ↑. Cuối cùng Xanh ↑ ↑ ↑.',
+        level: board({
+          cats: [cat('b', 'blue', 0, 0), cat('p1', 'pink', 4, 1), cat('p2', 'pink', 3, 0)],
+          holes: [hole('blue', 0, 4), hole('pink', 4, 4, 2)],
+          alarmSwitches: [[0, 3]],
+          alarms: [[1, 2], [2, 2], [3, 2], [4, 2]]
+        }),
+        bad: { moves: '0U 1UU 0D', status: 'lost', loseReason: 'alarm' },
+        good: '0U 1UUULU 0UUU'
+      },
+      demo: {
+        name: 'Board thật · Hành lang báo động',
+        hint: 'Cam dọn cụm cam. Vàng dọn cụm vàng. Xanh dương ↑ giữ công tắc S tắt báo động. Hồng ↑ ↑ ↑ ↑ vượt hành lang an toàn dọn cụm hồng. Xanh dương ↑ ↑ ăn cụm xanh.',
+        level: board({
+          cols: 6, rows: 8,
+          holes: [
+            hole('blue', 0, 4, 2, [[0, 0], [0, 1]]),
+            hole('pink', 1, 4, 4, [[0, 0], [0, 1], [0, 2], [1, 2]]),
+            hole('yellow', 2, 4, 5, [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]]),
+            hole('orange', 2, 0, 4, [[0, 0], [1, 0], [2, 0], [1, 1]])
+          ],
+          alarmSwitches: [[0, 3]],
+          alarms: [[1, 3], [2, 3], [3, 3], [4, 3], [5, 3]],
+          cats: [
+            cat('b1', 'blue', 0, 1), cat('b2', 'blue', 0, 2),
+            cat('p1', 'pink', 1, 0), cat('p2', 'pink', 1, 1), cat('p3', 'pink', 1, 2), cat('p4', 'pink', 2, 2),
+            cat('y1', 'yellow', 4, 4), cat('y2', 'yellow', 5, 5), cat('y3', 'yellow', 4, 6), cat('y4', 'yellow', 5, 6), cat('y5', 'yellow', 4, 7),
+            cat('o1', 'orange', 5, 0), cat('o2', 'orange', 4, 1), cat('o3', 'orange', 5, 1), cat('o4', 'orange', 4, 2)
+          ]
+        }),
+        bad: { moves: '3RD 2RD 0U 1U 0D', status: 'lost', loseReason: 'alarm' },
+        good: '3RD 2RD 0U 1UUUU 0UU'
+      }
+    } },
 
     'teleport-cat': { default: 'main', demo: 'demo', list: {
       main: {
@@ -188,7 +238,7 @@
       }
     } },
 
-    'electric-link': { default: 'EL-01', list: {
+    'electric-link': { default: 'EL-01', demo: 'demo', list: {
       'EL-00': { name: 'EL-00 · Hai hố làm quen', hint: 'Xanh ↑ ↑, Hồng ↑ ↑: rào bật. Xanh ← để tắt điện rồi đi tiếp.',
         level: board({ cats: [cat('b', 'blue', 0, 0), cat('p', 'pink', 4, 0)], holes: [hole('blue', 1, 4), hole('pink', 3, 4)], pads: [[1, 2], [3, 2]] }),
         bad: { moves: '0UU 1UU', status: 'playing', loseReason: null }, good: '0UU 1UU 0LUU 1RUU' },
@@ -204,7 +254,31 @@
       'EL-04': { name: 'EL-04 · 4 hố × 4 mèo', hint: 'Vàng ↑ ↑ ←; Hồng ↑ ↑; Vàng → bật rào an toàn; Hồng ↑ ↑; Vàng ↑ ↑; mỗi hố xanh ↑ ↑ ↑ ↑.',
         level: laneBoard([0, 1, 3, 4], ['blue', 'pink', 'yellow', 'blue'], 4),
         // Nước cuối (Xanh ↑ vào ô giữa) bị rào chặn: không thua.
-        bad: { moves: '2UUL 1UU 2R 0RURU', status: 'playing', loseReason: null, lastRejected: 'electric-barrier' }, good: '2UUL 1UU 2R 1UU 2UU 0UUUU 3UUUU' }
+        bad: { moves: '2UUL 1UU 2R 0RURU', status: 'playing', loseReason: null, lastRejected: 'electric-barrier' }, good: '2UUL 1UU 2R 1UU 2UU 0UUUU 3UUUU' },
+      demo: {
+        name: 'Board thật · Cầu rào điện',
+        hint: 'Cam và Xanh lá dọn góc phải. Vàng → → dọn góc dưới. Xanh dương ↓ ăn mèo xanh giữ Pad A, rồi sang phải ăn mèo trên dây điện dọn sạch cầu. Hồng ↓ chạm Pad B kích hoạt điện an toàn rồi → dọn cụm hồng. Xanh dương ↑ ↑ ăn nốt mèo xanh.',
+        level: board({
+          cols: 8, rows: 7,
+          holes: [
+            hole('blue', 0, 2, 3, [[0, 0], [1, 0], [0, 1]]),
+            hole('pink', 5, 1, 3, [[0, 0], [1, 0], [0, 1]]),
+            hole('yellow', 0, 4, 5, [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]]),
+            hole('green', 5, 4, 4, [[0, 0], [1, 0], [0, 1], [1, 1]]),
+            hole('orange', 1, 0, 4, [[0, 0], [1, 0], [2, 0], [0, 1]])
+          ],
+          pads: [[1, 3], [5, 3]],
+          cats: [
+            cat('b1', 'blue', 3, 3), cat('b2', 'blue', 0, 4), cat('b3', 'blue', 0, 1),
+            cat('p1', 'pink', 6, 2), cat('p2', 'pink', 7, 2), cat('p3', 'pink', 6, 3),
+            cat('y1', 'yellow', 2, 4), cat('y2', 'yellow', 3, 5), cat('y3', 'yellow', 2, 6), cat('y4', 'yellow', 3, 4), cat('y5', 'yellow', 3, 6),
+            cat('g1', 'green', 7, 4), cat('g2', 'green', 7, 5), cat('g3', 'green', 6, 6), cat('g4', 'green', 7, 6),
+            cat('o1', 'orange', 4, 0), cat('o2', 'orange', 2, 1), cat('o3', 'orange', 5, 0), cat('o4', 'orange', 3, 1)
+          ]
+        }),
+        bad: { moves: '4RR 3RD 2RR 0D 1D', status: 'lost', loseReason: 'electric' },
+        good: '4RR 3RD 2RR 0DRRLL 1DR 0UU'
+      }
     } }
   };
 
