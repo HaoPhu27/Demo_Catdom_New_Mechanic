@@ -144,7 +144,10 @@
         gsap.set(el, {scale: sc});
         el.parentNode.style.height = this.h * sc + 'px';
       };
-      new ResizeObserver(fit).observe(el.parentNode); fit();
+      if (el._ro) el._ro.disconnect();
+      el._ro = new ResizeObserver(fit);
+      el._ro.observe(el.parentNode);
+      fit();
       this.reset();
     }
     px(x, y) { return {left: PAD + x * CELL, top: PAD + y * CELL}; }
@@ -198,21 +201,58 @@
     }
     addHole(id, c, x, y, w = 1, h = 1, o = {}) {
       const d = document.createElement('div');
-      d.className = 'hole';
+      d.className = 'hole' + (o.cells?.length ? ' has-cells' : '');
       Object.assign(d.style, {left: this.px(x, y).left + 3 + 'px', top: this.px(x, y).top + 3 + 'px',
         width: w * CELL - 6 + 'px', height: h * CELL - 6 + 'px'});
+      if (o.cells?.length) {
+        d.style.outline = 'none';
+        const cells = o.cells;
+        cells.forEach(([cx, cy]) => {
+          const hasLeft = cells.some(([x, y]) => x === cx - 1 && y === cy);
+          const hasRight = cells.some(([x, y]) => x === cx + 1 && y === cy);
+          const hasTop = cells.some(([x, y]) => x === cx && y === cy - 1);
+          const hasBottom = cells.some(([x, y]) => x === cx && y === cy + 1);
+          const cellEl = document.createElement('div');
+          cellEl.className = 'hole-cell';
+          cellEl.dataset.dx = cx;
+          cellEl.dataset.dy = cy;
+          const left = cx * CELL - (hasLeft ? 3 : 0);
+          const top = cy * CELL - (hasTop ? 3 : 0);
+          const width = CELL - 6 + (hasLeft ? 3 : 0) + (hasRight ? 3 : 0);
+          const height = CELL - 6 + (hasTop ? 3 : 0) + (hasBottom ? 3 : 0);
+          const rTL = !hasTop && !hasLeft ? 11 : 0;
+          const rTR = !hasTop && !hasRight ? 11 : 0;
+          const rBR = !hasBottom && !hasRight ? 11 : 0;
+          const rBL = !hasBottom && !hasLeft ? 11 : 0;
+          Object.assign(cellEl.style, {
+            left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px',
+            borderRadius: `${rTL}px ${rTR}px ${rBR}px ${rBL}px`
+          });
+          d.appendChild(cellEl);
+        });
+      }
       this.holesL.appendChild(d);
-      this.holes[id] = {el: d, c, x, y, w, h};
+      this.holes[id] = {el: d, c, x, y, w, h, cells: o.cells};
       this.styleHole(id, c, !!o.special);
       return d;
     }
     styleHole(id, c, special) {
       const hole = this.holes[id], p = PAL[c];
       hole.c = c; hole.special = special;
-      hole.el.innerHTML = special ? socketSVG() : '';
+      if (hole.cells?.length) {
+        hole.el.style.background = 'none';
+        hole.el.style.boxShadow = 'none';
+        hole.el.style.outline = 'none';
+        hole.el.querySelectorAll('.hole-cell').forEach(cellEl => {
+          cellEl.style.background = p.f;
+          cellEl.style.boxShadow = `0 0 0 2px ${p.d}`;
+        });
+      } else {
+        hole.el.innerHTML = special ? socketSVG() : '';
       Object.assign(hole.el.style, special
         ? {background: 'radial-gradient(circle at 50% 40%, #5a3413 0%, #3a1f08 70%)', boxShadow: '0 0 0 2px #7a4a12, inset 0 0 0 3px #ffd36b, 0 0 14px 2px rgba(255,211,107,.7)'}
         : {background: p.f, boxShadow: `0 0 0 2px ${p.d}, inset 0 0 0 3px ${p.l}, inset 0 0 14px 7px ${p.d}`});
+      }
     }
     moveHoleTl(id, x, y, dur = .45) {
       const at = this.px(x, y);
@@ -478,7 +518,8 @@
       s.holes.forEach((h, i) => {
         const r = rectOf(h.shape.map(([dx, dy]) => [h.x + dx, h.y + dy]));
         this.off[i] = [r.x - h.x, r.y - h.y];
-        st.addHole('h' + i, h.color, r.x, r.y, r.w, r.h);
+        const cells = h.shape.map(([dx, dy]) => [h.x + dx - r.x, h.y + dy - r.y]);
+        st.addHole('h' + i, h.color, r.x, r.y, r.w, r.h, { cells });
         if (h.done) gsap.set(st.holes['h' + i].el, {scale: 0, opacity: 0});
         this.label(i, h);
       });
@@ -491,7 +532,11 @@
     label(i, h) {
       const el = this.st.holes['h' + i].el;
       el.querySelector('.hole-tag')?.remove();
-      el.insertAdjacentHTML('beforeend', `<span class="hole-tag">${h.remaining}${h.axis ? ' ' + AXIS_MARK[h.axis] : ''}</span>`);
+      const off = (this.off && this.off[i]) || [0, 0];
+      const [dx0, dy0] = (h.shape && h.shape[0]) || [0, 0];
+      const cx0 = dx0 - off[0], cy0 = dy0 - off[1];
+      const target = el.querySelector(`.hole-cell[data-dx="${cx0}"][data-dy="${cy0}"]`) || el.querySelector('.hole-cell') || el;
+      target.insertAdjacentHTML('beforeend', `<span class="hole-tag">${h.remaining}${h.axis ? ' ' + AXIS_MARK[h.axis] : ''}</span>`);
     }
     overlay(s) {
       const st = this.st, L = st.zonesL;
@@ -566,7 +611,7 @@
   /* Board chơi thử: chọn hố (bấm/kéo, phím 1–9), đi bằng phím mũi tên, nút data-dir hoặc kéo.
    * cfg: {el, logEl, slug, list: fixtures[slug].list, key, onUpdate(api)} */
   function movePlay(cfg) {
-    const logic = loadLogic(cfg.slug), view = new MoveView(cfg.el, cfg.list[cfg.key].level), st = view.st;
+    const logic = loadLogic(cfg.slug), view = new MoveView(cfg.el, cfg.list[cfg.key].level);
     const api = {view, game: null, busy: false, sel: 0, key: cfg.key};
     api.log = (html, cls = '') => { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; cfg.logEl.prepend(d); };
     api.select = i => {
@@ -576,7 +621,11 @@
     api.reset = key => {
       if (key) api.key = key;
       cfg.logEl.innerHTML = ''; api.busy = false;
-      if (!logic) { st.noLogic(`logic/${cfg.slug}.js`); return; }
+      const lvl = cfg.list[api.key]?.level;
+      if (lvl && (view.st.cols !== lvl.cols || view.st.rows !== lvl.rows)) {
+        view.st = new Stage(cfg.el, lvl.cols, lvl.rows);
+      }
+      if (!logic) { view.st.noLogic(`logic/${cfg.slug}.js`); return; }
       api.game = logic.createGame(cfg.list[api.key].level);
       view.build(api.game.getState());
       api.select(0);
@@ -595,7 +644,7 @@
       });
       api.log(describe(name, res.events, next), end === 'lose' ? 'b' : end === 'win' ? 'g' : '');
     };
-    const el = st.el, scale = () => el.getBoundingClientRect().width / st.w;
+    const el = cfg.el, scale = () => el.getBoundingClientRect().width / view.st.w;
     el.tabIndex = 0;
     el.setAttribute('role', 'application');
     el.setAttribute('aria-label', 'Board chơi thử: phím 1–9 chọn hố, phím mũi tên để đi');
@@ -631,9 +680,9 @@
 
   /* Nối các phần chuẩn của trang chi tiết mechanic 05–10 (id cố định trong khuôn trang). */
   function labPage(slug, text) {
-    const $ = id => document.getElementById(id), set = window.CatDomFixtures.fixtures[slug], def = set.list[set.default];
-    moveDemo({el: $('demoBad'), cap: $('capBad'), slug, level: def.level, moves: def.bad.moves, intro: text.bad});
-    moveDemo({el: $('demoGood'), cap: $('capGood'), slug, level: def.level, moves: def.good, intro: text.good});
+    const $ = id => document.getElementById(id), set = window.CatDomFixtures.fixtures[slug], demoFx = set.list[set.demo || set.default];
+    moveDemo({el: $('demoBad'), cap: $('capBad'), slug, level: demoFx.level, moves: demoFx.bad.moves, intro: text.bad});
+    moveDemo({el: $('demoGood'), cap: $('capGood'), slug, level: demoFx.level, moves: demoFx.good, intro: text.good});
     const STATUS = {playing: 'Đang chơi', won: 'Thắng ✓', lost: 'Thua ✗'};
     const play = movePlay({el: $('playStage'), logEl: $('log'), slug, list: set.list, key: set.default, onUpdate: api => {
       const s = api.game.getState(), h = s.holes[api.sel];

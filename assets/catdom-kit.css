@@ -39,6 +39,7 @@ h3{font:700 19px/1.3 "Baloo 2",sans-serif;margin:0 0 4px}
 .lyr.cats{pointer-events:auto}
 .tile{position:absolute;width:52px;height:52px;margin:2px;border-radius:9px;background:var(--tile);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 2px 0 var(--tile-hi)}
 .hole{position:absolute;border-radius:11px}
+.hole-cell{position:absolute}
 .cat{position:absolute;width:56px;height:56px;display:grid;place-items:center}
 .cat .body{width:52px;height:52px}
 .cat svg{width:100%;height:100%;overflow:visible;display:block}
@@ -108,6 +109,8 @@ h3{font:700 19px/1.3 "Baloo 2",sans-serif;margin:0 0 4px}
 .mv-range{position:absolute;border:2px dashed rgba(255,216,74,.85);border-radius:12px;background:rgba(255,216,74,.08);pointer-events:none}
 .hole-tag{position:absolute;right:4px;bottom:3px;color:#fff;font:800 15px/1 "Baloo 2",sans-serif;text-shadow:0 1px 0 rgba(0,0,0,.6)}
 .hole.sel{outline:3px solid #fff;outline-offset:2px}
+.hole.has-cells.sel,.hole:has(.hole-cell).sel{outline:none}
+.hole.sel .hole-cell{outline:3px solid #fff;outline-offset:2px}
 .badge.mv{font-size:13px;line-height:19px;padding:0 4px}
 .stage:focus-visible{outline:3px solid #ffb02e;outline-offset:3px}
 .pad-ctrl{display:grid;grid-template-columns:repeat(3,44px);grid-template-rows:repeat(2,44px);gap:6px;justify-content:center}
