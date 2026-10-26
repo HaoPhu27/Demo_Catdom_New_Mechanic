@@ -149,10 +149,10 @@ export function commonSuite(slug) {
       cols: 3, rows: 3,
       cats: [{ id: 'b1', color: 'blue', x: 1, y: 1 }, { id: 'b2', color: 'blue', x: 0, y: 1 }],
       holes: [{ color: 'blue', x: 0, y: 0, remaining: 1, shape: [[0, 0], [1, 0]] }],
-      walls: [[2, 2]]
+      walls: [[2, 0]]
     };
     const g = logic.createGame(lvl);
-    assert.deepEqual(g.move(0, 1, 0), rejected('blocked'));      // ô phải ra ngoài bàn
+    assert.deepEqual(g.move(0, 1, 0), rejected('blocked'));      // ô phải của hố đi vào tường
     assert.deepEqual(g.move(0, 0, 1).events, [
       { type: 'move', hole: 0, from: [0, 0], to: [0, 1] },
       { type: 'eat', hole: 0, ids: ['b1'] },
