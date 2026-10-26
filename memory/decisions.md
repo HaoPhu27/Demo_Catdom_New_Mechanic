@@ -41,3 +41,8 @@
 - **Quyết định:** Prompt cho agy chạy `-p` phải ghi rõ RunCommand luôn bị từ chối, chỉ dùng công cụ đọc/ghi file.
 - **Lý do:** Lần đầu PL-1 agy thử chạy lệnh, bị từ chối rồi dừng không trả lời (run-worker mã 8). Thêm câu dặn thì 6/6 task chạy trọn.
 - **Trạng thái:** Đang áp dụng.
+
+## 2026-10-26 — UI cho 6 mechanic hố di chuyển dùng một bộ vẽ chung trong kit
+- **Quyết định:** `assets/catdom-kit.js` thêm `MoveView` (vẽ theo `getState()` + events; vật thể của 6 mechanic là lớp phủ ô `mv-*`), `moveDemo` (demo sai/đúng tự lặp chạy logic thật theo chuỗi nước trong `boards/lab-fixtures.js`), `movePlay` (chọn hố bằng bấm/kéo/phím 1–9, đi bằng phím mũi tên, nút ↑↓←→, kéo) và `labPage(slug, text)` nối các id cố định của khuôn trang. Trang `<slug>.html` chỉ chứa nội dung + một lệnh `CatDom.labPage`. Khối "Tiêu chí đánh giá" là `<details class="review">` ngoài `.demos`/`.card.play` ở cả 10 trang. Header trang tổng chia 2 nhóm menu thả; mobile là hàng cuộn ngang.
+- **Lý do:** 6 mechanic có chung API `move`, một bộ vẽ đủ cho cả 6; demo chạy logic thật thay 49 MB GIF và 3,3 MB khung hình.
+- **Trạng thái:** Đang áp dụng. Phím bấm trong lúc animation (~0,3–1,1 s) bị bỏ qua, không xếp hàng.

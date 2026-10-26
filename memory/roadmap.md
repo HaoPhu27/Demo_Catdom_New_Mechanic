@@ -12,4 +12,5 @@
 - [x] Hợp nhất Play Lab — Bước 2 (`feature/move-contract`): hợp đồng mục 5, `boards/lab-fixtures.js`, 6 test nghiệm thu
 - [x] Hợp nhất Play Lab — Bước 3 (feature `lab-logic`, nhánh cuối `feature/PL-6`): logic 6 mechanic do agy viết, 174/174 test
 - [ ] Lead review + merge các nhánh Bước 1–3 vào `main`
-- [ ] Hợp nhất Play Lab — Bước 4–7: xem `design/merge-play-lab-plan.md`
+- [x] Hợp nhất Play Lab — Bước 4–6 (`feature/lab-ui`): kit board hố di chuyển, 6 trang chi tiết, trang tổng 10 mechanic, tiêu chí đánh giá cho cả 10 trang
+- [ ] Hợp nhất Play Lab — Bước 7: QA tay (desktop/mobile/reduced-motion/bàn phím), playtest, Lead review + merge

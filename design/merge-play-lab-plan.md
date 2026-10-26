@@ -1,7 +1,7 @@
 # Kế hoạch hợp nhất: Demo CatDom + Play Lab (clone từ site GPT)
 
 > Ngày lập: 2026-10-26.
-> Tiến độ: Bước 0 đã chốt theo đề xuất (ghi ở `memory/decisions.md`). Bước 1 xong trên nhánh `feature/import-lab`, chờ Lead duyệt quick spec.
+> Tiến độ (2026-10-26): Bước 0–6 xong. Bước 1 `feature/import-lab`, Bước 2 `feature/move-contract`, Bước 3 (agy) `feature/PL-1…6`, Bước 4–6 `feature/lab-ui` (nhánh cuối, chứa toàn bộ). Còn Bước 7.
 > Thực hiện theo quy trình `/feature` của repo này (mode `lean`): mỗi giai đoạn dưới đây là một feature, mỗi mục `Task` là một task cho worker, test nghiệm thu do orchestrator viết trước.
 
 ## 1. Hiện trạng hai bản
