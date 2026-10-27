@@ -30,7 +30,16 @@ Trạng thái: `node --test tests/*.test.mjs` 205/205. Fixture hướng dẫn c�
 - Chưa xem animation ở tốc độ thật và màn hình 375 px (app bị ẩn khi kiểm).
 - Quy trình: `run-task.ps1 -Fix` resume phiên agy có lúc bị agy bỏ qua prompt mới (trả lại câu trả lời cũ) → vòng fix nên chạy phiên mới với prompt tự đủ ngữ cảnh.
 
-## Đợt 2 — mechanic 01–04 (ĐANG LÊN KẾ HOẠCH, Lead đã duyệt hướng)
+## Đợt 2 — mechanic 01–04 (ĐANG LÀM)
+Spec: `design/quick-specs/realistic-eat-board-2026-10-27.md`. Test nghiệm thu: `tests/eat-demo-board.test.mjs` (đã kiểm bằng board mẫu sinh tự động trong scratchpad: 13/13 đạt; cố ý làm sai path/vị trí hố thì test bắt được).
+
+| Task | Nội dung | Trạng thái |
+|---|---|---|
+| RB-4 | Kit `demo()` kéo hố đặt sẵn + fixture Cây dại + `weed.html` | đang giao agy |
+| RB-5 | Fixture Mèo bệnh + Couple, 2 trang | chờ RB-4 |
+| RB-6 | Mèo Ích Kỷ | chờ Lead duyệt RB-4/5 |
+
+Ghi chú: `HoleShapes.json` gốc CÓ trên máy này (`D:/Xgame/Generate VIPPRO/SYSTEM/SOURCE/AI/IndependentSolver/IO/HoleShapes.json`), dùng để đối chiếu ánh xạ `holeType` nếu cần.
 Hiện trạng: Mèo Ích Kỷ (`selfish-cat.html`, Stage riêng không dùng kit), Cây dại (`weed.html`), Mèo bệnh (`sick-cat.html`), Couple (`couple-cat.html`) dùng kit `demo()`/`playground()` kiểu nuốt nhóm `eat(x, y)`: hố hiện ra tại chỗ với hình chữ nhật bao của nhóm, board 5×5–6×6.
 
 Hướng dự kiến:
