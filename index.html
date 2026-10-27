@@ -1247,7 +1247,13 @@ function applyEmbedStyle(mechId) {
     style.textContent = `header.topbar{display:none!important}
 main{padding-top:12px!important}
 main>*:not(${sel}){display:none!important}
-.demos{grid-template-columns:repeat(2,minmax(0,1fr))!important}`;
+.demos{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.card.play{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:12px!important;padding:12px!important}
+.card.play .panel{gap:8px!important}
+.card.play .hint{font-size:12.5px!important}
+.card.play .stat strong{font-size:18px!important}
+.card.play .log{height:96px!important}
+@media (max-width:520px){.card.play{grid-template-columns:1fr!important}.card.play .stage-wrap{max-width:240px!important}}`;
     if (noticeEl) noticeEl.hidden = true;
 
     measureFrame(iframe, doc);
