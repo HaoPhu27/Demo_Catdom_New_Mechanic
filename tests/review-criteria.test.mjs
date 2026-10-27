@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 const root = new URL('../', import.meta.url);
 const doc = readFileSync(new URL('design/review-criteria-2026-10-27.md', root), 'utf8').replace(/\r/g, '');
 const flat = s => s.replace(/\*\*/g, '').replace(/`/g, '').replace(/\s+/g, ' ').trim();
-const text = html => flat(html.replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+const text = html => flat(html.replace(/<\/?(b|strong|i|em|code|span)[^>]*>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' '));
 
 // Tách tài liệu theo mechanic: "## 01 · Tên (`file.html`)" … tới "---" hoặc mục kế tiếp.
