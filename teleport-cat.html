@@ -85,12 +85,21 @@
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Stuck do vị trí mới của mèo</summary>
+    <summary>📋 Tiêu chí đánh giá · Stuck khi mèo bị đẩy vào chỗ hố không tới</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Đi lên rồi sang phải để ăn mèo mũi tên: mèo cùng màu dịch sang hốc bên phải.</p><p><b>Hỏi người chơi:</b> Mèo kia sẽ đến ô nào, và hình dạng hố có thu được nó ở đó không?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Trong board mẫu, mèo vào hốc 1 ô nhưng hố cao 2 ô không thể lọt vào để thu. Màn mất cách hoàn thành.</p><p><b>Case an toàn:</b> Thu mèo dễ bị đẩy vào góc kẹt trước. Nếu ô đích có mèo hoặc hố thì mèo đó đứng yên.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Badge mũi tên chỉ hướng; animation dịch đúng 1 ô; hình hố và tường giúp đọc được lý do hốc bị kẹt.</p><p><b>Cần quan sát:</b> Người xem có dự đoán đúng ô đích trước khi bấm, kể cả trường hợp ô đích bị chặn không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi tính vị trí sau pickup, thay vì chỉ nhìn đường đi hiện tại.</p><p><b>Quyết định mới:</b> Kích hoạt dịch chuyển để đưa mèo vào vị trí thuận lợi hoặc trì hoãn khi nó có thể gây kẹt.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 mèo mũi tên, 1 mèo bị tác động. Màn sau: thêm mèo bị đẩy và ô đích bị chặn để tạo nhiều kết quả.</p><p><b>Rủi ro cần thử:</b> Nhiều hướng hoặc quá nhiều mèo dịch cùng lúc có thể khó theo dõi.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — hiểu sau 1 thao tác + 1 lần thấy kẹt.</p>
+        <ul><li>Ăn mèo mũi tên → mọi mèo cùng màu còn trên board trượt 1 ô theo mũi tên, cùng lúc.</li><li>Dễ hiểu sai: mèo bị chặn (mép, tường, mèo khác, hố) thì <b>đứng yên</b>, không thua.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Ăn mèo mũi tên bây giờ thì mèo xanh còn lại đi đâu? Hố còn tới được chỗ đó không?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Stuck ngay sau nước đi.</p>
+        <ul><li><b>Điều kiện:</b> có mèo mà không hố cùng màu nào tới được (tính cả hình dạng hố) → STUCK.</li><li><b>Trên board demo:</b> demo sai (4 nước): hố xanh ăn mèo mũi tên trước → mèo xanh thường bị đẩy vào hốc giữa hai tường, hố cao 2 ô không lọt.</li><li><b>An toàn:</b> thu mèo thường cùng màu trước, ăn mèo mũi tên sau cùng.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Badge mũi tên → ↑ ↓ ← trên mèo, animation trượt đồng thời, mèo bị chặn rung tại chỗ.</li><li><b>Rủi ro:</b> nhóm lớn trượt cùng lúc khó đoán vị trí mới.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> thường <b>để dành</b> mèo mũi tên; có lúc <b>dùng chủ đích</b> để kéo mèo xa lại gần hố.</p>
+        <ul><li><b>Cách chơi đổi:</b> người chơi đọc hướng mũi tên và địa hình (hốc, tường) trước khi ăn.</li><li><b>Tần suất trong map:</b> 1–2 mèo mũi tên/màn, ở màu có ít mèo; màn khó: mũi tên hướng vào góc/hốc.</li><li><b>Rủi ro cần playtest:</b> nhiều mũi tên cùng màu khiến kết quả khó đoán.</li></ul></article>
     </div>
   </details>
 

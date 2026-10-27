@@ -85,12 +85,21 @@
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Hard fail khi báo động bật và vùng có hố</summary>
+    <summary>📋 Tiêu chí đánh giá · Thua khi báo động bật lúc vùng còn hố</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Cho Xanh đi lên một ô, nhấn S: toàn bộ ô đỏ chuyển xanh. Cho Hồng đi lên hai ô vào vùng, rồi cho Xanh đi xuống: vùng đỏ bật lại và màn thua.</p><p><b>Hỏi người chơi:</b> Hố nào đang giữ S? Trước khi nhả, còn hố nào nằm trong vùng báo động không?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Đi vào vùng đỏ khi S chưa được nhấn: thua ngay. Khi S được nhả, kiểm tra tất cả hố còn hoạt động: chỉ cần một hố còn nằm trong vùng thì thua, kể cả hố đó không vừa di chuyển.</p><p><b>Case an toàn:</b> Giữ công tắc đến khi hố đi qua đã ra khỏi toàn bộ vùng nguy hiểm hoặc hoàn thành và biến mất. Vùng trống thì có thể nhả S an toàn. Có thể bật/tắt lại nhiều lần.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>S có viền vàng và nhãn GIỮ khi được nhấn. Đường nối từ S tới vùng thể hiện quan hệ. Ô đỏ có ! khi bật, ô xanh có dấu kiểm khi tắt; trạng thái trên board cập nhật ngay.</p><p><b>Cần quan sát:</b> Người xem có hiểu công tắc phải được giữ liên tục và việc thu mèo không mở đường vĩnh viễn không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi dành một hố để hỗ trợ hố khác đi qua, rồi chỉ rút hố giữ khi tuyến đã an toàn.</p><p><b>Quyết định mới:</b> Chọn hố giữ S và thời điểm nhường đường. Hoàn thành hố giữ quá sớm cũng làm công tắc nhả và có thể gây thua.</p><p><b>Mật độ trên map:</b> Giới thiệu: một công tắc, một vùng và hai hố. Demo có case nhả sớm gây thua cùng case giữ đủ lâu để hoàn thành.</p><p><b>Rủi ro cần thử:</b> Cần nhìn rõ các ô vùng nguy hiểm kể cả khi báo động đang tắt. Nếu hố giữ hoàn thành trên S, phải biểu thị rõ công tắc vừa được nhả.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — hiểu sau 2 thao tác.</p>
+        <ul><li>Hố đứng lên công tắc S → vùng đỏ tắt → hố khác đi qua hành lang.</li><li>Dễ hiểu sai: hố giữ S hoàn thành và biến mất thì S <b>tự nhả</b>; thua cả khi hố trong vùng đứng yên.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Nếu hố này rời S bây giờ, còn hố nào trong vùng đỏ không?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay.</p>
+        <ul><li><b>Điều kiện:</b> báo động bật (không hố nào đứng trên S) mà có bất kỳ hố nào có ô trong vùng → thua; kiểm sau khi hố đi và lần nữa sau khi thu mèo.</li><li><b>Trên board demo:</b> demo sai (7 nước): hố xanh giữ S cho hố hồng vào hành lang rồi nhả S khi hồng còn trong vùng → BÁO ĐỘNG.</li><li><b>An toàn:</b> giữ S tới khi hố trong vùng ra hẳn hoặc hoàn thành; hố giữ S đừng ăn mèo cuối khi còn hố trong vùng.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Vùng đỏ sáng khi báo động bật, tắt khi có hố giữ S; công tắc S đổi trạng thái.</li><li><b>Rủi ro:</b> luật "hoàn thành thì tự nhả S" là bẫy ngầm, cần nói rõ trong demo.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Để dành</b> hố giữ công tắc (đừng hoàn thành nó sớm).</p>
+        <ul><li><b>Cách chơi đổi:</b> phối hợp 2 hố; thứ tự "giữ – đi qua – nhả".</li><li><b>Tần suất trong map:</b> 1 công tắc + 1 hành lang; màn khó: hố giữ S cũng phải đi qua vùng, hoặc 2 công tắc.</li><li><b>Rủi ro cần playtest:</b> người chơi quên hố đứng yên trong vùng vẫn làm thua.</li></ul></article>
     </div>
   </details>
 

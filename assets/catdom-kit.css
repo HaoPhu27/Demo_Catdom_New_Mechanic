@@ -138,6 +138,9 @@ details.review summary{cursor:pointer;font:800 22px/1.2 "Baloo 2",sans-serif;pad
 .criteria .n{font:800 13px "Baloo 2";color:var(--accent)}
 .criteria h3{font-size:17px}
 .criteria p{margin:6px 0 0;font-size:14.5px}
+.criteria ul{margin:6px 0 0;padding-left:18px;font-size:14.5px;line-height:1.5}
+.criteria li{margin:3px 0}
+.criteria .verdict{margin-top:4px;padding:6px 10px;background:var(--card);border-radius:10px}
 
 /* ---------- rules ---------- */
 ul.rules{padding-left:20px;margin:0}

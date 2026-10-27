@@ -85,12 +85,21 @@
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Hard fail khi bật trúng mèo/hố · Rào chắn khi trống</summary>
+    <summary>📋 Tiêu chí đánh giá · Thua khi bật điện trúng mèo/hố trên đoạn nối</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>EL-01 bật điện khi mèo vàng còn trên dây: thua. EL-02 cho hố Hồng đứng trên dây rồi bật: cũng thua. EL-00 và EL-04 bật khi đoạn nối trống: chỉ chặn đường.</p><p><b>Hỏi người chơi:</b> Trước khi bật điện, đoạn nối có đang chứa mèo hoặc bất kỳ phần nào của hố không?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Ngay khi cả A và B được nhấn, kiểm tra tất cả mèo và hố còn hoạt động trên đoạn nối. Có một đối tượng chạm đoạn nối là THUA ngay, không được đi thêm để thoát. Hố lớn chỉ cần một ô chạm dây cũng gây thua.</p><p><b>Case an toàn:</b> Nếu đoạn nối trống lúc bật thì không thua, nó chỉ thành vật cản. Sau đó cố đi vào bị chặn, không xuyên qua được. Nhả A hoặc B để tắt điện và mở đường. Mèo ngoài đoạn nối vẫn thu bình thường.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Đoạn nối có rào đỏ khi bật. Khi kích hoạt trúng đối tượng, đối tượng vẫn hiện trên dây, thông báo THUA và nút làm lại xuất hiện. Nhãn case cho biết đang thử mèo, hố hay đoạn nối trống.</p><p><b>Cần quan sát:</b> Người xem có phân biệt được thua vì bật điện trúng đối tượng với thao tác bị rào chặn sau khi bật an toàn không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi dọn sạch hành lang và đưa hố ra khỏi đoạn nối trước khi cho hai hố giữ A–B.</p><p><b>Quyết định mới:</b> Hố đang đứng trong hành lang có thể giúp thu mèo, nhưng phải rút ra trước lúc kích hoạt điện. Vị trí chờ của hố trở thành quyết định quan trọng.</p><p><b>Mật độ trên map:</b> Giữ 5 case: 2 hố làm quen rào, 3 hố × 3 mèo bị điện trúng mèo, 4 hố × 3 mèo bị điện trúng hố, 3 hố × 4 mèo, và 4 hố × 4 mèo bật rào an toàn.</p><p><b>Rủi ro cần thử:</b> Phải đánh dấu rõ đoạn nối nguy hiểm, tách khỏi A/B. Kiểm tra mọi ô của hố lớn, không chỉ tâm hố, và không cho thu mèo trên dây trước khi kiểm tra thua.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Khó — cần ≥ 3 thao tác, có 3 trạng thái.</p>
+        <ul><li>Điện tắt (đi tự do) → điện bật khi <b>hai hố khác nhau</b> đứng trên A và B → đoạn nối trống thì thành rào chặn; đoạn nối còn mèo/hố thì điện giật.</li><li>Dễ hiểu sai: một hố nhiều ô đứng cả A và B <b>không</b> bật điện; hố lớn chỉ cần 1 ô chạm đoạn nối là thua.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Nếu hố hồng xuống B bây giờ, trên đoạn nối còn gì không?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay khi bật điện trúng; rào chặn khi đoạn trống thì <b>không</b> thua.</p>
+        <ul><li><b>Điều kiện:</b> điện bật mà đoạn nối (các ô giữa A và B) còn mèo hoặc ô của hố → thua, kiểm trước khi thu mèo; không được đi thêm để thoát.</li><li><b>Trên board demo:</b> demo sai (8 nước): hố xanh đứng A, hố hồng xuống B khi mèo xanh còn trên đoạn nối → ĐIỆN GIẬT.</li><li><b>An toàn:</b> dọn đoạn nối trước, rồi mới cho hai hố đứng A và B; muốn qua rào thì nhả một công tắc.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — cần chú thích.</p>
+        <ul><li>Pad A / B, dây nối, ô đoạn nối sáng khi điện bật, tia điện khi thua; hố bị rào chặn thì rung.</li><li><b>Rủi ro:</b> hố lớn chỉ 1 ô chạm dây khó nhìn thấy; "rào chặn" và "điện giật" cùng xuất hiện khi điện bật.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> dọn đoạn nối; dùng điện như rào chắn có chủ đích.</p>
+        <ul><li><b>Cách chơi đổi:</b> người chơi coi đoạn nối là "vùng cấm tạm thời" và lên lịch bật/tắt.</li><li><b>Tần suất trong map:</b> 1 cặp công tắc, đoạn nối 1–3 ô; màn khó: đoạn dài, mèo trên dây cần hố khác dọn trước.</li><li><b>Rủi ro cần playtest:</b> điều kiện thua chưa được Lead chốt (giật ngay vs. chỉ chặn).</li></ul></article>
     </div>
   </details>
 
