@@ -232,7 +232,7 @@
         });
       }
       this.holesL.appendChild(d);
-      this.holes[id] = {el: d, c, x, y, w, h, cells: o.cells};
+      this.holes[id] = {el: d, c, x, y, w, h, cells: o.cells, off: o.off || [0, 0]};
       this.styleHole(id, c, !!o.special);
       return d;
     }
@@ -243,15 +243,32 @@
         hole.el.style.background = 'none';
         hole.el.style.boxShadow = 'none';
         hole.el.style.outline = 'none';
-        hole.el.querySelectorAll('.hole-cell').forEach(cellEl => {
-          cellEl.style.background = p.f;
-          cellEl.style.boxShadow = `0 0 0 2px ${p.d}`;
-        });
+        const socket = hole.el.querySelector('.hole-socket');
+        if (special) {
+          hole.el.querySelectorAll('.hole-cell').forEach(cellEl => {
+            cellEl.style.background = 'radial-gradient(circle at 50% 40%, #5a3413 0%, #3a1f08 70%)';
+            cellEl.style.boxShadow = '0 0 0 2px #7a4a12, inset 0 0 0 3px #ffd36b, 0 0 14px 2px rgba(255,211,107,.7)';
+          });
+          if (!socket) {
+            const firstCell = hole.el.querySelector('.hole-cell') || hole.el;
+            const sockEl = document.createElement('div');
+            sockEl.className = 'hole-socket';
+            sockEl.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:1';
+            sockEl.innerHTML = socketSVG();
+            firstCell.appendChild(sockEl);
+          }
+        } else {
+          socket?.remove();
+          hole.el.querySelectorAll('.hole-cell').forEach(cellEl => {
+            cellEl.style.background = p.f;
+            cellEl.style.boxShadow = `0 0 0 2px ${p.d}`;
+          });
+        }
       } else {
         hole.el.innerHTML = special ? socketSVG() : '';
-      Object.assign(hole.el.style, special
-        ? {background: 'radial-gradient(circle at 50% 40%, #5a3413 0%, #3a1f08 70%)', boxShadow: '0 0 0 2px #7a4a12, inset 0 0 0 3px #ffd36b, 0 0 14px 2px rgba(255,211,107,.7)'}
-        : {background: p.f, boxShadow: `0 0 0 2px ${p.d}, inset 0 0 0 3px ${p.l}, inset 0 0 14px 7px ${p.d}`});
+        Object.assign(hole.el.style, special
+          ? {background: 'radial-gradient(circle at 50% 40%, #5a3413 0%, #3a1f08 70%)', boxShadow: '0 0 0 2px #7a4a12, inset 0 0 0 3px #ffd36b, 0 0 14px 2px rgba(255,211,107,.7)'}
+          : {background: p.f, boxShadow: `0 0 0 2px ${p.d}, inset 0 0 0 3px ${p.l}, inset 0 0 14px 7px ${p.d}`});
       }
     }
     moveHoleTl(id, x, y, dur = .45) {
@@ -354,13 +371,29 @@
     /* Bàn tay kéo hole từ ô (fx,fy) tới ô (tx,ty). */
     dragTl(holeId, fx, fy, tx, ty) {
       const hole = this.holes[holeId];
-      const handAt = (x, y) => ({left: this.px(x, y).left + 18, top: this.px(x, y).top + 22});
-      const at = this.px(tx, ty);
+      const o = (hole && hole.off) || [0, 0];
+      const handAt = (x, y) => ({left: this.px(x + o[0], y + o[1]).left + 18, top: this.px(x + o[0], y + o[1]).top + 22});
+      const at = this.px(tx + o[0], ty + o[1]);
       return gsap.timeline()
         .set(this.hand, handAt(fx, fy)).to(this.hand, {opacity: 1, duration: .25}).to(this.hand, {scale: .82, duration: .12})
         .to(hole.el, {left: at.left + 3, top: at.top + 3, duration: .55, ease: 'power2.inOut'})
         .to(this.hand, {...handAt(tx, ty), duration: .55, ease: 'power2.inOut'}, '<')
         .to(this.hand, {scale: 1, opacity: 0, duration: .2});
+    }
+    /* Kéo hole theo chuỗi ô path kèm bàn tay. */
+    dragPathTl(holeId, fromX, fromY, path) {
+      const hole = this.holes[holeId];
+      const o = (hole && hole.off) || [0, 0];
+      const handAt = (x, y) => ({left: this.px(x + o[0], y + o[1]).left + 18, top: this.px(x + o[0], y + o[1]).top + 22});
+      const dur = Math.min(.35, 1.1 / path.length);
+      const tl = gsap.timeline()
+        .set(this.hand, handAt(fromX, fromY)).to(this.hand, {opacity: 1, duration: .2}).to(this.hand, {scale: .82, duration: .1});
+      for (const [tx, ty] of path) {
+        const at = this.px(tx + o[0], ty + o[1]);
+        tl.to(hole.el, {left: at.left + 3, top: at.top + 3, duration: dur, ease: 'power2.inOut'})
+          .to(this.hand, {...handAt(tx, ty), duration: dur, ease: 'power2.inOut'}, '<');
+      }
+      return tl.to(this.hand, {scale: 1, opacity: 0, duration: .15});
     }
   }
 
@@ -375,10 +408,21 @@
     el.innerHTML = text;
     gsap.fromTo(el, {opacity: 0, y: 4}, {opacity: 1, y: 0, duration: .25});
   }
+  function setHoleTag(st, hid, hs) {
+    const el = st.holes[hid]?.el;
+    if (!el) return;
+    el.querySelector('.hole-tag')?.remove();
+    if (hs.remaining <= 0) return;
+    const [dx0, dy0] = (hs.shape && hs.shape[0]) || [0, 0];
+    const off = hs.off || [0, 0];
+    const cx0 = dx0 - off[0], cy0 = dy0 - off[1];
+    const target = el.querySelector(`.hole-cell[data-dx="${cx0}"][data-dy="${cy0}"]`) || el.querySelector('.hole-cell') || el;
+    target.insertAdjacentHTML('beforeend', `<span class="hole-tag">${hs.remaining}</span>`);
+  }
 
   /* Demo tự lặp kiểu GIF, chạy logic thật theo kịch bản.
    * cfg: { el, cap, name, file, level, steps, build(st, game), cellOf(game, id) -> [x,y],
-   *        on: { <eventType>: (st, ev, tl, ctx) => void }, intro(st, tl, cap) }
+   *        on: { <eventType>: (st, ev, tl, ctx) => void }, intro(st, tl, cap), holes? }
    * step: { eat:[x,y], from:[x,y], say } | { pick:true, hole:'<id>', path:[[x,y],...], say } */
   function demo(cfg) {
     const logic = loadLogic(cfg.name);
@@ -389,41 +433,94 @@
       const game = logic.createGame(cfg.level);
       const ctx = {game, cap: t => caption(cfg.cap, t), hole: null};
       cfg.build(st, game);
+      const holeState = {};
+      if (cfg.holes) {
+        for (const h of cfg.holes) {
+          const r = rectOf(h.shape.map(([dx, dy]) => [h.x + dx, h.y + dy]));
+          const off = [r.x - h.x, r.y - h.y];
+          const cells = h.shape.map(([dx, dy]) => [h.x + dx - r.x, h.y + dy - r.y]);
+          const remaining = h.remaining || h.shape.length;
+          st.addHole(h.id, h.color, r.x, r.y, r.w, r.h, { cells, special: !!h.special, off });
+          st.holes[h.id].off = off;
+          holeState[h.id] = { id: h.id, color: h.color, x: h.x, y: h.y, shape: h.shape, off, remaining, special: !!h.special };
+          setHoleTag(st, h.id, holeState[h.id]);
+        }
+      }
       const tl = gsap.timeline({onComplete: () => gsap.delayedCall(2.4, loop)});
-      if (cfg.intro) cfg.intro(st, tl, ctx); else tl.to({}, {duration: 1});
+      if (typeof cfg.intro === 'function') cfg.intro(st, tl, ctx);
+      else if (typeof cfg.intro === 'string') tl.call(() => ctx.cap(cfg.intro)).to({}, {duration: 1.8});
+      else tl.to({}, {duration: 1});
       let k = 0, finished = false;
       for (const step of cfg.steps) {
         let res;
-        if (step.eat) {
-          const ids = game.groupAt(...step.eat);
-          if (!ids.length) throw new Error(`Kịch bản demo sai: ô ${step.eat} không có nhóm ăn được`);
-          const r = rectOf(ids.map(id => cfg.cellOf(game, id)));
-          const from = step.from || [r.x, r.y + 1];
-          const hid = 'h' + (k++);
-          const hole = st.addHole(hid, cfg.colorOf(game, ids[0]), from[0], from[1], r.w, r.h);
-          gsap.set(hole, {opacity: 0});
-          tl.call(() => ctx.cap(step.say || ''))
-            .fromTo(hole, {opacity: 0, scale: 0}, {opacity: 1, scale: 1, duration: .25, immediateRender: false})
-            .add(st.dragTl(hid, from[0], from[1], r.x, r.y));
-          res = game.eat(...step.eat);
-          ctx.hole = hid;
-        } else if (step.pick) {
+        if (cfg.holes) {
+          const hid = step.hole;
+          const hs = holeState[hid];
           tl.call(() => ctx.cap(step.say || ''));
-          for (let i = 1; i < step.path.length; i++) tl.add(st.dragTl(step.hole, ...step.path[i - 1], ...step.path[i]));
-          res = game.pickPesticide();
-          ctx.hole = step.hole;
+          if (step.path && step.path.length) {
+            tl.add(st.dragPathTl(hid, hs.x, hs.y, step.path));
+            const last = step.path[step.path.length - 1];
+            hs.x = last[0]; hs.y = last[1];
+          }
+          if (step.eat) {
+            res = game.eat(...step.eat);
+            ctx.hole = hid;
+          } else if (step.pick) {
+            res = game.pickPesticide();
+            ctx.hole = hid;
+          }
+          let ended = false;
+          for (const ev of res.events) {
+            (cfg.on[ev.type] || defaultOn[ev.type] || (() => {}))(st, ev, tl, ctx);
+            if (ev.type === 'lose' || ev.type === 'win') ended = true;
+          }
+          if (step.eat) {
+            const eatEv = res.events.find(e => e.type === 'eat');
+            const eaten = eatEv ? eatEv.ids.length : 0;
+            hs.remaining -= eaten;
+            const rem = hs.remaining;
+            tl.call(() => {
+              setHoleTag(st, hid, { ...hs, remaining: rem });
+              if (rem <= 0) {
+                const h = st.holes[hid];
+                if (h) gsap.to(h.el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'});
+              }
+            });
+          }
+          tl.to({}, {duration: .6});
+          if (ended) { finished = true; tl.to({}, {duration: 1.2}); break; }
+        } else {
+          if (step.eat) {
+            const ids = game.groupAt(...step.eat);
+            if (!ids.length) throw new Error(`Kịch bản demo sai: ô ${step.eat} không có nhóm ăn được`);
+            const r = rectOf(ids.map(id => cfg.cellOf(game, id)));
+            const from = step.from || [r.x, r.y + 1];
+            const hid = 'h' + (k++);
+            const hole = st.addHole(hid, cfg.colorOf(game, ids[0]), from[0], from[1], r.w, r.h);
+            gsap.set(hole, {opacity: 0});
+            tl.call(() => ctx.cap(step.say || ''))
+              .fromTo(hole, {opacity: 0, scale: 0}, {opacity: 1, scale: 1, duration: .25, immediateRender: false})
+              .add(st.dragTl(hid, from[0], from[1], r.x, r.y));
+            res = game.eat(...step.eat);
+            ctx.hole = hid;
+          } else if (step.pick) {
+            tl.call(() => ctx.cap(step.say || ''));
+            for (let i = 1; i < step.path.length; i++) tl.add(st.dragTl(step.hole, ...step.path[i - 1], ...step.path[i]));
+            res = game.pickPesticide();
+            ctx.hole = step.hole;
+          }
+          let ended = false;
+          for (const ev of res.events) {
+            (cfg.on[ev.type] || defaultOn[ev.type] || (() => {}))(st, ev, tl, ctx);
+            if (ev.type === 'lose' || ev.type === 'win') ended = true;
+          }
+          if (step.eat) {
+            const used = ctx.hole;
+            tl.call(() => { const h = st.holes[used]; if (h) gsap.to(h.el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'}); });
+          }
+          tl.to({}, {duration: .6});
+          if (ended) { finished = true; tl.to({}, {duration: 1.2}); break; }
         }
-        let ended = false;
-        for (const ev of res.events) {
-          (cfg.on[ev.type] || defaultOn[ev.type] || (() => {}))(st, ev, tl, ctx);
-          if (ev.type === 'lose' || ev.type === 'win') ended = true;
-        }
-        if (step.eat) {
-          const used = ctx.hole;
-          tl.call(() => { const h = st.holes[used]; if (h) gsap.to(h.el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'}); });
-        }
-        tl.to({}, {duration: .6});
-        if (ended) { finished = true; tl.to({}, {duration: 1.2}); break; }
       }
       if (!finished && cfg.outro) { cfg.outro(st, tl, ctx); tl.to({}, {duration: 1.2}); }
     };
