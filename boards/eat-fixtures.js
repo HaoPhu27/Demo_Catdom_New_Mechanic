@@ -116,6 +116,64 @@
     { eat: [0, 5], hole: 'hg', path: [[0, 4], [0, 5]], say: 'Ăn 4 mèo xanh lá thay vì dập ổ bệnh → 4 ca lây bùng phát, đại dịch!' }
   ];
 
+  // --- Couple Cat (Couple Mèo) ---
+  const coupleLevel = {
+    cols: 7,
+    rows: 8,
+    cats: [
+      // Yellow (T4, 4 cats)
+      { id: 'y1', color: 'yellow', x: 0, y: 0 },
+      { id: 'y2', color: 'yellow', x: 1, y: 0 },
+      { id: 'y3', color: 'yellow', x: 2, y: 0 },
+      { id: 'y4', color: 'yellow', x: 1, y: 1, couple: 'A' },
+      // Purple (I3, 3 cats)
+      { id: 'p1', color: 'purple', x: 0, y: 2 },
+      { id: 'p2', color: 'purple', x: 1, y: 2 },
+      { id: 'p3', color: 'purple', x: 2, y: 2 },
+      // Blue (O4, 4 cats)
+      { id: 'b1', color: 'blue', x: 3, y: 3 },
+      { id: 'b2', color: 'blue', x: 4, y: 3 },
+      { id: 'b3', color: 'blue', x: 3, y: 4 },
+      { id: 'b4', color: 'blue', x: 4, y: 4 },
+      // Green (L4, 4 cats)
+      { id: 'g1', color: 'green', x: 0, y: 4 },
+      { id: 'g2', color: 'green', x: 1, y: 4 },
+      { id: 'g3', color: 'green', x: 2, y: 4 },
+      { id: 'g4', color: 'green', x: 0, y: 5 },
+      // Orange (L3, 3 cats)
+      { id: 'o1', color: 'orange', x: 6, y: 6 },
+      { id: 'o2', color: 'orange', x: 5, y: 7 },
+      { id: 'o3', color: 'orange', x: 6, y: 7, couple: 'A' }
+    ],
+    couples: [
+      { id: 'A', n: 4, mark: 'pink' }
+    ]
+  };
+
+  const coupleHoles = [
+    { id: 'hy', color: 'yellow', x: 3, y: 0, shape: [[0, 0], [1, 0], [2, 0], [1, 1]] },
+    { id: 'hp', color: 'purple', x: 0, y: 3, shape: [[0, 0], [1, 0], [2, 0]] },
+    { id: 'hb', color: 'blue', x: 5, y: 3, shape: [[0, 0], [1, 0], [0, 1], [1, 1]] },
+    { id: 'hg', color: 'green', x: 0, y: 6, shape: [[0, 0], [1, 0], [2, 0], [0, 1]] },
+    { id: 'ho', color: 'orange', x: 3, y: 6, shape: [[1, 0], [0, 1], [1, 1]] }
+  ];
+
+  const coupleIntro = 'Hai con mèo mang mũi tên 💘 hồng là một cặp, N = 4. Nuốt một con thì con kia bắt đầu đếm ngược, phải cứu kịp trước khi số về 0!';
+
+  const coupleGood = [
+    { eat: [6, 6], hole: 'ho', path: [[4, 6], [5, 6]], say: 'Kéo hố cam nuốt 3 mèo → mèo vàng bắt đầu đếm ngược 4' },
+    { eat: [0, 2], hole: 'hp', path: [[0, 2]], say: 'Kéo hố tím nuốt 3 mèo → mèo vàng còn 1 lượt' },
+    { eat: [0, 0], hole: 'hy', path: [[2, 0], [1, 0], [0, 0]], say: 'Kéo hố vàng nuốt 4 mèo → đưa mèo vàng về với người yêu kịp lúc, an toàn!' },
+    { eat: [0, 4], hole: 'hg', path: [[0, 5], [0, 4]], say: 'Cặp đôi đã an toàn, kéo hố xanh lá nuốt 4 mèo' },
+    { eat: [3, 3], hole: 'hb', path: [[4, 3], [3, 3]], say: 'Nuốt nốt 4 mèo xanh dương cuối cùng, bàn sạch!' }
+  ];
+
+  const coupleBad = [
+    { eat: [6, 6], hole: 'ho', path: [[4, 6], [5, 6]], say: 'Kéo hố cam nuốt 3 mèo → mèo vàng bắt đầu đếm ngược 4' },
+    { eat: [0, 2], hole: 'hp', path: [[0, 2]], say: 'Kéo hố tím nuốt 3 mèo → mèo vàng còn 1 lượt' },
+    { eat: [3, 3], hole: 'hb', path: [[4, 3], [3, 3]], say: 'Mải ăn 4 mèo xanh dương thay vì cứu cặp đôi → đếm về 0, chia tay, thua!' }
+  ];
+
   return {
     fixtures: {
       weed: {
@@ -123,6 +181,9 @@
       },
       sick: {
         demo: { level: sickLevel, holes: sickHoles, intro: sickIntro, good: sickGood, bad: sickBad }
+      },
+      couple: {
+        demo: { level: coupleLevel, holes: coupleHoles, intro: coupleIntro, good: coupleGood, bad: coupleBad }
       }
     }
   };

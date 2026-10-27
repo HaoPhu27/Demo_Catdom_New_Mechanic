@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/catdom-kit.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="logic/couple.js" onerror="this.remove()"></script>
+<script src="boards/eat-fixtures.js"></script>
 <script src="assets/catdom-kit.js"></script>
 <style>
 .couples{display:flex;flex-direction:column;gap:8px}
@@ -105,15 +106,7 @@
 </main>
 
 <script>
-const LEVEL_DEMO = {
-  cols: 5, rows: 5,
-  cats: [
-    {id:'c1', color:'blue', x:0, y:0, couple:'A'}, {id:'g1', color:'green', x:2, y:0}, {id:'g2', color:'green', x:3, y:0},
-    {id:'o1', color:'orange', x:0, y:2}, {id:'o2', color:'orange', x:1, y:2}, {id:'y1', color:'yellow', x:3, y:2},
-    {id:'c2', color:'purple', x:4, y:4, couple:'A'}
-  ],
-  couples: [{id:'A', n:3, mark:'pink'}]
-};
+const FX = CatDomEatFixtures.fixtures.couple.demo;
 const PLAY_CATS = [
   [0,0,'blue'], [2,0,'green'], [3,0,'green'], [5,0,'orange','A'],
   [0,1,'blue'], [1,1,'yellow'], [4,1,'orange'], [5,1,'orange'],
@@ -209,22 +202,14 @@ const handlers = {
   }
 };
 
-function demoCfg(el, cap, intro, steps, outro) {
+function demoCfg(el, cap, intro, steps) {
   return {el: document.getElementById(el), cap: document.getElementById(cap), name: 'couple', file: 'logic/couple.js',
-    level: LEVEL_DEMO, cellOf, colorOf, on: handlers, steps, outro,
-    build: (st, game) => buildBoard(st, game, LEVEL_DEMO),
+    level: FX.level, holes: FX.holes, cellOf, colorOf, on: handlers, steps,
+    build: (st, game) => buildBoard(st, game, FX.level),
     intro: (st, tl, ctx) => tl.call(() => ctx.cap(intro)).to({}, {duration: 1.8})};
 }
-CatDom.demo(demoCfg('demoWin', 'capWin', 'Hai con mèo có mũi tên 💘 hồng là một cặp, N = 3.', [
-  {eat: [0, 0], from: [0, 1], say: 'Ăn mèo xanh → mèo tím bắt đầu đếm 3'},
-  {eat: [2, 0], from: [2, 1], say: 'Clear 2 mèo xanh lá → còn 1'},
-  {eat: [4, 4], from: [4, 3], say: 'Đưa mèo tím về với người yêu kịp lúc!'}
-], (st, tl) => tl.call(() => st.showBanner('ĐOÀN TỤ ✓', 'ok'))));
-CatDom.demo(demoCfg('demoFail', 'capFail', 'Cùng cặp đôi, nhưng lần này mải ăn mèo khác…', [
-  {eat: [0, 0], from: [0, 1], say: 'Ăn mèo xanh → mèo tím đếm 3'},
-  {eat: [2, 0], from: [2, 1], say: 'Clear 2 mèo xanh lá → còn 1'},
-  {eat: [0, 2], from: [0, 3], say: 'Thêm 2 mèo cam → đếm về 0, mèo tím nổi giận!'}
-]));
+CatDom.demo(demoCfg('demoWin', 'capWin', FX.intro, FX.good));
+CatDom.demo(demoCfg('demoFail', 'capFail', 'Cùng cặp đôi, nhưng lần này mải ăn mèo khác…', FX.bad));
 
 /* ---------- states ---------- */
 const miniCat = (mood, extra = '', o = {}) => `<div class="mini"><div class="cat${o.shake ? ' angry' : ''}" style="left:0;top:0"><div class="body">${CatDom.catSVG('purple', mood, o)}</div><div class="mark">${CatDom.heartMarkSVG(CatDom.MARK.pink)}</div>${extra}</div></div>`;
