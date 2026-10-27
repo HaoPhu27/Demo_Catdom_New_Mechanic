@@ -1,6 +1,6 @@
 # Tiến trình: demo trên board giống level thật (feature `real-board`)
 
-Cập nhật: 2026-10-27. Nhánh mới nhất: `feature/RB-4` (chứa toàn bộ chuỗi `feature/lab-ui` → `RB-1` → … → `RB-4`), chưa merge `main`.
+Cập nhật: 2026-10-27. Nhánh gộp: `feature/RB-7` (chứa chuỗi agy `RB-1` → … → `RB-7` và chuỗi ccr `RB-8` → `RB-10` đã merge), đã push GitHub, chưa merge `main`.
 
 ## Mục tiêu
 Lead: demo "GIF"/chơi thử phải chân thực như game thật, tham khảo cách Rollic dựng obstacle trong *30 Drop Away* (https://rollic.helpshift.com/hc/en/30-drop-away/faq/1043-what-are-the-obstacles/): dùng hố/mèo có sẵn của kit, số lượng khớp, hình hố đa dạng, không spam hố 2 ô ngang/dọc. Claude lên kế hoạch + review, agy (Antigravity CLI) làm qua orchestrator.
@@ -38,8 +38,8 @@ Spec: `design/quick-specs/realistic-eat-board-2026-10-27.md`. Test nghiệm thu:
 | RB-4 | Kit `demo()` kéo hố đặt sẵn + fixture Cây dại + `weed.html` | XONG `1a8897c` (lượt 1 agy hết giờ 15 phút nhưng đã viết kit + fixture; lượt 2 phiên mới chỉ sửa trang). Đã xem trên trình duyệt. |
 | RB-5 | Fixture Mèo bệnh + `sick-cat.html` | XONG `e992f1f`, đạt lần đầu (prompt kèm công thức dựng board: ổ bệnh giữa nhóm T4 cô lập). Đã xem trên trình duyệt. |
 | RB-6 | Fixture Couple + `couple-cat.html` | XONG `0a0934c` sau 1 vòng sửa (vòng 1 chép nguyên vị trí board Mèo bệnh). |
-| RB-7 | Mèo Ích Kỷ: fixture + `selfish-cat.html` (giữ Stage riêng) | đang giao agy (Lead yêu cầu đẩy nhanh, không chờ duyệt RB-4…6) |
-| RB-8…RB-10 | Việc nhỏ giao ccr, chuỗi riêng ở worktree `D:/Cat Mechanic Demo Visualize - ccr` | xem `design/real-board-tasks.md` trên nhánh `feature/RB-8`+ |
+| RB-7 | Mèo Ích Kỷ: fixture + `selfish-cat.html` (giữ Stage riêng) | XONG `8c0d363` sau 1 vòng sửa (bong bóng đọc N sai thời điểm). |
+| RB-8…RB-10 | Việc nhỏ giao ccr (worktree `D:/Cat Mechanic Demo Visualize - ccr`), chi tiết `design/real-board-tasks.md` | XONG: RB-8 `d7ef97f`, RB-9 `b0d4427`, RB-10 `af89482`; đã merge vào `feature/RB-7`. |
 
 Ghi chú: `HoleShapes.json` gốc CÓ trên máy này (`D:/Xgame/Generate VIPPRO/SYSTEM/SOURCE/AI/IndependentSolver/IO/HoleShapes.json`), dùng để đối chiếu ánh xạ `holeType` nếu cần.
 Hiện trạng: Mèo Ích Kỷ (`selfish-cat.html`, Stage riêng không dùng kit), Cây dại (`weed.html`), Mèo bệnh (`sick-cat.html`), Couple (`couple-cat.html`) dùng kit `demo()`/`playground()` kiểu nuốt nhóm `eat(x, y)`: hố hiện ra tại chỗ với hình chữ nhật bao của nhóm, board 5×5–6×6.
@@ -50,3 +50,7 @@ Hướng dự kiến:
 - `selfish-cat.html` là file mẫu chuẩn đã duyệt → làm sau cùng, giữ kịch bản gameplay.
 
 Bài học quy trình: prompt lớn (kit + board + trang) làm agy chạm `--print-timeout 15m`. Nên tách mỗi task ≤ 2 file chính, hoặc tăng timeout.
+
+Sau merge: checks 11/11, `node --test tests/*.test.mjs` 222/222, 14 trang qua `check-html`.
+Còn tồn: `selfish-cat.html` (Stage riêng) chưa có reduced-motion; QA tay 375 px + bàn phím; playtest; Lead review rồi merge `main`.
+Worker ccr: nhanh nhưng hay báo sửa mà không gọi Edit / quên marker → luôn xem diff + trình duyệt.
