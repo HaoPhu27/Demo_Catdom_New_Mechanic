@@ -61,10 +61,68 @@
     { eat: [2, 4], hole: 'hg', path: [[1, 4], [2, 4]], say: 'Quên thuốc sâu, ăn tiếp 4 mèo xanh lá → cây dại phủ kín, thua!' }
   ];
 
+  // --- Sick Cat (Mèo bệnh) ---
+  const sickLevel = {
+    cols: 7,
+    rows: 8,
+    cats: [
+      // Orange (L3, 3 cats)
+      { id: 'o1', color: 'orange', x: 0, y: 0 },
+      { id: 'o2', color: 'orange', x: 1, y: 0 },
+      { id: 'o3', color: 'orange', x: 0, y: 1 },
+      // Yellow (T4, 4 cats, y2 at center is initial sick)
+      { id: 'y1', color: 'yellow', x: 2, y: 1 },
+      { id: 'y2', color: 'yellow', x: 3, y: 1 },
+      { id: 'y3', color: 'yellow', x: 4, y: 1 },
+      { id: 'y4', color: 'yellow', x: 3, y: 2 },
+      // Blue (I3, 3 cats)
+      { id: 'b1', color: 'blue', x: 6, y: 0 },
+      { id: 'b2', color: 'blue', x: 6, y: 1 },
+      { id: 'b3', color: 'blue', x: 6, y: 2 },
+      // Green (L4, 4 cats)
+      { id: 'g1', color: 'green', x: 0, y: 5 },
+      { id: 'g2', color: 'green', x: 0, y: 6 },
+      { id: 'g3', color: 'green', x: 0, y: 7 },
+      { id: 'g4', color: 'green', x: 1, y: 7 },
+      // Pink (O4, 4 cats)
+      { id: 'p1', color: 'pink', x: 4, y: 6 },
+      { id: 'p2', color: 'pink', x: 5, y: 6 },
+      { id: 'p3', color: 'pink', x: 4, y: 7 },
+      { id: 'p4', color: 'pink', x: 5, y: 7 }
+    ],
+    initialSick: 'y2'
+  };
+
+  const sickHoles = [
+    { id: 'ho', color: 'orange', x: 0, y: 2, shape: [[0, 0], [1, 0], [0, 1]] },
+    { id: 'hy', color: 'yellow', x: 2, y: 3, shape: [[0, 0], [1, 0], [2, 0], [1, 1]] },
+    { id: 'hb', color: 'blue', x: 6, y: 3, shape: [[0, 0], [0, 1], [0, 2]] },
+    { id: 'hg', color: 'green', x: 1, y: 4, shape: [[0, 0], [0, 1], [0, 2], [1, 2]] },
+    { id: 'hp', color: 'pink', x: 4, y: 4, shape: [[0, 0], [1, 0], [0, 1], [1, 1]] }
+  ];
+
+  const sickIntro = 'Ổ bệnh ban đầu ở giữa nhóm mèo vàng (1 con). Mỗi mèo khoẻ lọt hố lây thêm 1 ca. Mèo bệnh chiếm từ 50% số mèo còn lại sẽ thua!';
+
+  const sickGood = [
+    { eat: [0, 0], hole: 'ho', path: [[0, 1], [0, 0]], say: 'Kéo hố cam nuốt 3 mèo khoẻ → 3 ca lây, cả ổ vàng bị bệnh' },
+    { eat: [2, 1], hole: 'hy', path: [[2, 2], [2, 1]], say: 'Kéo hố vàng nuốt cả ổ 4 mèo bệnh → dập tắt ổ dịch!' },
+    { eat: [6, 0], hole: 'hb', path: [[6, 2], [6, 1], [6, 0]], say: 'Ổ dịch đã hết, kéo hố xanh dương nuốt 3 mèo' },
+    { eat: [0, 5], hole: 'hg', path: [[0, 4], [0, 5]], say: 'Kéo hố xanh lá nuốt 4 mèo' },
+    { eat: [4, 6], hole: 'hp', path: [[4, 5], [4, 6]], say: 'Nuốt nốt 4 mèo hồng cuối cùng, bàn sạch!' }
+  ];
+
+  const sickBad = [
+    { eat: [0, 0], hole: 'ho', path: [[0, 1], [0, 0]], say: 'Kéo hố cam nuốt 3 mèo khoẻ → 3 ca lây, cả ổ vàng bị bệnh' },
+    { eat: [0, 5], hole: 'hg', path: [[0, 4], [0, 5]], say: 'Ăn 4 mèo xanh lá thay vì dập ổ bệnh → 4 ca lây bùng phát, đại dịch!' }
+  ];
+
   return {
     fixtures: {
       weed: {
         demo: { level, holes, intro, good, bad }
+      },
+      sick: {
+        demo: { level: sickLevel, holes: sickHoles, intro: sickIntro, good: sickGood, bad: sickBad }
       }
     }
   };
