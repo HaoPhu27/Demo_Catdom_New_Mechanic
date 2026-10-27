@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/catdom-kit.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="logic/sick.js" onerror="this.remove()"></script>
+<script src="logic/hole-play.js"></script>
 <script src="boards/eat-fixtures.js"></script>
 <script src="assets/catdom-kit.js"></script>
 <style>
@@ -74,7 +75,7 @@ select{font:600 15px "Be Vietnam Pro";padding:6px 8px;border-radius:10px;border:
   <div class="card play">
     <div><div class="stage-wrap"><div id="playStage"></div></div></div>
     <div class="panel">
-      <p class="hint">Bấm vào một con mèo: hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Bấm vào <b>box</b> để lấy con mèo đầu hàng. Mỗi lần chơi lại, mèo bệnh ban đầu được chọn ngẫu nhiên.</p>
+      <p class="hint">Bấm chọn một hố rồi kéo (hoặc phím mũi tên). Hố trùm đủ nhóm mèo cùng màu thì nuốt. Box chỉ cho hố cùng màu con đầu hàng đi vào.</p>
       <div class="ctrl">Ngưỡng thua
         <select id="ratio"><option value="0.3">30%</option><option value="0.4">40%</option><option value="0.5" selected>50% (đề xuất)</option><option value="0.6">60%</option></select>
       </div>
@@ -124,15 +125,9 @@ select{font:600 15px "Be Vietnam Pro";padding:6px 8px;border-radius:10px;border:
 
 <script>
 const FX = CatDomEatFixtures.fixtures.sick.demo;
-const PLAY_GRID = ['BB.GGY', '.K..G.', 'OOP..Y', '..PB..', 'Y..B.O', '..GG..'];
-const PLAY_BOXES = [{id:'bxA', x:0, y:5, cats:['orange', 'blue']}, {id:'bxB', x:5, y:5, cats:['yellow', 'green', 'pink']}];
-const CODE = {B:'blue', G:'green', O:'orange', Y:'yellow', P:'purple', K:'pink'};
 
 function playLevel() {
-  const cats = [];
-  PLAY_GRID.forEach((row, y) => [...row].forEach((ch, x) => { if (CODE[ch]) cats.push({id: `${x}_${y}`, color: CODE[ch], x, y}); }));
-  const boxes = PLAY_BOXES.map(b => ({id: b.id, x: b.x, y: b.y, cats: b.cats.map((color, i) => ({id: `${b.id}_${i}`, color}))}));
-  return {cols: 6, rows: 6, cats, boxes, seed: Math.floor(Math.random() * 1e9), loseRatio: Number(document.getElementById('ratio').value)};
+  return {...JSON.parse(JSON.stringify(FX.level)), loseRatio: Number(document.getElementById('ratio').value)};
 }
 
 /* Mèo box không nằm trong state.cats: tra trong boxes. */
@@ -247,8 +242,8 @@ document.getElementById('states').innerHTML = [
 const ui = {sick: document.getElementById('sSick'), done: document.getElementById('sDone'), fill: document.getElementById('mFill'), mark: document.getElementById('mMark')};
 const play = CatDom.playground({
   el: document.getElementById('playStage'), logEl: document.getElementById('log'),
-  name: 'sick', file: 'logic/sick.js', level: playLevel, cellOf, colorOf, on: handlers,
-  build: (st, game, api) => buildBoard(st, game, game ? null : {...playLevel(), initialSick: '1_1'}, api),
+  name: 'sick', file: 'logic/sick.js', level: playLevel, holes: FX.holes, cellOf, colorOf, on: handlers,
+  build: (st, game) => buildBoard(st, game, null),
   startText: game => {
     const s = game.getState(), c = s.cats.find(c => c.sick);
     return `Bắt đầu: mèo ${CatDom.PAL[c.color].vi} ở ô (${c.x},${c.y}) bị bệnh. Thua khi ≥ ${Math.round(s.loseRatio * 100)}% mèo bệnh.`;
