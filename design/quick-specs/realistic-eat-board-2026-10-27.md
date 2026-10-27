@@ -27,11 +27,17 @@ Demo hiện tại của 01–04: board 5×5, hố HIỆN RA tại chỗ với h�
    - Không có `cfg.holes` thì giữ nguyên hành vi cũ.
 9. **Trang:** hai demo ở `weed.html`, `sick-cat.html`, `couple-cat.html` lấy `level`, `holes`, `intro`, `good`/`bad` từ fixture. Board chơi thử và phần còn lại của trang giữ nguyên. `main > .demos` và `main > .card.play` vẫn là con trực tiếp của `<main>`.
 
+## Mèo Ích Kỷ (RB-7)
+`selfish-cat.html` là file mẫu chuẩn, không dùng kit và không có module logic. RB-7 giữ nguyên toàn bộ phần vẽ (Stage riêng, mèo khoanh tay, badge đếm, cào, banner), trạng thái visual và playground; chỉ thay board demo:
+- `fixtures.selfish.demo = { level, holes, intro, good, bad }` trong `boards/eat-fixtures.js`. `level = { cols, rows, cats:[{id,color,x,y,selfish?}], selfishCount }`: đúng 1 mèo `selfish: true`, `selfishCount` 3–8.
+- Luật đếm (test tự mô phỏng theo `docs/business-rules.md`): lượt nuốt không có Mèo Ích Kỷ trừ N đúng bằng số mèo; N ≤ 0 khi nó còn trên bàn thì thua `selfish`; lượt có nó (kể cả cùng mèo khác) thì an toàn, hết đếm. Event chữ ký: `selfishCount`, `selfishSafe`.
+- Trang đọc fixture: kích thước Stage theo `level`, vẽ hố đúng hình (ô liền khối, viền chỉ ở cạnh ngoài), mỗi bước kéo hố theo `path` rồi nuốt nhóm `groupAt(eat)` (nhóm cùng màu nối 4 hướng).
+
 ## Catalog hình hố
 Giống đợt 1: I2, I3, L3, L4, O4, T4, X5 (xoay/lật). Xem `design/quick-specs/realistic-demo-board-2026-10-26.md`.
 
 ## Acceptance Criteria
-- [ ] `node --test tests/eat-demo-board.test.mjs` đạt.
+- [ ] `node --test tests/eat-demo-board.test.mjs` đạt (cả 4 mechanic sau RB-7).
 - [ ] Test cũ (`tests/*.test.mjs`) vẫn đạt.
 - [ ] `node tools/check-html.mjs <trang>` đạt cho `weed.html`, `sick-cat.html`, `couple-cat.html`.
 - [ ] Mở trang qua `node tools/serve.mjs`: demo sai/đúng chạy hết kịch bản, hố đúng hình đi qua ô trống, không lỗi console.

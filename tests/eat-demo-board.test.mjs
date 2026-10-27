@@ -1,4 +1,4 @@
-// Board demo thực tế cho 3 mechanic nuốt nhóm (Cây dại, Mèo bệnh, Couple): design/quick-specs/realistic-eat-board-2026-10-27.md.
+// Board demo thực tế cho 4 mechanic nuốt nhóm (Cây dại, Mèo bệnh, Couple, Mèo Ích Kỷ): design/quick-specs/realistic-eat-board-2026-10-27.md.
 // Hố đặt sẵn trên bàn với hình trong catalog, mỗi bước kéo một hố theo đường đi tới trùm đúng nhóm mèo cùng màu.
 // Test này đi lại từng bước như trang demo: logic thật (logic/<tên>.js) + vị trí, sức chứa của hố.
 import { test } from 'node:test';
@@ -38,8 +38,51 @@ const STRAIGHT = new Set(['I2', 'I3']);
 const MECH = {
   weed: { good: ['pick', 'weedClear', 'weedGrow'], lose: 'weed' },
   sick: { good: ['infect'], lose: 'sick' },
-  couple: { good: ['coupleTrigger', 'coupleSafe'], lose: 'couple' }
+  couple: { good: ['coupleTrigger', 'coupleSafe'], lose: 'couple' },
+  selfish: { good: ['selfishCount', 'selfishSafe'], lose: 'selfish' }
 };
+
+// Mèo Ích Kỷ không có module logic (selfish-cat.html là file mẫu tự chứa). Mô phỏng luật của docs/business-rules.md:
+// level { cols, rows, cats:[{id,color,x,y,selfish?}], selfishCount: N }. Mỗi lượt nuốt KHÔNG có Mèo Ích Kỷ trừ N theo số mèo;
+// N về 0 khi nó còn trên bàn thì thua 'selfish'. Lượt có nó (kể cả cùng các mèo khác) thì an toàn, hết đếm.
+const selfishLogic = {
+  createGame(level) {
+    const cats = level.cats.map(c => ({ id: c.id, color: c.color, x: c.x, y: c.y, alive: true }));
+    const st = { status: 'playing', loseReason: null, counter: level.selfishCount, safe: false };
+    const sid = (level.cats.find(c => c.selfish) || {}).id;
+    const at = (x, y) => cats.find(c => c.alive && c.x === x && c.y === y);
+    const groupAt = (x, y) => {
+      const first = at(x, y); if (!first) return [];
+      const out = [first], seen = new Set([first.id]);
+      for (let i = 0; i < out.length; i++) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const n = at(out[i].x + dx, out[i].y + dy);
+        if (n && n.color === first.color && !seen.has(n.id)) { seen.add(n.id); out.push(n); }
+      }
+      return out.sort((a, b) => a.y - b.y || a.x - b.x).map(c => c.id);
+    };
+    return {
+      getState: () => JSON.parse(JSON.stringify({ ...st, cats })),
+      groupAt,
+      eat(x, y) {
+        const ids = st.status === 'playing' ? groupAt(x, y) : [];
+        if (!ids.length) return { ok: false, reason: 'empty', events: [] };
+        ids.forEach(id => { cats.find(c => c.id === id).alive = false; });
+        const events = [{ type: 'eat', ids }];
+        if (!st.safe) {
+          if (ids.includes(sid)) { st.safe = true; events.push({ type: 'selfishSafe' }); }
+          else {
+            st.counter -= ids.length;
+            events.push({ type: 'selfishCount', remaining: st.counter });
+            if (st.counter <= 0) { st.status = 'lost'; st.loseReason = 'selfish'; events.push({ type: 'lose', reason: 'selfish' }); return { ok: true, events }; }
+          }
+        }
+        if (cats.every(c => !c.alive)) { st.status = 'won'; events.push({ type: 'win' }); }
+        return { ok: true, events };
+      }
+    };
+  }
+};
+const logicOf = name => name === 'selfish' ? selfishLogic : require('../logic/' + name + '.js');
 const key = (x, y) => x + ',' + y;
 
 test('module: UMD export cho Node và trình duyệt', () => {
@@ -50,7 +93,7 @@ test('module: UMD export cho Node và trình duyệt', () => {
 
 // Đi lại một kịch bản. Trả { results, events } hoặc ném lỗi assert với bước sai.
 function walk(name, fx, steps) {
-  const logic = require('../logic/' + name + '.js');
+  const logic = logicOf(name);
   const L = fx.level, game = logic.createGame(clone(L));
   const holes = fx.holes.map(h => ({ ...h, remaining: h.shape.length, picked: !h.special, done: false }));
   const area = L.weedArea;
@@ -136,6 +179,10 @@ for (const [name, mech] of Object.entries(MECH)) {
     assert.ok(holes.length >= 4 && holes.length <= 7, `${holes.length} hố, cần 4–7`);
     assert.equal(new Set(holes.map(h => h.id)).size, holes.length, 'id hố trùng nhau');
     assert.equal(holes.filter(h => h.special).length, name === 'weed' ? 1 : 0, 'Cây dại có đúng 1 Special Hole, mechanic khác không có');
+    if (name === 'selfish') {
+      assert.equal(L.cats.filter(c => c.selfish).length, 1, 'cần đúng 1 Mèo Ích Kỷ (selfish: true)');
+      assert.ok(Number.isInteger(L.selfishCount) && L.selfishCount >= 3 && L.selfishCount <= 8, `selfishCount = ${L.selfishCount}, cần 3–8`);
+    }
 
     const names = holes.map(h => {
       const n = CATALOG.get(norm(h.shape || [[0, 0]]));

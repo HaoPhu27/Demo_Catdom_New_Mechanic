@@ -41,7 +41,8 @@
     { "name": "test-eat-demo-board", "command": "node --test tests/eat-demo-board.test.mjs", "timeout_sec": 120 },
     { "name": "html-weed", "command": "node tools/check-html.mjs weed.html", "timeout_sec": 60 },
     { "name": "html-sick", "command": "node tools/check-html.mjs sick-cat.html", "timeout_sec": 60 },
-    { "name": "html-couple", "command": "node tools/check-html.mjs couple-cat.html", "timeout_sec": 60 }
+    { "name": "html-couple", "command": "node tools/check-html.mjs couple-cat.html", "timeout_sec": 60 },
+    { "name": "html-selfish", "command": "node tools/check-html.mjs selfish-cat.html", "timeout_sec": 60 }
   ],
   "checks_example": [
     { "name": "lint",  "command": "npm run lint",     "timeout_sec": 300 },
