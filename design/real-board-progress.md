@@ -54,3 +54,6 @@ Bài học quy trình: prompt lớn (kit + board + trang) làm agy chạm `--pri
 Sau merge: checks 11/11, `node --test tests/*.test.mjs` 222/222, 14 trang qua `check-html`.
 Còn tồn: `selfish-cat.html` (Stage riêng) chưa có reduced-motion; QA tay 375 px + bàn phím; playtest; Lead review rồi merge `main`.
 Worker ccr: nhanh nhưng hay báo sửa mà không gọi Edit / quên marker → luôn xem diff + trình duyệt.
+
+## Tiêu chí đánh giá chi tiết (2026-10-27)
+Tài liệu chuẩn `design/review-criteria-2026-10-27.md` (4 câu hỏi của Lead × 10 mechanic, số liệu theo board demo thật). Test `tests/review-criteria.test.mjs` đối chiếu từng ý với trang. ccr chép vào trang: RB-11 (01–04 + CSS, `47ea58d`), RB-12 (05–10, `9825d51`), cả hai đạt lượt đầu; đã merge vào `feature/RB-7`. Sau merge: 234/234 test, 13/13 checks.
