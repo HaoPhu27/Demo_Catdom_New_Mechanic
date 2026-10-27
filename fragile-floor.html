@@ -85,12 +85,21 @@
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Stuck khi mất đường hoàn thành</summary>
+    <summary>📋 Tiêu chí đánh giá · Stuck khi cầu sụp cắt đường</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Hai bước sang phải đưa hố xanh lên cầu và làm độ bền đổi từ 2 xuống 1.</p><p><b>Hỏi người chơi:</b> Sàn này sụp thì hố hồng còn đường nào đến mèo không?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Case mẫu dùng cầu độc đạo: dùng hết độ bền quá sớm làm hố còn lại mất đường thu mèo. Chỉ sụp sàn không tự động gây thua.</p><p><b>Case an toàn:</b> Nếu còn đường vòng hợp lệ và màn vẫn có thể hoàn thành, người chơi đổi đường và tiếp tục. Không coi ô sụp là một hard fail.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Số 2/1/0 đọc được trên sàn; vết nứt tăng, ô sụp chuyển tối và viền đỏ. Hố bị chặn khi thử đi vào ô đã sụp.</p><p><b>Cần quan sát:</b> Người xem có phân biệt được “sàn sụp” với “không còn cách hoàn thành màn” không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Mỗi lượt qua cầu trở thành một tài nguyên. Người chơi chừa đường cho hố cần đi sau.</p><p><b>Quyết định mới:</b> Chọn đường ngắn qua sàn hay giữ độ bền và đi đường vòng.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 cầu dễ vỡ. Màn sau: đặt một đường ngắn dễ vỡ cạnh một đường vòng để tạo lựa chọn.</p><p><b>Rủi ro cần thử:</b> Sàn phủ khắp đường đi có thể biến mechanic thành đếm bước thay vì chọn tuyến.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa–Khó — hiểu sau 2–3 thao tác.</p>
+        <ul><li>Số độ bền trên ô cầu giảm mỗi lần hố <b>bước vào</b> ô đó; đứng yên hay di chuyển mà ô vẫn nằm trong hố thì không giảm.</li><li>Dễ hiểu sai: hố nhiều ô bước vào nhiều ô sàn cùng lúc → nhiều ô cùng giảm.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Ô cầu này còn chịu được mấy lần?" · "Còn hố nào cần qua cầu?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Stuck (sàn sụp tự nó không thua).</p>
+        <ul><li><b>Điều kiện:</b> sau mỗi nước, có mèo mà không hố cùng màu nào còn tới được (tính tường, mép board, sàn đã sụp) → STUCK.</li><li><b>Trên board demo:</b> demo sai (3 nước): hố xanh bước lên cầu, lùi lại, quay lại → cầu sụp, nửa dưới bị cắt.</li><li><b>An toàn:</b> mỗi hố qua cầu đúng số lần cần, không bước lãng phí; hố đang đứng trên ô vừa sụp vẫn đi ra được.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Số độ bền trên ô, ô nứt dần, ô sụp tối hẳn; hố bị chặn rung khi định đi vào ô sụp.</li><li><b>Rủi ro:</b> người xem không thấy ô nào bị trừ khi hố lớn đi qua nhiều ô sàn một lúc.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Để dành</b> lượt qua cầu — tính trước đường đi, cho hố cần qua cầu đi trước khi cầu yếu.</p>
+        <ul><li><b>Cách chơi đổi:</b> chơi như bài toán đường đi; mỗi bước thừa có giá.</li><li><b>Tần suất trong map:</b> giới thiệu 1 cầu 2–3 ô độ bền 2; màn thường cầu chia đôi map; màn khó độ bền 1 hoặc 2 cầu.</li><li><b>Rủi ro cần playtest:</b> người chơi lỡ bước thừa không nhận ra cho tới khi STUCK.</li></ul></article>
     </div>
   </details>
 

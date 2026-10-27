@@ -85,12 +85,21 @@
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Stuck do thiếu mèo</summary>
+    <summary>📋 Tiêu chí đánh giá · Stuck khi nam châm hút mất mèo hố khác cần</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Hai bước đưa hố vàng tới nam châm cho thấy mèo quanh nó bị hút cùng lúc.</p><p><b>Hỏi người chơi:</b> Nếu ăn nam châm bây giờ, những hố nào sẽ không còn đủ mèo?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Mèo khác màu bị hút mất, nhưng hố đúng màu của chúng vẫn còn nhu cầu. Màn không thể hoàn thành và phải làm lại.</p><p><b>Case an toàn:</b> Thu hết mèo xung quanh bằng các hố đúng màu trước khi kích hoạt nam châm.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Vùng sáng chỉ phạm vi hút; sóng từ và chuyển động mèo chỉ nguồn gây lỗi; các hố còn số 1 cho thấy lượng mèo bị thiếu.</p><p><b>Cần quan sát:</b> Người xem có chỉ đúng 8 ô bị ảnh hưởng và nhận ra vì sao hố còn dư không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi cân nhắc thứ tự thu mèo: ưu tiên dọn vùng hút, để nam châm sau.</p><p><b>Quyết định mới:</b> Ăn sớm có lợi trước mắt nhưng có thể làm mất mèo cần cho hố khác.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 nam châm với vài mèo lân cận. Màn sau: thử 2 vùng hút tách nhau trước khi cho vùng hút giao nhau.</p><p><b>Rủi ro cần thử:</b> Nhiều vùng hút chồng lên nhau có thể khiến thứ tự giải khó đọc.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — hiểu sau khi thấy 1 lần ăn sai.</p>
+        <ul><li>Ăn nam châm → vùng 3×3 sáng lên, mèo khác màu trong 8 ô quanh nó bị hút mất; hố hồng còn dư số → biết ngay thiếu mèo.</li><li>Dễ hiểu sai: mèo bị hút <b>không</b> tính là được thu, không giảm số của hố nào.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Ăn nam châm bây giờ thì hố nào thiếu mèo?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Stuck ngay (thua ngay sau khi hút, không chờ hết nước).</p>
+        <ul><li><b>Điều kiện:</b> sau khi hút, có hố mà số còn cần > số mèo cùng màu còn trên board → STUCK.</li><li><b>Trên board demo:</b> demo sai (6 nước): hố vàng ăn nam châm khi cụm hồng còn kề bên → 3 mèo hồng bị hút → hố hồng không bao giờ đủ.</li><li><b>An toàn:</b> thu hết mèo trong 8 ô quanh nam châm bằng hố đúng màu trước; vùng trống thì ăn nam châm không mất gì.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Badge 🧲 trên mèo nam châm, vùng 3×3 viền vàng nét đứt, sóng hút + mèo bay vào; hố còn dư số cho thấy chỗ thiếu.</li><li><b>Rủi ro:</b> hai vùng hút chồng nhau làm người xem khó chỉ đúng ô bị ảnh hưởng.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Để dành</b> nam châm tới khi vùng hút trống.</p>
+        <ul><li><b>Cách chơi đổi:</b> thứ tự thu đảo ngược — dọn xung quanh trước, "phần thưởng" (nam châm) sau.</li><li><b>Tần suất trong map:</b> giới thiệu 1 nam châm, 2–3 mèo lân cận; màn thường 1–2 vùng hút tách nhau; màn khó 2 vùng giao nhau.</li><li><b>Rủi ro cần playtest:</b> vùng giao nhau làm thứ tự giải khó đọc.</li></ul></article>
     </div>
   </details>
 

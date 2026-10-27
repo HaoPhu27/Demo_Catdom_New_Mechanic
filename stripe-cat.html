@@ -85,12 +85,21 @@
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Thua ngay khi ăn sọc đối trục</summary>
+    <summary>📋 Tiêu chí đánh giá · Thua khi xung đột trục hoặc STUCK</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Cho Xanh 1 sang phải ăn mèo ngang: badge hố đổi từ ○ sang ↔. Hố còn cần 2 mèo, đi tiếp ăn mèo dọc: xung đột và thua.</p><p><b>Hỏi người chơi:</b> Hố này đang mang strict gì? Ăn mèo tiếp theo có gây xung đột không?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Hố mang ngang ăn sọc dọc, hoặc hố mang dọc ăn sọc ngang: thua ngay nếu trước khi ăn hố còn cần hơn 1 mèo. Khi chỉ còn 1, thu mèo cuối và làm hố biến mất trước, không xét xung đột. Vuốt sai trục chỉ bị chặn. Nếu strict hoặc vật cản khiến không còn cách thu đủ mèo cho các hố thì thua STUCK ngay (thử SC-05: đi →).</p><p><b>Case an toàn:</b> Hố còn 1 có thể ăn sọc đối trục để hoàn thành (SC-04). Bị chặn tạm nhưng hố khác có thể mở đường thì chưa thua. Ở SC-05, thu mèo phía trên trước khi nhận strict ngang để tránh stuck. Dùng hai hố cùng màu để chia hai nhóm sọc. Mèo thường không đổi strict; thu sọc cùng trục vẫn an toàn. Hố tự do có thể ăn sọc từ bất kỳ hướng nào.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Badge ○ / ↔ / ↕ cho biết strict từng hố. Xung đột hiện hai sọc đối trục cùng dấu × và màn thua. Xanh 1 và Xanh 2 được đánh số để dễ theo dõi.</p><p><b>Cần quan sát:</b> Người xem có phân biệt được hướng đi vào mèo với strict nhận sau khi ăn không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi phân công mỗi hố cho một trục, cân nhắc thu mèo thường trước khi nhận giới hạn di chuyển.</p><p><b>Quyết định mới:</b> Ăn sọc sớm giúp thu mèo ngay nhưng khóa trục; để dành sọc giúp hố tự do đi dọn mèo ở vị trí khác trước.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 hố với 1 loại sọc và mèo thường. Màn sau: 2 hố cùng màu, hai loại sọc để người chơi chia nhiệm vụ.</p><p><b>Rủi ro cần thử:</b> Cần phân biệt rõ hố còn 1 và còn nhiều mèo: cùng một mèo sọc đối trục có thể kết thúc hố hoặc gây thua tùy quota còn lại.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Khó — cần ≥ 3 thao tác, có 2 luật.</p>
+        <ul><li>Luật 1 (khoá trục): ăn sọc ngang → hố chỉ đi trái/phải; sọc dọc → chỉ lên/xuống. Đi sai hướng bị <b>chặn</b>, không thua.</li><li>Luật 2 (xung đột): ăn sọc khác trục khi hố còn cần > 1 mèo → thua.</li><li>Ký hiệu trên hố: ○ tự do, ↔ ngang, ↕ dọc.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Hố này đang khoá trục nào?" · "Còn mấy mèo thì ăn được sọc đối trục?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> 2 kiểu — thua ngay khi xung đột; STUCK khi không còn chuỗi nước nào thắng được (máy tự kiểm mọi đường).</p>
+        <ul><li><b>Trên board demo:</b> demo sai (5 nước): hố xanh ăn sọc ngang rồi rẽ trái ăn ngay sọc dọc khi còn cần 2 → XUNG ĐỘT.</li><li><b>An toàn:</b> để sọc đối trục là mèo cuối của hố (còn đúng 1 thì ăn bất kể trục). Hai sọc cùng trục không cộng dồn.</li><li>Vuốt sai trục chỉ bị chặn (hố rung), không mất lượt.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — cần chú thích.</p>
+        <ul><li>Badge ↔ / ↕ trên mèo, ký hiệu trục trên hố, rung khi bị chặn.</li><li><b>Rủi ro:</b> người chơi tưởng "bị chặn" là lỗi game; STUCK do máy phát hiện sớm (thua dù vẫn còn đi được) cần câu giải thích rõ.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Để dành</b> sọc đối trục làm mèo cuối; <b>ưu tiên</b> chia sọc cho đúng hố.</p>
+        <ul><li><b>Cách chơi đổi:</b> mỗi hố có "hướng sống"; người chơi xếp thứ tự ăn theo trục.</li><li><b>Tần suất trong map:</b> giới thiệu 1 sọc + 1 hố; màn thường 2 sọc 2 hố; màn khó 2 trục cùng màu (kiểu SC-02).</li><li><b>Rủi ro cần playtest:</b> case strict SC-05 (STUCK sớm) có thể bị cảm nhận là bất công.</li></ul></article>
     </div>
   </details>
 
