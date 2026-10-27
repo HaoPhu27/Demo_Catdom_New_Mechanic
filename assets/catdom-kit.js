@@ -216,6 +216,10 @@
           cellEl.className = 'hole-cell';
           cellEl.dataset.dx = cx;
           cellEl.dataset.dy = cy;
+          // Cạnh NGOÀI của khối (phía bên kia không có ô cùng hố) — viền tối chỉ vẽ ở đây.
+          cellEl.dataset.edges = [!hasTop && 't', !hasRight && 'r', !hasBottom && 'b', !hasLeft && 'l']
+            .filter(Boolean).join(' ');
+          cellEl.style.boxSizing = 'border-box';
           const left = cx * CELL - (hasLeft ? 3 : 0);
           const top = cy * CELL - (hasTop ? 3 : 0);
           const width = CELL - 6 + (hasLeft ? 3 : 0) + (hasRight ? 3 : 0);
@@ -247,7 +251,9 @@
         if (special) {
           hole.el.querySelectorAll('.hole-cell').forEach(cellEl => {
             cellEl.style.background = 'radial-gradient(circle at 50% 40%, #5a3413 0%, #3a1f08 70%)';
-            cellEl.style.boxShadow = '0 0 0 2px #7a4a12, inset 0 0 0 3px #ffd36b, 0 0 14px 2px rgba(255,211,107,.7)';
+            // Viền vàng chỉ ở cạnh NGOÀI (3px), không dùng inset để không vẽ vạch giữa các ô cùng hố.
+            setCellEdges(cellEl, '#ffd36b', 3);
+            cellEl.style.boxShadow = '0 0 14px 2px rgba(255,211,107,.7)';
           });
           if (!socket) {
             const firstCell = hole.el.querySelector('.hole-cell') || hole.el;
@@ -261,7 +267,8 @@
           socket?.remove();
           hole.el.querySelectorAll('.hole-cell').forEach(cellEl => {
             cellEl.style.background = p.f;
-            cellEl.style.boxShadow = `0 0 0 2px ${p.d}`;
+            setCellEdges(cellEl, p.d);
+            cellEl.style.boxShadow = 'none';
           });
         }
       } else {
@@ -403,6 +410,16 @@
     const xs = cells.map(c => c[0]), ys = cells.map(c => c[1]);
     const x = Math.min(...xs), y = Math.min(...ys);
     return {x, y, w: Math.max(...xs) - x + 1, h: Math.max(...ys) - y + 1};
+  }
+  /* Viền tối cho một ô của hố nhiều ô: chỉ vẽ ở cạnh NGOÀI (data-edges),
+   * cạnh giáp ô cùng hố thì bỏ hẳn viền để khối trông liền một màu. */
+  function setCellEdges(cellEl, color, thickness = 2) {
+    const edges = (cellEl.dataset.edges || '').split(' ');
+    const line = `${thickness}px solid ${color}`;
+    cellEl.style.borderTop = edges.includes('t') ? line : 'none';
+    cellEl.style.borderRight = edges.includes('r') ? line : 'none';
+    cellEl.style.borderBottom = edges.includes('b') ? line : 'none';
+    cellEl.style.borderLeft = edges.includes('l') ? line : 'none';
   }
   function caption(el, text) {
     el.innerHTML = text;
