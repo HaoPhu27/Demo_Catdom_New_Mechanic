@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/catdom-kit.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="logic/couple.js" onerror="this.remove()"></script>
+<script src="logic/hole-play.js"></script>
 <script src="boards/eat-fixtures.js"></script>
 <script src="assets/catdom-kit.js"></script>
 <style>
@@ -70,7 +71,7 @@
   <div class="card play">
     <div><div class="stage-wrap"><div id="playStage"></div></div></div>
     <div class="panel">
-      <p class="hint">Bấm vào một con mèo: hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Map có 2 cặp: 💗 hồng và 💙 xanh.</p>
+      <p class="hint">Bấm chọn một hố rồi kéo (hoặc phím mũi tên). Hố trùm đủ nhóm mèo cùng màu thì nuốt. Map có 2 cặp: 💗 hồng và 💙 xanh.</p>
       <div class="ctrl">N của mỗi cặp
         <div class="step"><button id="nMinus" aria-label="Giảm N">−</button><output id="nVal">4</output><button id="nPlus" aria-label="Tăng N">+</button></div>
       </div>
@@ -116,20 +117,9 @@
 
 <script>
 const FX = CatDomEatFixtures.fixtures.couple.demo;
-const PLAY_CATS = [
-  [0,0,'blue'], [2,0,'green'], [3,0,'green'], [5,0,'orange','A'],
-  [0,1,'blue'], [1,1,'yellow'], [4,1,'orange'], [5,1,'orange'],
-  [1,2,'yellow'], [2,2,'purple','B'],
-  [0,3,'green'], [2,3,'purple'], [4,3,'blue'], [5,3,'blue'],
-  [0,4,'green'], [3,4,'yellow'],
-  [0,5,'orange','A'], [1,5,'orange'], [3,5,'yellow'], [5,5,'purple','B']
-];
-let N = 4;
-const playLevel = () => ({
-  cols: 6, rows: 6,
-  cats: PLAY_CATS.map(([x, y, color, couple]) => ({id: `${x}_${y}`, color, x, y, ...(couple ? {couple} : {})})),
-  couples: [{id: 'A', n: N, mark: 'pink'}, {id: 'B', n: N, mark: 'blue'}]
-});
+let N = FX.level.couples[0].n;
+document.getElementById('nVal').textContent = N;
+const playLevel = () => { const L = JSON.parse(JSON.stringify(FX.level)); L.couples.forEach(c => { c.n = N; }); return L; };
 
 const catById = (game, id) => game.getState().cats.find(c => c.id === id);
 const cellOf = (game, id) => { const c = catById(game, id); return [c.x, c.y]; };
@@ -241,9 +231,9 @@ function renderCouples(game) {
 }
 const play = CatDom.playground({
   el: document.getElementById('playStage'), logEl: document.getElementById('log'),
-  name: 'couple', file: 'logic/couple.js', level: playLevel, cellOf, colorOf, on: handlers,
-  build: (st, game, api) => buildBoard(st, game, playLevel(), api),
-  startText: () => `Bắt đầu: 2 cặp đôi, mỗi cặp N = ${N}.`,
+  name: 'couple', file: 'logic/couple.js', level: playLevel, holes: FX.holes, cellOf, colorOf, on: handlers,
+  build: (st, game) => buildBoard(st, game, FX.level),
+  startText: () => `Bắt đầu: ${FX.level.couples.length} cặp đôi, mỗi cặp N = ${N}.`,
   update: api => { renderCouples(api.game); if (api.game) document.getElementById('sDone').textContent = api.game.getState().clearedCount; }
 });
 document.getElementById('reset').onclick = play.reset;

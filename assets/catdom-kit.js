@@ -590,10 +590,13 @@
     api.reset = () => {
       st.reset(); logEl.innerHTML = ''; api.busy = false;
       if (!logic) { cfg.build(st, null, api); st.noLogic(cfg.file); cfg.update(api); return; }
-      api.game = logic.createGame(cfg.level());
-      cfg.build(st, api.game, api);
+      const level = cfg.level();
+      api.game = logic.createGame(JSON.parse(JSON.stringify(level)));
+      cfg.build(st, api.game, cfg.holes ? undefined : api);
+      if (cfg.holes) setupHoles(level);
       cfg.update(api);
       api.log(cfg.startText(api.game));
+      if (cfg.holes) api.log('Bấm chọn một hố rồi kéo, hoặc dùng phím mũi tên. Hố trùm đủ nhóm mèo cùng màu thì nuốt.');
     };
     api.run = (res, holeCells, color) => {
       if (!res.ok) { api.busy = false; return; }
@@ -616,6 +619,91 @@
       api.busy = true;
       api.run(api.game.eat(x, y), cells, color);
     };
+    /* ---------- chế độ hố: hố đặt sẵn trên bàn, người chơi chọn hố rồi kéo/phím mũi tên ---------- */
+    const HP_REJECT = {'out-of-board': 'ra ngoài bàn', 'weed-area': 'không vào được khu vực cây dại', hole: 'vướng hố khác',
+      box: 'vướng box khác màu', pesticide: 'chỉ Special Hole mới nhặt được thuốc sâu', cat: 'vướng mèo khác màu',
+      'not-playing': 'màn đã kết thúc, bấm Chơi lại', 'bad-hole': 'hố đã xong', 'bad-move': 'nước đi không hợp lệ'};
+    const holeLabel = h => h.special && !h.picked ? 'Special Hole' : 'Hố ' + PAL[h.color].vi;
+    function setupHoles(level) {
+      for (const h of cfg.holes) {
+        const r = rectOf(h.shape.map(([dx, dy]) => [h.x + dx, h.y + dy]));
+        const off = [r.x - h.x, r.y - h.y];
+        const cells = h.shape.map(([dx, dy]) => [h.x + dx - r.x, h.y + dy - r.y]);
+        st.addHole(h.id, h.color, r.x, r.y, r.w, r.h, {cells, special: !!h.special, off});
+        st.holes[h.id].off = off;
+        setHoleTag(st, h.id, {shape: h.shape, off, remaining: h.shape.length});
+      }
+      api.hp = window.CatDomHolePlay.create(api.game, {cols: level.cols, rows: level.rows, holes: cfg.holes, weedArea: level.weedArea, pesticide: level.pesticide});
+      api.sel = null;
+      api.select(cfg.holes[0].id);
+    }
+    api.select = id => {
+      const h = api.hp && api.hp.holes().find(o => o.id === id && !o.done);
+      if (!h) return;
+      api.sel = id;
+      Object.entries(st.holes).forEach(([k, o]) => o.el.classList.toggle('sel', k === id));
+    };
+    api.move = (dx, dy) => {
+      if (api.busy || !api.hp || !api.sel) return;
+      const id = api.sel, before = api.hp.holes().find(o => o.id === id), res = api.hp.move(id, dx, dy), el = st.holes[id].el;
+      if (!res.ok) {
+        gsap.fromTo(el, {x: -5}, {x: 5, duration: .05, repeat: 5, yoyo: true, clearProps: 'x'});
+        api.log(`${holeLabel(before)} · ${HP_REJECT[res.reason] || res.reason}`);
+        return;
+      }
+      api.busy = true;
+      const off = st.holes[id].off || [0, 0];
+      const ctx = {game: api.game, log: api.log, playground: true, hole: id};
+      const tl = gsap.timeline({onComplete: () => {
+        api.busy = false;
+        const left = api.hp.holes().filter(o => !o.done);
+        if (!left.some(o => o.id === api.sel) && left.length) api.select(left[0].id);
+        cfg.update(api);
+      }});
+      for (const ev of res.events) {
+        if (ev.type === 'move') {
+          const at = st.px(ev.x + off[0], ev.y + off[1]);
+          tl.to(el, {left: at.left + 3, top: at.top + 3, duration: .14, ease: 'power2.out'});
+        } else if (ev.type === 'holeEat') {
+          const rem = ev.remaining;
+          tl.call(() => setHoleTag(st, id, {shape: before.shape, off, remaining: rem}));
+        } else if (ev.type === 'holeDone') {
+          tl.to(el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'});
+        } else (cfg.on[ev.type] || defaultOn[ev.type] || (() => {}))(st, ev, tl, ctx);
+      }
+    };
+    if (cfg.holes) {
+      const el = cfg.el, scale = () => el.getBoundingClientRect().width / st.w;
+      el.tabIndex = 0;
+      el.setAttribute('role', 'application');
+      el.setAttribute('aria-label', 'Board chơi thử: bấm chọn hố, phím 1–9 chọn hố, phím mũi tên để đi');
+      el.style.touchAction = 'none';
+      let drag = null;
+      el.addEventListener('pointerdown', e => {
+        if (!api.hp) return;
+        const r = el.getBoundingClientRect(), sc = scale();
+        const x = Math.floor(((e.clientX - r.left) / sc - PAD) / CELL), y = Math.floor(((e.clientY - r.top) / sc - PAD) / CELL);
+        const id = api.hp.holeAt(x, y);
+        if (!id) return;
+        api.select(id); drag = {x: e.clientX, y: e.clientY};
+        el.setPointerCapture(e.pointerId); el.focus({preventScroll: true});
+      });
+      el.addEventListener('pointermove', e => {
+        if (!drag || api.busy) return;
+        const sc = scale(), dx = (e.clientX - drag.x) / sc, dy = (e.clientY - drag.y) / sc;
+        if (Math.max(Math.abs(dx), Math.abs(dy)) < CELL * .6) return;
+        const hor = Math.abs(dx) > Math.abs(dy);
+        drag = {x: e.clientX, y: e.clientY};
+        api.move(hor ? Math.sign(dx) : 0, hor ? 0 : Math.sign(dy));
+      });
+      el.addEventListener('pointerup', () => { drag = null; });
+      el.addEventListener('pointercancel', () => { drag = null; });
+      el.addEventListener('keydown', e => {
+        const d = {ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0]}[e.key];
+        if (d) { e.preventDefault(); api.move(...d); }
+        else if (/^[1-9]$/.test(e.key) && api.hp) { const left = api.hp.holes().filter(o => !o.done); if (left[+e.key - 1]) api.select(left[+e.key - 1].id); }
+      });
+    }
     api.reset();
     return api;
   }

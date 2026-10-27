@@ -51,6 +51,8 @@ h3{font:700 19px/1.3 "Baloo 2",sans-serif;margin:0 0 4px}
 .tile{position:absolute;width:52px;height:52px;margin:2px;border-radius:9px;background:var(--tile);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 2px 0 var(--tile-hi)}
 .hole{position:absolute;border-radius:11px}
 .hole-cell{position:absolute;box-sizing:border-box}
+.hole.sel{outline:3px solid #fff;outline-offset:2px}
+.hole-tag{position:absolute;right:4px;top:2px;font:800 13px/1 "Baloo 2",sans-serif;color:#fff;text-shadow:0 1px 2px #000;pointer-events:none}
 .cat{position:absolute;width:56px;height:56px;display:grid;place-items:center}
 .cat .body{width:52px;height:52px}
 .cat svg{width:100%;height:100%;overflow:visible;display:block}
@@ -188,7 +190,7 @@ details.review summary{cursor:pointer;font:800 22px/1.2 "Baloo 2",sans-serif;pad
       <div class="stage-wrap"><div id="playStage"></div></div>
     </div>
     <div class="panel">
-      <p class="hint">Bấm vào một con mèo: một hole cùng màu sẽ nuốt cả nhóm mèo cùng màu đang dính nhau. Tìm cách clear Mèo Ích Kỷ (có vương miện) trước khi số về 0.</p>
+      <p class="hint">Bấm chọn một hố rồi kéo (hoặc phím mũi tên). Hố trùm đủ nhóm mèo cùng màu thì nuốt. Tìm cách clear Mèo Ích Kỷ (có vương miện) trước khi số về 0.</p>
       <div class="ctrl">Bộ đếm N
         <div class="step"><button id="nMinus" aria-label="Giảm N">−</button><output id="nVal">5</output><button id="nPlus" aria-label="Tăng N">+</button></div>
       </div>
@@ -236,6 +238,7 @@ details.review summary{cursor:pointer;font:800 22px/1.2 "Baloo 2",sans-serif;pad
   <div class="tip">💡 <b>Pro Tip</b>: Nhìn số trên đầu Mèo Ích Kỷ trước khi kéo hole lớn. Một hole nuốt cả nhóm đông có thể làm bộ đếm tụt về 0 chỉ trong một lần kéo, nên hãy mở đường cho hole cùng màu với nó trước.</div>
 </main>
 
+<script src="logic/hole-play.js"></script>
 <script src="boards/eat-fixtures.js"></script>
 <script>
 const CELL = 56, PAD = 8, OL = '#3b2417';
@@ -557,81 +560,159 @@ document.getElementById('states').innerHTML = STATES.map(([n, t, d]) => {
 }).join('');
 
 /* ---------- playground ---------- */
-const GRID = [
-  'BBxGGP',
-  'BxSxGP',
-  'OOxYxP',
-  'xYYYxx',
-  'GxOOxB',
-  'GGxxBB'
-];
-const CODE = {B:'blue', G:'green', P:'purple', O:'orange', Y:'yellow', S:'orange'};
-const play = new Stage(document.getElementById('playStage'), 6, 6);
+const PFX = CatDomEatFixtures.fixtures.selfish.demo;
+const play = new Stage(document.getElementById('playStage'), PFX.level.cols, PFX.level.rows);
 const ui = {n: document.getElementById('nVal'), left: document.getElementById('sLeft'), done: document.getElementById('sDone'), log: document.getElementById('log')};
-let N = 5, game;
+const SID = PFX.level.cats.find(c => c.selfish).id;
+let N = PFX.level.selfishCount, game, hp, sel = null, busy = false;
 
 function log(html, cls = '') {
   const d = document.createElement('div'); d.className = cls; d.innerHTML = html;
   ui.log.prepend(d);
 }
+/* Game tối giản cho hole-play: getState / groupAt / eat (luật đếm N như docs/business-rules.md). */
+function makeGame() {
+  const cats = PFX.level.cats.map(c => ({id: c.id, color: c.color, x: c.x, y: c.y, alive: true}));
+  const s = {status: 'playing', left: N, saved: false, done: 0};
+  const at = (x, y) => cats.find(c => c.alive && c.x === x && c.y === y);
+  const groupAt = (x, y) => {
+    const first = at(x, y); if (!first) return [];
+    const out = [first], seen = new Set([first.id]);
+    for (let i = 0; i < out.length; i++) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const n = at(out[i].x + dx, out[i].y + dy);
+      if (n && n.color === first.color && !seen.has(n.id)) { seen.add(n.id); out.push(n); }
+    }
+    return out.map(c => c.id);
+  };
+  return {
+    s,
+    getState: () => ({status: s.status, cats: cats.map(c => ({...c}))}),
+    groupAt,
+    eat(x, y) {
+      const ids = s.status === 'playing' ? groupAt(x, y) : [];
+      if (!ids.length) return {ok: false, reason: 'empty', events: []};
+      ids.forEach(id => { cats.find(c => c.id === id).alive = false; });
+      s.done += ids.length;
+      const events = [{type: 'eat', ids}];
+      if (!s.saved) {
+        if (ids.includes(SID)) { s.saved = true; events.push({type: 'selfishSafe'}); }
+        else {
+          s.left -= ids.length;
+          events.push({type: 'selfishCount', remaining: s.left});
+          if (s.left <= 0) { s.status = 'lost'; events.push({type: 'lose'}); return {ok: true, events}; }
+        }
+      }
+      if (cats.every(c => !c.alive)) { s.status = 'won'; events.push({type: 'win'}); }
+      return {ok: true, events};
+    }
+  };
+}
+function setTag(id, remaining) {
+  const h = play.holes[id]; if (!h) return;
+  h.el.querySelector('.hole-tag')?.remove();
+  if (remaining > 0) h.el.insertAdjacentHTML('beforeend', `<span class="hole-tag">${remaining}</span>`);
+}
+function select(id) {
+  const h = hp && hp.holes().find(o => o.id === id && !o.done);
+  if (!h) return;
+  sel = id;
+  Object.entries(play.holes).forEach(([k, o]) => o.el.classList.toggle('sel', k === id));
+}
 function newGame() {
-  play.reset(); ui.log.innerHTML = '';
-  game = {left: N, done: 0, saved: false, over: false, busy: false, alive: {}};
-  GRID.forEach((row, y) => [...row].forEach((ch, x) => {
-    if (ch === 'x') return;
-    const id = `${x}_${y}`;
-    play.addCat(id, CODE[ch], x, y, ch === 'S', onPick);
-    game.alive[id] = true;
-  }));
-  play.setCounter('2_1', N);
+  play.reset(); ui.log.innerHTML = ''; busy = false;
+  game = makeGame();
+  PFX.level.cats.forEach(c => play.addCat(c.id, c.color, c.x, c.y, !!c.selfish));
+  PFX.holes.forEach(h => {
+    const r = rectOf(h.shape.map(([dx, dy]) => [h.x + dx, h.y + dy]));
+    const off = [r.x - h.x, r.y - h.y];
+    const cells = h.shape.map(([dx, dy]) => [h.x + dx - r.x, h.y + dy - r.y]);
+    play.addHole(h.id, h.color, r.x, r.y, r.w, r.h, {cells, off});
+    setTag(h.id, h.shape.length);
+  });
+  hp = CatDomHolePlay.create(game, {cols: PFX.level.cols, rows: PFX.level.rows, holes: PFX.holes});
+  select(PFX.holes[0].id);
+  play.setCounter(SID, N);
   ui.n.textContent = N; ui.left.textContent = N; ui.done.textContent = 0;
   log(`Bắt đầu: Mèo Ích Kỷ phải nằm trong <b>${N}</b> con đầu tiên.`);
+  log('Bấm chọn một hố rồi kéo, hoặc dùng phím mũi tên. Hố trùm đủ nhóm mèo cùng màu thì nuốt.');
 }
-function groupOf(id) {
-  const c = play.cats[id].c, out = [], seen = {[id]: 1}, q = [id];
-  while (q.length) {
-    const cur = q.shift(); out.push(cur);
-    const {x, y} = play.cats[cur];
-    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
-      const nid = `${x + dx}_${y + dy}`;
-      if (game.alive[nid] && !seen[nid] && play.cats[nid].c === c) { seen[nid] = 1; q.push(nid); }
-    }
+const REJECT = {'out-of-board': 'ra ngoài bàn', hole: 'vướng hố khác', cat: 'vướng mèo khác màu', 'not-playing': 'màn đã kết thúc, bấm Chơi lại', 'bad-hole': 'hố đã xong'};
+function move(dx, dy) {
+  if (busy || !hp || !sel) return;
+  const id = sel, before = hp.holes().find(o => o.id === id), res = hp.move(id, dx, dy), el = play.holes[id].el;
+  if (!res.ok) {
+    gsap.fromTo(el, {x: -5}, {x: 5, duration: .05, repeat: 5, yoyo: true, clearProps: 'x'});
+    log(`Hố ${PAL[before.color].vi} · ${REJECT[res.reason] || res.reason}`);
+    return;
   }
-  return out;
-}
-function onPick(id) {
-  if (game.over || game.busy || !game.alive[id]) return;
-  game.busy = true;
-  const grp = groupOf(id), c = play.cats[id].c, hasS = grp.includes('2_1');
-  grp.forEach(g => game.alive[g] = false);
-  const holes = grp.map(g => play.addHole('h' + g, c, play.cats[g].x, play.cats[g].y));
-  const tl = gsap.timeline({onComplete: () => { game.busy = false; checkWin(); }});
-  tl.from(holes, {scale: 0, duration: .25, ease: 'back.out(2)', stagger: .04});
-  if (hasS && !game.saved) { game.saved = true; tl.call(() => play.markSaved('2_1')).to({}, {duration: .45}); }
-  tl.add(play.eatTl(grp));
-  game.done += grp.length; ui.done.textContent = game.done;
-  const others = grp.filter(g => g !== '2_1').length;
-  if (hasS) log(`Clear ${grp.length} mèo ${PAL[c].vi}, có Mèo Ích Kỷ → <span class="g">an toàn!</span>`, 'g');
-  else if (!game.saved) {
-    game.left -= others;
-    const v = game.left;
-    tl.call(() => { ui.left.textContent = Math.max(0, v); if (v > 0) play.setCounter('2_1', v); }, null, '<');
-    log(`Clear ${others} mèo ${PAL[c].vi} → còn <b>${Math.max(0, v)}</b>`);
-    if (v <= 0) {
-      game.over = true;
-      tl.add(play.scratchTl('2_1'));
+  busy = true;
+  const off = play.holes[id].off || [0, 0];
+  const tl = gsap.timeline({onComplete: () => {
+    busy = false;
+    const left = hp.holes().filter(o => !o.done);
+    if (!left.some(o => o.id === sel) && left.length) select(left[0].id);
+  }});
+  for (const ev of res.events) {
+    if (ev.type === 'move') {
+      const at = play.px(ev.x + off[0], ev.y + off[1]);
+      tl.to(el, {left: at.left + 3, top: at.top + 3, duration: .14, ease: 'power2.out'});
+    } else if (ev.type === 'eat') {
+      tl.add(play.eatTl(ev.ids));
+      ui.done.textContent = game.s.done;
+    } else if (ev.type === 'selfishSafe') {
+      tl.call(() => play.markSaved(SID), null, '<').to({}, {duration: .45});
+      log(`Nuốt cả Mèo Ích Kỷ → <span class="g">an toàn!</span>`, 'g');
+    } else if (ev.type === 'selfishCount') {
+      const v = ev.remaining;
+      tl.call(() => { ui.left.textContent = Math.max(0, v); if (v > 0) play.setCounter(SID, v); }, null, '<');
+      log(`Clear mèo khác → còn <b>${Math.max(0, v)}</b>`);
+    } else if (ev.type === 'lose') {
+      tl.add(play.scratchTl(SID));
       log('Bộ đếm về 0 → <span class="b">Mèo Ích Kỷ cào! Thua.</span>', 'b');
+    } else if (ev.type === 'win') {
+      tl.call(() => play.showBanner('BÀN SẠCH ✓', 'ok'));
+      log('Clear hết bàn mà không bị cào!', 'g');
+    } else if (ev.type === 'holeEat') {
+      const rem = ev.remaining;
+      tl.call(() => setTag(id, rem));
+    } else if (ev.type === 'holeDone') {
+      tl.to(el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'});
     }
-  } else log(`Clear ${others} mèo ${PAL[c].vi}`);
-  tl.to(holes, {scale: 0, opacity: 0, duration: .25, ease: 'back.in(2)'}, game.over ? 0.9 : '+=.1');
-}
-function checkWin() {
-  if (!game.over && Object.values(game.alive).every(a => !a)) {
-    game.over = true;
-    play.showBanner('BÀN SẠCH ✓', 'ok');
-    log('Clear hết bàn mà không bị cào!', 'g');
   }
 }
+(() => {
+  const el = document.getElementById('playStage');
+  const scale = () => el.getBoundingClientRect().width / play.w;
+  el.tabIndex = 0;
+  el.setAttribute('role', 'application');
+  el.setAttribute('aria-label', 'Board chơi thử: bấm chọn hố, phím 1–9 chọn hố, phím mũi tên để đi');
+  el.style.touchAction = 'none';
+  let drag = null;
+  el.addEventListener('pointerdown', e => {
+    if (!hp) return;
+    const r = el.getBoundingClientRect(), sc = scale();
+    const x = Math.floor(((e.clientX - r.left) / sc - PAD) / CELL), y = Math.floor(((e.clientY - r.top) / sc - PAD) / CELL);
+    const id = hp.holeAt(x, y);
+    if (!id) return;
+    select(id); drag = {x: e.clientX, y: e.clientY};
+    el.setPointerCapture(e.pointerId); el.focus({preventScroll: true});
+  });
+  el.addEventListener('pointermove', e => {
+    if (!drag || busy) return;
+    const sc = scale(), dx = (e.clientX - drag.x) / sc, dy = (e.clientY - drag.y) / sc;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) < CELL * .6) return;
+    const hor = Math.abs(dx) > Math.abs(dy);
+    drag = {x: e.clientX, y: e.clientY};
+    move(hor ? Math.sign(dx) : 0, hor ? 0 : Math.sign(dy));
+  });
+  el.addEventListener('pointerup', () => { drag = null; });
+  el.addEventListener('pointercancel', () => { drag = null; });
+  el.addEventListener('keydown', e => {
+    const d = {ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0]}[e.key];
+    if (d) { e.preventDefault(); move(...d); }
+    else if (/^[1-9]$/.test(e.key) && hp) { const left = hp.holes().filter(o => !o.done); if (left[+e.key - 1]) select(left[+e.key - 1].id); }
+  });
+})();
 document.getElementById('reset').onclick = newGame;
 document.getElementById('nMinus').onclick = () => { N = Math.max(1, N - 1); newGame(); };
 document.getElementById('nPlus').onclick = () => { N = Math.min(20, N + 1); newGame(); };

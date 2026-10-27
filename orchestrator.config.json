@@ -54,6 +54,7 @@
     { "name": "html-selfish", "command": "node tools/check-html.mjs selfish-cat.html", "timeout_sec": 60 },
     { "name": "html-teleport", "command": "node tools/check-html.mjs teleport-cat.html", "timeout_sec": 60 },
     { "name": "test-nav-links", "command": "node --test tests/nav-links.test.mjs", "timeout_sec": 60 },
+    { "name": "test-hole-play", "command": "node --test tests/hole-play.test.mjs", "timeout_sec": 60 },
     { "name": "test-review-criteria", "command": "node --test tests/review-criteria.test.mjs", "timeout_sec": 60 },
     { "name": "html-pages-05-10", "command": "node -e \"for (const f of ['magnet','fragile-floor','stripe-cat','alarm-zone','electric-link']) require('child_process').execFileSync('node',['tools/check-html.mjs',f+'.html'],{stdio:'inherit'})\"", "timeout_sec": 60 }
   ],
