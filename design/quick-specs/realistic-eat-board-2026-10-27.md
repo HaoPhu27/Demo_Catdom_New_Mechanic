@@ -40,5 +40,8 @@ Giống đợt 1: I2, I3, L3, L4, O4, T4, X5 (xoay/lật). Xem `design/quick-spe
 | Task | Nội dung |
 |---|---|
 | RB-4 | Kit `demo()` kéo hố đặt sẵn + `boards/eat-fixtures.js` (board Cây dại) + `weed.html` dùng fixture |
-| RB-5 | Board Mèo bệnh + Couple trong fixture, `sick-cat.html` / `couple-cat.html` dùng fixture |
-| RB-6 | Mèo Ích Kỷ (`selfish-cat.html`), sau khi Lead duyệt RB-4/RB-5 |
+| RB-5 | Board Mèo bệnh trong fixture, `sick-cat.html` dùng fixture |
+| RB-6 | Board Couple trong fixture, `couple-cat.html` dùng fixture |
+| RB-7 | Mèo Ích Kỷ (`selfish-cat.html`), sau khi Lead duyệt RB-4…RB-6 |
+
+Mỗi task tối đa 2 file chính (bài học RB-4: prompt lớn làm agy chạm giới hạn 15 phút).
