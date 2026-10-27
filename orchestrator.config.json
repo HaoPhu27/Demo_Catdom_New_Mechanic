@@ -53,7 +53,7 @@
     { "name": "html-couple", "command": "node tools/check-html.mjs couple-cat.html", "timeout_sec": 60 },
     { "name": "html-selfish", "command": "node tools/check-html.mjs selfish-cat.html", "timeout_sec": 60 },
     { "name": "html-teleport", "command": "node tools/check-html.mjs teleport-cat.html", "timeout_sec": 60 },
-    { "name": "test-review-criteria (01–04 + CSS)", "command": "node --test --test-name-pattern=\"^(tài liệu|0[1-4] |CSS)\" tests/review-criteria.test.mjs", "timeout_sec": 60 },
+    { "name": "test-review-criteria", "command": "node --test tests/review-criteria.test.mjs", "timeout_sec": 60 },
     { "name": "html-pages-05-10", "command": "node -e \"for (const f of ['magnet','fragile-floor','stripe-cat','alarm-zone','electric-link']) require('child_process').execFileSync('node',['tools/check-html.mjs',f+'.html'],{stdio:'inherit'})\"", "timeout_sec": 60 }
   ],
   "checks_example": [
