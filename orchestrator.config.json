@@ -12,6 +12,15 @@
       "timeout_sec": 960,
       "env": {}
     },
+    "ccr": {
+      "note": "Claude Code qua claude-code-router (ccr), provider river (DeepSeek-V4.1-Flash, cấu hình ở ~/.claude-code-router/config.json; router phải đang chạy ở 127.0.0.1:3456). acceptEdits: chỉ sửa file trong repo, lệnh shell bị từ chối nên KHÔNG tự test được. Model hay đổi dấu cách trong đường dẫn thành gạch ngang: prompt phải ghi rõ đường dẫn gốc của workspace. Chạy song song với agy bằng worktree riêng `D:/Cat Mechanic Demo Visualize - ccr`.",
+      "command": "ccr",
+      "args": ["code", "-p", "--permission-mode", "acceptEdits"],
+      "output": "text",
+      "stdin_prompt": true,
+      "timeout_sec": 960,
+      "env": {}
+    },
     "codex": {
       "note": "OpenAI Codex CLI, đăng nhập bằng tài khoản ChatGPT (`codex login`). workspace-write: ghi được trong workspace, lệnh shell chạy trong sandbox.",
       "command": "codex",
