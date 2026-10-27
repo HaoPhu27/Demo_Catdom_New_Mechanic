@@ -91,10 +91,19 @@
   <details class="review">
     <summary>📋 Tiêu chí đánh giá · Thua khi cây dại phủ kín khu vực</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Hai lần clear đầu làm cây dại mọc thêm từng ô: người chơi thấy mỗi con mèo lọt hố là một ô cây.</p><p><b>Hỏi người chơi:</b> Còn mấy ô trống? Kéo nhóm này thì cây dại có phủ kín không?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Số ô cây bằng diện tích khu vực: thua ngay, kể cả đang giữa lượt.</p><p><b>Case an toàn:</b> Đưa Special Hole tới nhặt thuốc sâu trước khi kín: cây dại bị xoá sạch và không mọc lại.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Viền khu vực đổi xanh → cam → đỏ theo số ô trống; nhãn đếm ô; hiệu ứng diệt sạch khi nhặt thuốc.</p><p><b>Cần quan sát:</b> Người xem có hiểu Special Hole không nuốt mèo mà chỉ nhặt thuốc sâu không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi chen một lượt nhặt thuốc sâu vào giữa các lượt clear, dọn đường cho Special Hole sớm.</p><p><b>Quyết định mới:</b> Dọn đường tới thuốc sâu (tốn mèo, cây mọc) hay đua clear bàn trước khi kín.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 khu vực nhỏ, thuốc sâu gần. Màn sau: khu vực lớn hơn nhưng đường tới thuốc bị mèo chặn.</p><p><b>Rủi ro cần thử:</b> Khu vực quá nhỏ so với số mèo cần clear trước khi tới thuốc làm màn không giải được.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — hiểu sau 2 thao tác.</p>
+        <ul><li>Thao tác 1: nuốt 3 mèo cam → 3 ô cây mọc (1/6 → 4/6). Người chơi thấy ngay "mỗi mèo lọt hố = 1 ô cây".</li><li>Thao tác 2: kéo Special Hole tới lọ thuốc sâu → cây bị diệt sạch.</li><li>Dễ hiểu sai: Special Hole <b>không nuốt mèo</b> cho tới khi nhặt thuốc sâu; nhặt xong nó mới thành hố thường.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Còn mấy mèo nữa là kín?" · "Hố nào nhặt được thuốc sâu?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay (không có stuck).</p>
+        <ul><li><b>Điều kiện:</b> số ô cây = diện tích khu vực (w × h) → thua, kể cả giữa một lượt nuốt nhóm lớn.</li><li><b>Trên board demo:</b> khu vực 3×2 = 6 ô, sẵn 1 ô → còn được 5 mèo. Bước 1 nuốt 3 cam (4/6); bước 2 nuốt 4 xanh lá thay vì đi nhặt thuốc → kín 6/6 → THUA.</li><li><b>An toàn:</b> nhặt thuốc sâu trước khi tổng mèo đã nuốt đạt diện tích − số ô ban đầu; nhặt xong cây xoá sạch và không mọc lại.</li><li><b>Cảnh báo trước:</b> viền khu vực chuyển cam khi còn ≤ 2 ô trống, đỏ khi kín.</li><li>Khu vực cây dại là vùng hố không đi vào được: board phải được kiểm tra vẫn giải được khi vùng này bị chặn.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Viền nét đứt + nhãn đếm 🌿 x/6; cây mọc từng ô có animation; lọ thuốc sâu là vật riêng; Special Hole viền vàng phát sáng + ổ hình mèo, đổi về hố thường sau khi nhặt; hiệu ứng diệt sạch.</li><li><b>Rủi ro:</b> Special Hole cùng màu với nhóm mèo của nó có thể bị nhìn như hố thường; thứ tự mọc (hàng trên trước, cột trái trước) khó đoán nhưng không đổi kết quả thắng/thua.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> chen một lượt "không nuốt mèo" để nhặt thuốc sâu sớm.</p>
+        <ul><li><b>Cách chơi đổi:</b> trước khi nhặt thuốc, chọn nhóm nhỏ; dọn đường cho Special Hole trước khi dọn bàn.</li><li><b>Tần suất trong map:</b> 1 khu vực/màn. Giới thiệu: diện tích 6, sẵn 1 ô, thuốc sâu cách Special Hole 1–2 bước. Màn thường: đường tới thuốc bị mèo chặn. Màn khó: diện tích 4 hoặc sẵn 2–3 ô. Khu vực chiếm chỗ trên map — tránh đặt giữa vùng dày mèo.</li><li><b>Rủi ro cần playtest:</b> diện tích quá nhỏ so với số mèo phải dọn để mở đường tới thuốc làm màn không giải được (cần certify bằng solver).</li></ul></article>
     </div>
   </details>
 

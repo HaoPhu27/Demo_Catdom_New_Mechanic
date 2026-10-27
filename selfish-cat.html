@@ -112,6 +112,18 @@ th{width:30%;color:var(--muted);font-weight:600}
 .tag{display:inline-block;font-size:12px;font-weight:700;background:#fff3d6;color:#9a5b00;border-radius:8px;padding:2px 8px;margin-left:6px}
 .tip{background:#fff8e6;border:1px solid #ffe2a3;border-radius:16px;padding:16px 18px;margin-top:28px}
 
+/* ---------- tiêu chí đánh giá (ngoài .demos và .card.play để iframe trang tổng không hiện) ---------- */
+details.review{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 20px}
+details.review summary{cursor:pointer;font:800 22px/1.2 "Baloo 2",sans-serif;padding:16px 0}
+.criteria{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;padding-bottom:20px}
+.criteria article{background:var(--bg);border-radius:14px;padding:14px 16px}
+.criteria .n{font:800 13px "Baloo 2";color:var(--accent)}
+.criteria h3{font-size:17px}
+.criteria p{margin:6px 0 0;font-size:14.5px}
+.criteria ul{margin:6px 0 0;padding-left:18px;font-size:14.5px;line-height:1.5}
+.criteria li{margin:3px 0}
+.criteria .verdict{margin-top:4px;padding:6px 10px;background:var(--card);border-radius:10px}
+
 @media (max-width:760px){
   .play{grid-template-columns:1fr}
   .topbar nav{display:none}
@@ -199,12 +211,21 @@ th{width:30%;color:var(--muted);font-weight:600}
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Thua khi bộ đếm về 0 mà Mèo Ích Kỷ còn trên bàn</summary>
+    <summary>📋 Tiêu chí đánh giá · Thua khi bộ đếm N về 0</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Một lần kéo hole lớn làm số trên đầu Mèo Ích Kỷ tụt mạnh: người chơi thấy ngay bộ đếm tính theo số mèo bị clear, không theo số lượt.</p><p><b>Hỏi người chơi:</b> Kéo hole này thì bộ đếm còn bao nhiêu? Đã mở được đường cho hole cùng màu với Mèo Ích Kỷ chưa?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Bộ đếm về 0 khi Mèo Ích Kỷ còn trên bàn: nó nhảy ra cào và thua màn. Hole nuốt cả nhóm đông có thể làm bộ đếm về 0 chỉ trong một lần kéo.</p><p><b>Case an toàn:</b> Clear Mèo Ích Kỷ trước khi bộ đếm về 0, hoặc cùng lượt với lượt làm bộ đếm về 0.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Số trên đầu mèo, nét mặt chuyển từ khó chịu sang giận dữ khi số nhỏ dần, vết cào đỏ khi thua.</p><p><b>Cần quan sát:</b> Người xem có nhận ra số giảm theo số mèo bị nuốt (3 con thì giảm 3) không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi ưu tiên mở đường tới Mèo Ích Kỷ, chọn nhóm nhỏ khi bộ đếm sắp hết.</p><p><b>Quyết định mới:</b> Nuốt nhóm lớn để dọn bàn nhanh, hay nhóm nhỏ để giữ bộ đếm.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 Mèo Ích Kỷ với N rộng rãi. Màn sau: N sát hơn và hole cùng màu bị chặn đường.</p><p><b>Rủi ro cần thử:</b> N quá sát với số mèo bắt buộc phải clear trước có thể thành màn không giải được; cần kiểm bằng solver.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ — hiểu sau 1–2 thao tác.</p>
+        <ul><li>Số N hiện trên đầu ngay từ đầu màn và giảm ngay lượt đầu: demo nuốt 3 mèo cam, N 5 → 2.</li><li>Cảm xúc leo thang báo trước: khó chịu (≥ 3) → badge cam, nổi gân (2) → badge đỏ nhấp nháy, rung (1).</li><li>Dễ hiểu sai: tưởng N là số <b>lượt</b>. Thật ra N trừ theo <b>số mèo</b> (một lượt nuốt 3 con trừ 3).</li></ul>
+        <p><b>Hỏi người chơi:</b> "Nuốt nhóm này thì N còn mấy?" · "Hố tím cần mấy bước để tới Mèo Ích Kỷ?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay (không có stuck).</p>
+        <ul><li><b>Điều kiện:</b> sau mỗi lượt nuốt không có Mèo Ích Kỷ, N trừ đúng số mèo bị nuốt; N ≤ 0 khi nó còn trên bàn → nó cào, thua.</li><li><b>Trên board demo:</b> bước 1 nuốt 3 mèo cam (N = 2); bước 2 nuốt 3 mèo xanh dương thay vì cứu nó → N = −1 → BỊ CÀO.</li><li><b>An toàn:</b> nuốt nó trong một lượt bất kỳ khi N ≥ 1, kể cả cùng lượt với mèo khác; từ đó hết đếm.</li><li><b>Luật thiết kế màn:</b> phải có lời giải đưa hố cùng màu tới nó sau ≤ N − 1 mèo khác.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Rất dễ demo — 1 con mèo, 1 con số, cảm xúc rõ.</p>
+        <ul><li>Badge số, mặt mèo đổi theo N, bong bóng "Tớ trước! Trong 5 con!", cào + rung + banner khi thua, mặt hài lòng khi được cứu.</li><li><b>Rủi ro:</b> N lớn (≥ 7) gần như không căng; nhóm 1 con không cho thấy "trừ theo số mèo" → demo nên dùng nhóm 3–4 con.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> — dọn đường cho hố cùng màu tới nó trước mọi thứ.</p>
+        <ul><li><b>Cách chơi đổi:</b> khi buộc phải nuốt mèo khác, chọn nhóm nhỏ để "tiết kiệm" N; tránh hố lớn (4–5 ô) đầu màn.</li><li><b>Tần suất trong map:</b> giới thiệu 1 con, N = số mèo cần dọn tối thiểu + 2; màn thường 1 con, N vừa đủ + 1; màn khó 2 con khác màu. Không quá 2 con/màn.</li><li><b>Rủi ro cần playtest:</b> N quá chặt khiến màn chỉ còn đúng 1 thứ tự giải; ghép với Couple trong cùng màn tạo 2 bộ đếm khó theo dõi.</li></ul></article>
     </div>
   </details>
 

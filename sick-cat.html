@@ -101,12 +101,21 @@ select{font:600 15px "Be Vietnam Pro";padding:6px 8px;border-radius:10px;border:
   </div>
 
   <details class="review">
-    <summary>📋 Tiêu chí đánh giá · Thua khi mèo bệnh chiếm ≥ 50% số mèo còn lại</summary>
+    <summary>📋 Tiêu chí đánh giá · Thua khi mèo bệnh ≥ 50% số mèo còn lại</summary>
     <div class="criteria">
-      <article><div class="n">01</div><h3>Hiểu sau vài thao tác?</h3><p>Ăn một con khoẻ thì bệnh lây sang con khoẻ gần ổ nhất: người chơi thấy mỗi lần ăn mèo khoẻ là thêm một ca.</p><p><b>Hỏi người chơi:</b> Ăn nhóm này thì có mấy ca lây? Hole cùng màu với mèo bệnh đã tới được chưa?</p></article>
-      <article><div class="n">02</div><h3>Có case stuck / thua rõ ràng?</h3><p>Mèo bệnh chiếm từ một nửa số mèo còn lại trở lên (loseRatio mặc định 0,5): thua.</p><p><b>Case an toàn:</b> Cho mèo bệnh lọt hố sớm để dập ổ; mèo trong box/tower không bao giờ bị lây.</p></article>
-      <article><div class="n">03</div><h3>Visual có dễ demo?</h3><p>Mèo bệnh có màu xanh bệnh và nhiệt kế; đường nối cho thấy nguồn lây và mục tiêu.</p><p><b>Cần quan sát:</b> Người xem có đoán đúng con nào bị lây tiếp theo (gần ổ nhất theo ô ngang + dọc) không?</p></article>
-      <article><div class="n">04</div><h3>Thay đổi cách chơi ra sao?</h3><p>Người chơi ưu tiên nhóm chứa mèo bệnh và tránh nuốt nhóm khoẻ lớn.</p><p><b>Quyết định mới:</b> Ăn nhóm khoẻ để mở đường tới mèo bệnh hay chấp nhận đi đường vòng.</p><p><b>Mật độ trên map:</b> Giới thiệu: 1 ổ bệnh, ít mèo khoẻ quanh nó. Màn sau: thêm box để có mèo miễn nhiễm.</p><p><b>Rủi ro cần thử:</b> Ngưỡng thua 1/2 chưa được playtest; vị trí ổ bệnh ngẫu nhiên làm độ khó dao động.</p></article>
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa–Khó — hiểu "ăn mèo khoẻ thì lây" sau 1 thao tác, hiểu ngưỡng thua sau khi thấy 1 lần thua.</p>
+        <ul><li>Thao tác 1: nuốt 3 mèo cam khoẻ → 3 chấm xanh bay sang 3 mèo gần ổ nhất (HUD 4/15).</li><li>Dễ hiểu sai: (a) mục tiêu lây là mèo khoẻ gần ổ nhất theo ô ngang + dọc, hoà thì hàng trên trước, cột trái trước; (b) ngưỡng 50% tính trên số mèo <b>còn lại</b> (cả mèo trong box), không phải tổng ban đầu.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Ăn nhóm này có mấy ca lây?" · "Con nào bị lây tiếp theo?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay (không có stuck).</p>
+        <ul><li><b>Điều kiện:</b> sau mỗi lượt, mèo bệnh ≥ 50% × số mèo còn lại → ĐẠI DỊCH.</li><li><b>Trên board demo:</b> bước 1 nuốt 3 mèo khoẻ → cả ổ vàng 4 con bệnh (4/15); bước 2 nuốt 4 mèo xanh lá thay vì dập ổ → 4 ca lây → 8/11 → THUA.</li><li><b>An toàn:</b> cho nhóm có mèo bệnh lọt hố (mèo bệnh bị nuốt không gây lây) → hết ổ, các lượt sau không lây nữa. Mèo trong box không bao giờ bị lây.</li><li><b>Cảnh báo trước:</b> HUD 🤒 x/y luôn hiện; chưa có cảnh báo màu khi gần ngưỡng (đề xuất thêm).</li><li>Vì mẫu số giảm dần, cuối màn càng dễ chạm ngưỡng.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Mèo bệnh đổi màu xanh bệnh + 🦠; chấm lây bay từ nguồn tới đích; HUD đếm bệnh/còn lại; banner ĐẠI DỊCH.</li><li><b>Rủi ro:</b> nhiều ca lây trong một lượt diễn ra liên tiếp, khó theo; ổ lớn cùng màu khó phân biệt con nào bệnh nếu không có 🦠.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> dập ổ; <b>để dành</b> mèo trong box (an toàn) cho cuối màn.</p>
+        <ul><li><b>Cách chơi đổi:</b> tránh nuốt nhóm khoẻ lớn khi ổ còn sống; cân nhắc "ăn nhóm khoẻ nhỏ để mở đường cho hố cùng màu ổ bệnh" hay "đi vòng".</li><li><b>Tần suất trong map:</b> 1 ổ/màn. Giới thiệu: ổ trong nhóm cô lập, hố cùng màu sát bên. Màn thường: ổ giữa vùng đông mèo. Màn khó: hố cùng màu ổ ở xa, ít box.</li><li><b>Rủi ro cần playtest:</b> ngưỡng 50% (Lead chưa chốt); luôn chỉ định <b>initialSick</b> trong level, không để ngẫu nhiên.</li></ul></article>
     </div>
   </details>
 
