@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liên Kết Điện</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/catdom-kit.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="logic/_board-move.js" onerror="this.remove()"></script>
+<script src="logic/electric-link.js" onerror="this.remove()"></script>
+<script src="boards/lab-fixtures.js"></script>
+<script src="assets/catdom-kit.js"></script>
+</head>
+<body>
+<header class="topbar"><div class="in">
+  <div class="logo"><span>🐱</span> CatDom Support</div>
+  <nav><a href="index.html">Trang tổng</a><a href="magnet.html">Mèo Nam Châm</a><a href="fragile-floor.html">Sàn Dễ Vỡ</a><a href="stripe-cat.html">Mèo Sọc</a><a href="alarm-zone.html">Vùng Báo Động</a><a href="teleport-cat.html">Mèo Dịch Chuyển</a><a href="electric-link.html">Liên Kết Điện</a></nav>
+</div></header>
+
+<main>
+  <div class="crumb">Home › 🧱 Game Elements › Bộ 2 · Mechanic 10 › Liên Kết Điện</div>
+  <h1>⚡ Liên Kết Điện là gì?</h1>
+  <div class="meta">Mechanic 10 · Board hố di chuyển (port từ Play Lab) · Bản visualize để review</div>
+
+  <p class="lead">Hai công tắc <b>A</b> và <b>B</b>. Hai hố khác nhau cùng đứng trên A và B thì điện bật trên <b>đoạn nối</b> giữa chúng. Bật trúng mèo hoặc hố là <b>thua ngay</b>; đoạn nối trống thì điện thành rào chắn.</p>
+
+  <p class="entry">⚡ <b>Liên Kết Điện</b> – Dọn đoạn nối trước, rồi mới cho hai hố đứng lên A và B. Nhả một công tắc để mở rào.</p>
+
+  <div class="demos">
+    <div class="demo">
+      <div class="demo-head">01 · Cách chơi sai <span class="pill bad">✗ ĐIỆN GIẬT</span></div>
+      <div class="stage-wrap"><div id="demoBad"></div></div>
+      <div class="caption" id="capBad"></div>
+    </div>
+    <div class="demo">
+      <div class="demo-head">02 · Cách chơi đúng <span class="pill ok">✓ BẬT AN TOÀN</span></div>
+      <div class="stage-wrap"><div id="demoGood"></div></div>
+      <div class="caption" id="capGood"></div>
+    </div>
+  </div>
+
+  <h2>📖 Cách hoạt động →</h2>
+  <div class="card">
+    <ul class="rules">
+      <li>Đoạn nối là các ô <b>giữa</b> A và B, không gồm chính A và B. Một hố nhiều ô đứng trên cả A và B không bật điện.</li>
+      <li>Ngay khi điện bật: còn mèo hoặc bất kỳ ô nào của hố trên đoạn nối là <b>thua ngay</b>, không được đi thêm để thoát.</li>
+      <li>Đoạn nối trống: điện chỉ thành <b>rào chắn</b>, hố đi vào bị chặn (không thua).</li>
+      <li>Một hố rời A hoặc B thì điện tắt, đường mở lại. Mèo ngoài đoạn nối vẫn thu bình thường.</li>
+      <li>Luật nền: chọn một hố, đi từng ô theo 4 hướng. Đi vào ô có mèo cùng màu thì thu mèo; số trên hố là số mèo còn cần. Mèo khác màu, tường và hố khác chặn đường. Mọi hố về 0 là thắng.</li>
+    </ul>
+  </div>
+
+  <h2>🎮 Thử ngay</h2>
+  <div class="card play">
+    <div><div class="stage-wrap"><div id="playStage"></div></div></div>
+    <div class="panel">
+      <p class="hint">Bấm hoặc kéo một hố để chọn. Đi bằng phím mũi tên (bấm vào board trước), nút bên dưới, hoặc kéo hố. Phím 1–9 chọn hố theo thứ tự.</p>
+      <div class="ctrl"><label for="fixture">Màn</label><select id="fixture"></select></div>
+      <div class="stat">
+        <div><small>Hố đang chọn</small><strong id="sHole">–</strong></div>
+        <div><small>Lượt</small><strong id="sTurn">0</strong></div>
+      </div>
+      <div class="stat"><div><small>Trạng thái</small><strong id="sStatus">–</strong></div></div>
+      <div class="pad-ctrl" role="group" aria-label="Đi hố đang chọn">
+        <button type="button" data-dir="0,-1" aria-label="Lên">↑</button><button type="button" data-dir="-1,0" aria-label="Trái">←</button>
+        <button type="button" data-dir="0,1" aria-label="Xuống">↓</button><button type="button" data-dir="1,0" aria-label="Phải">→</button>
+      </div>
+      <div class="ctrl"><button class="btn" id="reset" type="button">↻ Làm lại</button><button class="btn ghost" id="hint" type="button">💡 Gợi ý</button></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <h2>📐 Spec cho Dev / Level Design <span class="tag">Theo quick spec 2026-10-26</span></h2>
+  <div class="card" style="padding:6px 8px">
+    <table>
+      <tr><th>Tham số level</th><td><code>pads: [A, B]</code> cùng hàng hoặc cùng cột. State có <code>barrier</code> (đoạn nối) và <code>electricOn</code>.</td></tr>
+      <tr><th>Từ chối</th><td><code>'electric-barrier'</code> khi điện bật và vị trí mới của hố chạm đoạn nối.</td></tr>
+      <tr><th>Event</th><td><code>move</code> → <code>electricOn/electricOff</code> → <code>lose electric</code> (trước khi thu mèo) → <code>eat</code> → …</td></tr>
+      <tr><th>Fixture</th><td>EL-00…EL-04 (chọn ở board chơi thử). EL-00, EL-04: bật khi trống, chỉ chặn đường.</td></tr>
+      <tr><th>Tài liệu</th><td><code>design/quick-specs/electric-link-2026-10-26.md</code>, hợp đồng <code>docs/logic-contract.md</code> mục 5, logic <code>logic/electric-link.js</code>.</td></tr>
+    </table>
+  </div>
+
+  <details class="review">
+    <summary>📋 Tiêu chí đánh giá · Thua khi bật điện trúng mèo/hố trên đoạn nối</summary>
+    <div class="criteria">
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Khó — cần ≥ 3 thao tác, có 3 trạng thái.</p>
+        <ul><li>Điện tắt (đi tự do) → điện bật khi <b>hai hố khác nhau</b> đứng trên A và B → đoạn nối trống thì thành rào chặn; đoạn nối còn mèo/hố thì điện giật.</li><li>Dễ hiểu sai: một hố nhiều ô đứng cả A và B <b>không</b> bật điện; hố lớn chỉ cần 1 ô chạm đoạn nối là thua.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Nếu hố hồng xuống B bây giờ, trên đoạn nối còn gì không?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay khi bật điện trúng; rào chặn khi đoạn trống thì <b>không</b> thua.</p>
+        <ul><li><b>Điều kiện:</b> điện bật mà đoạn nối (các ô giữa A và B) còn mèo hoặc ô của hố → thua, kiểm trước khi thu mèo; không được đi thêm để thoát.</li><li><b>Trên board demo:</b> demo sai (8 nước): hố xanh đứng A, hố hồng xuống B khi mèo xanh còn trên đoạn nối → ĐIỆN GIẬT.</li><li><b>An toàn:</b> dọn đoạn nối trước, rồi mới cho hai hố đứng A và B; muốn qua rào thì nhả một công tắc.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — cần chú thích.</p>
+        <ul><li>Pad A / B, dây nối, ô đoạn nối sáng khi điện bật, tia điện khi thua; hố bị rào chặn thì rung.</li><li><b>Rủi ro:</b> hố lớn chỉ 1 ô chạm dây khó nhìn thấy; "rào chặn" và "điện giật" cùng xuất hiện khi điện bật.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> dọn đoạn nối; dùng điện như rào chắn có chủ đích.</p>
+        <ul><li><b>Cách chơi đổi:</b> người chơi coi đoạn nối là "vùng cấm tạm thời" và lên lịch bật/tắt.</li><li><b>Tần suất trong map:</b> 1 cặp công tắc, đoạn nối 1–3 ô; màn khó: đoạn dài, mèo trên dây cần hố khác dọn trước.</li><li><b>Rủi ro cần playtest:</b> điều kiện thua chưa được Lead chốt (giật ngay vs. chỉ chặn).</li></ul></article>
+    </div>
+  </details>
+
+  <div class="tip">💡 <b>Pro Tip</b>: Hố đang đứng trong hành lang có thể giúp thu mèo, nhưng phải rút ra trước lúc hai công tắc cùng được giữ.</div>
+</main>
+
+<script>
+CatDom.labPage('electric-link', {
+  bad: "Cách chơi sai: hố xanh đứng A, hố hồng xuống B khi mèo xanh còn trên đoạn nối — điện giật…",
+  good: "Cách chơi đúng: hố xanh dọn mèo trên đoạn nối trước, hố hồng bật điện an toàn rồi đi tiếp."
+});
+</script>
+</body>
+</html>

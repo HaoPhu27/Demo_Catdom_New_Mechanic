@@ -104,3 +104,57 @@ State thêm: `couples: [{ id, n, mark, cats:[id1,id2], state:'idle'|'counting'|'
    - `counting` + lượt không có `target`: `remaining -= ids.length`, rồi `{ type:'coupleCount', couple, target, remaining }`. Nếu `remaining <= 0` thì `state='broken'`, phát `{ type:'lose', reason:'couple', couple }` và dừng.
    - Cặp `safe`/`broken` bị bỏ qua. Cặp vừa chuyển `counting` trong lượt này KHÔNG bị trừ trong cùng lượt.
 3. Nếu hết mèo sống: `{ type:'win' }`
+
+## 5. Mô hình hố di chuyển (mechanic 05–10)
+
+Áp dụng cho `magnet | fragile-floor | stripe-cat | alarm-zone | teleport-cat | electric-link`. Mục 2–4 ở trên (nhóm ăn, `eat`, `groupAt`) KHÔNG áp dụng cho các mechanic này. Luật: `design/quick-specs/hole-move-board-2026-10-26.md` + spec riêng. Board và chuỗi nước mẫu: `boards/lab-fixtures.js` (`CatDomFixtures.fixtures[<slug>]`, `CatDomFixtures.seq`).
+
+### 5.1 Module
+- Lõi chung `logic/_board-move.js`, export `CatDomLogic._boardMove` (API bên trong do worker tự đặt, không phải hợp đồng).
+- Mỗi mechanic `logic/<slug>.js`, khung UMD như mục 1 nhưng export vào `CatDomLogic['<slug>']`, trả `{ validateLevel, createGame }`. Lấy lõi bằng `require('./_board-move.js')` khi có `module.exports`, ngược lại đọc `root.CatDomLogic._boardMove` (trang nạp `_board-move.js` trước). Không DOM, không `Math.random`, không thư viện ngoài.
+
+### 5.2 Level
+```js
+{ cols, rows,
+  cats:  [{ id, color, x, y, magnet?: true, arrow?: [dx,dy], kind?: 'NORMAL'|'STRIPE_H'|'STRIPE_V' }],
+  holes: [{ color, x, y, remaining, shape?: [[dx,dy], ...] }],   // shape mặc định [[0,0]]
+  walls?: [[x,y], ...],
+  floors?: [{ x, y, durability, max? }],                         // max mặc định = durability
+  alarmSwitches?: [[x,y], ...], alarms?: [[x,y], ...],
+  pads?: [[x,y], [x,y]] }
+```
+Mọi trường có dấu `?` là tuỳ chọn ở MỌI module; thiếu thì phần luật đó không có tác dụng (ví dụ `electric-link` không có `pads` thì chạy như board nền). Hố được đánh số theo thứ tự trong `holes`, bắt đầu từ 0.
+
+`validateLevel(level) → string[]` kiểm ít nhất: `cols`/`rows` số nguyên ≥ 1; `cats` và `holes` là mảng, `holes` không rỗng; id mèo trùng; mèo ngoài bàn; màu không hợp lệ (mục 2); hai mèo cùng ô; `remaining` không phải số nguyên ≥ 1; ô của hố ngoài bàn hoặc trùng tường; hai hố chồng ô; `arrow` không phải một trong 4 hướng đơn vị; `kind` ngoài 3 giá trị; `pads` có mặt mà không phải đúng 2 ô cùng hàng hoặc cùng cột. `createGame` ném lỗi như mục 3 và không sửa `level`.
+
+### 5.3 State — `game.getState()` (bản sao sâu)
+- `status`: `'playing' | 'won' | 'lost'`
+- `loseReason`: `null | 'stuck' | 'stripe' | 'alarm' | 'electric'`
+- `turn`: số nước đi hợp lệ
+- `cats`: `[{ id, color, x, y, alive, ...cờ của level (magnet/arrow/kind) }]` theo thứ tự level; `alive: false` khi đã bị thu hoặc bị hút. `x`, `y` là vị trí hiện tại (đã tính dịch chuyển).
+- `holes`: `[{ color, x, y, remaining, shape, done }]`, `shape` luôn có, `done = remaining === 0`.
+- `walls`: `[[x,y], ...]`
+- Riêng: `magnet` — mỗi mèo thêm `pulled: boolean` (true = bị hút, không phải bị thu). `fragile-floor` — `floors: [{ x, y, durability, max }]`. `stripe-cat` — mỗi hố thêm `axis: 'FREE'|'HORIZONTAL'|'VERTICAL'`. `alarm-zone` — `alarmSwitches`, `alarms`, `alarmOn: boolean`. `electric-link` — `pads`, `barrier: [[x,y], ...]` (đoạn nối, không gồm A/B), `electricOn: boolean`.
+
+### 5.4 `game.move(h, dx, dy) → { ok, reason?, events }`
+Từ chối: `ok: false`, `events: []`, state và `turn` KHÔNG đổi. `reason` xét theo thứ tự, lấy cái đầu tiên đúng:
+1. `'not-playing'` — status khác `'playing'`
+2. `'bad-move'` — `h` không phải chỉ số hố, hố đã `done`, hoặc `|dx| + |dy| !== 1`
+3. `'axis-locked'` — (stripe-cat) đi sai trục đang khoá
+4. `'electric-barrier'` — (electric-link) điện đang bật và vị trí mới của hố có ô thuộc đoạn nối
+5. `'blocked'` — luật 3 của spec nền (ngoài bàn, tường, sàn sụp, hố khác, mèo khác màu)
+
+Thành công: `ok: true`, `turn + 1`, `events` theo đúng thứ tự (bỏ dòng không xảy ra). Sau event `lose`/`win` không phát gì thêm.
+1. `{ type:'move', hole, from:[x,y], to:[x,y] }`
+2. (fragile) mỗi ô sàn MỚI đi vào, theo thứ tự `floors`: `{ type:'crack', x, y, durability }` (độ bền sau khi giảm)
+3. (alarm) trạng thái đổi so với trước nước đi: `{ type:'alarmOn' }` / `{ type:'alarmOff' }`; nếu đang bật và có hố còn hoạt động trong vùng: `{ type:'lose', reason:'alarm' }`.
+   (electric) trạng thái đổi: `{ type:'electricOn' }` / `{ type:'electricOff' }`; nếu đang bật và đoạn nối có mèo còn sống hoặc ô của hố còn hoạt động: `{ type:'lose', reason:'electric' }`.
+4. (stripe) xung đột theo luật 4–5 của spec, xét trên cả danh sách mèo sắp thu trước khi thu con nào: `{ type:'lose', reason:'stripe' }`.
+5. Thu ≥ 1 mèo: `{ type:'eat', hole, ids }` (theo thứ tự level, tối đa `remaining`)
+6. (stripe) trục đổi: `{ type:'axis', hole, axis }`
+7. `remaining` về 0: `{ type:'holeDone', hole }`
+8. (alarm) hố vừa xong làm đổi trạng thái: `{ type:'alarmOn' }`, rồi kiểm thua như bước 3.
+9. (magnet) mỗi nam châm vừa thu, nếu hút được ít nhất 1 mèo: `{ type:'magnet', source:<id nam châm>, ids }`; sau đó nếu có hố còn hoạt động có `remaining` > số mèo sống cùng màu: `{ type:'lose', reason:'stuck' }`.
+10. (teleport) mỗi mèo mũi tên vừa thu, với từng mèo sống cùng màu theo thứ tự level: `{ type:'teleport', id, from:[x,y], to:[x,y] }` hoặc `{ type:'teleportBlocked', id }`.
+11. Mọi hố `done`: `{ type:'win' }`.
+12. Ngược lại kiểm stuck (fragile, teleport: luật tới-được; stripe: tìm kiếm chuỗi nước): `{ type:'lose', reason:'stuck' }`.

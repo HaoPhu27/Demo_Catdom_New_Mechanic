@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/catdom-kit.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="logic/sick.js" onerror="this.remove()"></script>
+<script src="boards/eat-fixtures.js"></script>
 <script src="assets/catdom-kit.js"></script>
 <style>
 .cat.is-sick::after{content:"🦠";position:absolute;top:-8px;left:-4px;font-size:15px;animation:germ 1.8s ease-in-out infinite;pointer-events:none}
@@ -99,20 +100,30 @@ select{font:600 15px "Be Vietnam Pro";padding:6px 8px;border-radius:10px;border:
     </table>
   </div>
 
+  <details class="review">
+    <summary>📋 Tiêu chí đánh giá · Thua khi mèo bệnh ≥ 50% số mèo còn lại</summary>
+    <div class="criteria">
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa–Khó — hiểu "ăn mèo khoẻ thì lây" sau 1 thao tác, hiểu ngưỡng thua sau khi thấy 1 lần thua.</p>
+        <ul><li>Thao tác 1: nuốt 3 mèo cam khoẻ → 3 chấm xanh bay sang 3 mèo gần ổ nhất (HUD 4/15).</li><li>Dễ hiểu sai: (a) mục tiêu lây là mèo khoẻ gần ổ nhất theo ô ngang + dọc, hoà thì hàng trên trước, cột trái trước; (b) ngưỡng 50% tính trên số mèo <b>còn lại</b> (cả mèo trong box), không phải tổng ban đầu.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Ăn nhóm này có mấy ca lây?" · "Con nào bị lây tiếp theo?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay (không có stuck).</p>
+        <ul><li><b>Điều kiện:</b> sau mỗi lượt, mèo bệnh ≥ 50% × số mèo còn lại → ĐẠI DỊCH.</li><li><b>Trên board demo:</b> bước 1 nuốt 3 mèo khoẻ → cả ổ vàng 4 con bệnh (4/15); bước 2 nuốt 4 mèo xanh lá thay vì dập ổ → 4 ca lây → 8/11 → THUA.</li><li><b>An toàn:</b> cho nhóm có mèo bệnh lọt hố (mèo bệnh bị nuốt không gây lây) → hết ổ, các lượt sau không lây nữa. Mèo trong box không bao giờ bị lây.</li><li><b>Cảnh báo trước:</b> HUD 🤒 x/y luôn hiện; chưa có cảnh báo màu khi gần ngưỡng (đề xuất thêm).</li><li>Vì mẫu số giảm dần, cuối màn càng dễ chạm ngưỡng.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Mèo bệnh đổi màu xanh bệnh + 🦠; chấm lây bay từ nguồn tới đích; HUD đếm bệnh/còn lại; banner ĐẠI DỊCH.</li><li><b>Rủi ro:</b> nhiều ca lây trong một lượt diễn ra liên tiếp, khó theo; ổ lớn cùng màu khó phân biệt con nào bệnh nếu không có 🦠.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> dập ổ; <b>để dành</b> mèo trong box (an toàn) cho cuối màn.</p>
+        <ul><li><b>Cách chơi đổi:</b> tránh nuốt nhóm khoẻ lớn khi ổ còn sống; cân nhắc "ăn nhóm khoẻ nhỏ để mở đường cho hố cùng màu ổ bệnh" hay "đi vòng".</li><li><b>Tần suất trong map:</b> 1 ổ/màn. Giới thiệu: ổ trong nhóm cô lập, hố cùng màu sát bên. Màn thường: ổ giữa vùng đông mèo. Màn khó: hố cùng màu ổ ở xa, ít box.</li><li><b>Rủi ro cần playtest:</b> ngưỡng 50% (Lead chưa chốt); luôn chỉ định <b>initialSick</b> trong level, không để ngẫu nhiên.</li></ul></article>
+    </div>
+  </details>
+
   <div class="tip">💡 <b>Pro Tip</b>: Mở đường cho hole cùng màu với mèo bệnh trước tiên. Nếu buộc phải ăn mèo khoẻ, hãy chọn nhóm nhỏ: mỗi con khoẻ lọt hố là thêm một ca lây.</div>
 </main>
 
 <script>
-const LEVEL_DEMO = {
-  cols: 5, rows: 5,
-  cats: [
-    {id:'b1', color:'blue', x:0, y:0}, {id:'b2', color:'blue', x:1, y:0}, {id:'g1', color:'green', x:4, y:0},
-    {id:'o1', color:'orange', x:1, y:2}, {id:'p1', color:'pink', x:2, y:2}, {id:'o2', color:'orange', x:3, y:2},
-    {id:'u1', color:'purple', x:0, y:4}, {id:'u2', color:'purple', x:1, y:4}, {id:'y1', color:'yellow', x:2, y:4}
-  ],
-  boxes: [{id:'bx', x:4, y:4, cats:[{id:'bx1', color:'green'}]}],
-  initialSick: 'p1'
-};
+const FX = CatDomEatFixtures.fixtures.sick.demo;
 const PLAY_GRID = ['BB.GGY', '.K..G.', 'OOP..Y', '..PB..', 'Y..B.O', '..GG..'];
 const PLAY_BOXES = [{id:'bxA', x:0, y:5, cats:['orange', 'blue']}, {id:'bxB', x:5, y:5, cats:['yellow', 'green', 'pink']}];
 const CODE = {B:'blue', G:'green', O:'orange', Y:'yellow', P:'purple', K:'pink'};
@@ -208,10 +219,10 @@ const handlers = {
   }
 };
 
-function demoCfg(el, cap, intro, steps, outro) {
+function demoCfg(el, cap, intro, steps) {
   return {el: document.getElementById(el), cap: document.getElementById(cap), name: 'sick', file: 'logic/sick.js',
-    level: LEVEL_DEMO, cellOf, colorOf, on: handlers, steps, outro,
-    build: (st, game) => buildBoard(st, game, LEVEL_DEMO),
+    level: FX.level, holes: FX.holes, cellOf, colorOf, on: handlers, steps,
+    build: (st, game) => buildBoard(st, game, FX.level),
     intro: (st, tl, ctx) => {
       const s = ctx.game.getState();
       ctx.sickSet = new Set(s.cats.filter(c => c.sick).map(c => c.id));
@@ -219,15 +230,8 @@ function demoCfg(el, cap, intro, steps, outro) {
       tl.call(() => ctx.cap(intro)).to({}, {duration: 1.8});
     }};
 }
-CatDom.demo({...demoCfg('demoWin', 'capWin', 'Mèo hồng ở giữa đang bệnh. Ổ bệnh chỉ có 1 con.', [
-    {eat: [2, 2], from: [2, 3], say: 'Cho mèo bệnh lọt hố trước → không ai bị lây'},
-    {eat: [0, 0], from: [0, 1], say: 'Hết ổ bệnh, giờ ăn mèo khoẻ cũng không lây nữa'},
-    {eat: [4, 4], from: [3, 4], say: 'Mèo trong box 🛡️ luôn an toàn'}
-  ], (st, tl) => tl.call(() => st.showBanner('ĐÃ DẬP Ổ BỆNH ✓', 'ok')))});
-CatDom.demo({...demoCfg('demoFail', 'capFail', 'Cùng màn chơi, nhưng lần này ăn mèo khoẻ trước…', [
-    {eat: [0, 0], from: [0, 1], say: 'Ăn 2 mèo khoẻ → 2 ca lây sang 2 mèo cam sát bên'},
-    {eat: [0, 4], from: [0, 3], say: 'Ăn thêm 2 mèo khoẻ → lây tiếp, 5/6 mèo còn lại bị bệnh'}
-  ])});
+CatDom.demo(demoCfg('demoWin', 'capWin', FX.intro, FX.good));
+CatDom.demo(demoCfg('demoFail', 'capFail', 'Cùng màn chơi, nhưng lần này ăn mèo khoẻ trước…', FX.bad));
 
 /* ---------- states ---------- */
 const miniCat = (mood, o = {}, extra = '') => `<div class="mini"><div class="cat${o.sick ? ' is-sick' : ''}" style="left:0;top:0"><div class="body">${CatDom.catSVG('pink', mood, o)}</div>${extra}</div></div>`;

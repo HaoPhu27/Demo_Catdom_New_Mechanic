@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="assets/catdom-kit.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="logic/couple.js" onerror="this.remove()"></script>
+<script src="boards/eat-fixtures.js"></script>
 <script src="assets/catdom-kit.js"></script>
 <style>
 .couples{display:flex;flex-direction:column;gap:8px}
@@ -91,19 +92,30 @@
     </table>
   </div>
 
+  <details class="review">
+    <summary>📋 Tiêu chí đánh giá · Thua khi đếm ngược của cặp về 0</summary>
+    <div class="criteria">
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Vừa — hiểu sau 2 thao tác.</p>
+        <ul><li>Thao tác 1: nuốt nhóm cam có 1 con của cặp → con vàng bắt đầu đếm 4. Thao tác 2: nuốt 3 mèo tím → còn 1.</li><li>Dễ hiểu sai: lượt kích hoạt <b>không</b> bị trừ; đếm trừ theo <b>số mèo</b>, không theo lượt.</li></ul>
+        <p><b>Hỏi người chơi:</b> "Ăn con này thì con kia còn mấy?" · "Hố cùng màu con kia đã tới được chưa?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay (không có stuck).</p>
+        <ul><li><b>Điều kiện:</b> đếm ≤ 0 khi con còn lại chưa lọt hố → CHIA TAY.</li><li><b>Trên board demo:</b> cặp cách nhau 11 ô (góc trên trái – góc dưới phải), N = 4. Bước 3 nuốt 4 mèo xanh dương khi còn 1 → −3 → THUA.</li><li><b>An toàn:</b> nuốt cả hai trong cùng một lượt (không đếm), hoặc nuốt con thứ hai khi đếm ≥ 1.</li><li><b>Cảnh báo trước:</b> số đếm trên con chờ, mặt buồn dần khi gần 0.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ demo.</p>
+        <ul><li>Mũi tên 💘 cùng màu đánh dấu + đường chấm nối hai con, tim bay khi kích hoạt, 💔 + cào khi thua.</li><li><b>Rủi ro:</b> 2 cặp cùng đếm khó theo dõi; đường nối dài chéo bàn bị hố che khi hố đi ngang.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Để dành</b> — không vội ăn con đầu; dọn đường cho cả hai rồi ăn liên tiếp.</p>
+        <ul><li><b>Cách chơi đổi:</b> lên kế hoạch theo cặp; sau khi kích hoạt, chỉ chọn nhóm nhỏ cho tới khi cứu được con còn lại.</li><li><b>Tần suất trong map:</b> giới thiệu 1 cặp gần nhau, N = 4; màn thường 1 cặp chéo bàn; màn khó 2 cặp N khác nhau. Không quá 2 cặp/màn.</li><li><b>Rủi ro cần playtest:</b> ghép cùng Mèo Ích Kỷ trong một màn (2 bộ đếm) — tránh ở màn sớm.</li></ul></article>
+    </div>
+  </details>
+
   <div class="tip">💡 <b>Pro Tip</b>: Đừng vội ăn con đầu tiên. Hãy dọn đường cho cả hai trước, rồi ăn hai con liên tiếp, hoặc tốt nhất là trong cùng một lượt.</div>
 </main>
 
 <script>
-const LEVEL_DEMO = {
-  cols: 5, rows: 5,
-  cats: [
-    {id:'c1', color:'blue', x:0, y:0, couple:'A'}, {id:'g1', color:'green', x:2, y:0}, {id:'g2', color:'green', x:3, y:0},
-    {id:'o1', color:'orange', x:0, y:2}, {id:'o2', color:'orange', x:1, y:2}, {id:'y1', color:'yellow', x:3, y:2},
-    {id:'c2', color:'purple', x:4, y:4, couple:'A'}
-  ],
-  couples: [{id:'A', n:3, mark:'pink'}]
-};
+const FX = CatDomEatFixtures.fixtures.couple.demo;
 const PLAY_CATS = [
   [0,0,'blue'], [2,0,'green'], [3,0,'green'], [5,0,'orange','A'],
   [0,1,'blue'], [1,1,'yellow'], [4,1,'orange'], [5,1,'orange'],
@@ -199,22 +211,14 @@ const handlers = {
   }
 };
 
-function demoCfg(el, cap, intro, steps, outro) {
+function demoCfg(el, cap, intro, steps) {
   return {el: document.getElementById(el), cap: document.getElementById(cap), name: 'couple', file: 'logic/couple.js',
-    level: LEVEL_DEMO, cellOf, colorOf, on: handlers, steps, outro,
-    build: (st, game) => buildBoard(st, game, LEVEL_DEMO),
+    level: FX.level, holes: FX.holes, cellOf, colorOf, on: handlers, steps,
+    build: (st, game) => buildBoard(st, game, FX.level),
     intro: (st, tl, ctx) => tl.call(() => ctx.cap(intro)).to({}, {duration: 1.8})};
 }
-CatDom.demo(demoCfg('demoWin', 'capWin', 'Hai con mèo có mũi tên 💘 hồng là một cặp, N = 3.', [
-  {eat: [0, 0], from: [0, 1], say: 'Ăn mèo xanh → mèo tím bắt đầu đếm 3'},
-  {eat: [2, 0], from: [2, 1], say: 'Clear 2 mèo xanh lá → còn 1'},
-  {eat: [4, 4], from: [4, 3], say: 'Đưa mèo tím về với người yêu kịp lúc!'}
-], (st, tl) => tl.call(() => st.showBanner('ĐOÀN TỤ ✓', 'ok'))));
-CatDom.demo(demoCfg('demoFail', 'capFail', 'Cùng cặp đôi, nhưng lần này mải ăn mèo khác…', [
-  {eat: [0, 0], from: [0, 1], say: 'Ăn mèo xanh → mèo tím đếm 3'},
-  {eat: [2, 0], from: [2, 1], say: 'Clear 2 mèo xanh lá → còn 1'},
-  {eat: [0, 2], from: [0, 3], say: 'Thêm 2 mèo cam → đếm về 0, mèo tím nổi giận!'}
-]));
+CatDom.demo(demoCfg('demoWin', 'capWin', FX.intro, FX.good));
+CatDom.demo(demoCfg('demoFail', 'capFail', 'Cùng cặp đôi, nhưng lần này mải ăn mèo khác…', FX.bad));
 
 /* ---------- states ---------- */
 const miniCat = (mood, extra = '', o = {}) => `<div class="mini"><div class="cat${o.shake ? ' angry' : ''}" style="left:0;top:0"><div class="body">${CatDom.catSVG('purple', mood, o)}</div><div class="mark">${CatDom.heartMarkSVG(CatDom.MARK.pink)}</div>${extra}</div></div>`;

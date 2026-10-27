@@ -9,7 +9,10 @@ import { readFileSync, existsSync } from 'node:fs';
 const root = new URL('../', import.meta.url);
 const html = readFileSync(new URL('index.html', root), 'utf8');
 const MECHS = [
-  ['selfish', 'selfish-cat.html'], ['weed', 'weed.html'], ['sick', 'sick-cat.html'], ['couple', 'couple-cat.html']
+  ['selfish', 'selfish-cat.html'], ['weed', 'weed.html'], ['sick', 'sick-cat.html'], ['couple', 'couple-cat.html'],
+  // Bộ 2 (hợp nhất Play Lab, design/merge-play-lab-plan.md Bước 6): mechanic 05–10
+  ['magnet', 'magnet.html'], ['fragile-floor', 'fragile-floor.html'], ['stripe-cat', 'stripe-cat.html'],
+  ['alarm-zone', 'alarm-zone.html'], ['teleport-cat', 'teleport-cat.html'], ['electric-link', 'electric-link.html']
 ];
 const inlineScripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]).join('\n');
 const strip = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -22,7 +25,7 @@ function sectionBody(id) {
   return {tag: open[0], body: html.slice(open.index + open[0].length, end), index: open.index};
 }
 
-test('4 section mechanic đúng id, class, data-page và thứ tự', () => {
+test('10 section mechanic đúng id, class, data-page và thứ tự', () => {
   let last = -1;
   for (const [id, page] of MECHS) {
     const {tag, index} = sectionBody(id);
@@ -32,7 +35,7 @@ test('4 section mechanic đúng id, class, data-page và thứ tự', () => {
     last = index;
     assert.ok(existsSync(new URL(page, root)), `không có file ${page}`);
   }
-  assert.equal((html.match(/<section\b[^>]*\bclass=["'][^"']*\bmech\b/gi) || []).length, 4, 'phải có đúng 4 section .mech');
+  assert.equal((html.match(/<section\b[^>]*\bclass=["'][^"']*\bmech\b/gi) || []).length, 10, 'phải có đúng 10 section .mech');
 });
 
 test('mỗi section có đúng 2 nút gif/play với đúng nhãn và link trang chi tiết', () => {
@@ -105,10 +108,13 @@ test('JS: showDemo, CSS nhúng nguyên văn, xử lý lỗi, tự co giãn chi�
   assert.match(inlineScripts, /aria-pressed/);
 });
 
-test('header sticky có nav tới 4 mechanic; hero và footer', () => {
+test('header sticky có nav tới 10 mechanic (2 nhóm); hero và footer', () => {
   assert.match(html, /<header\b/i);
   assert.match(html, /position\s*:\s*sticky/);
-  for (const [id] of MECHS) assert.match(html, new RegExp(`href=["']#${id}["']`), `nav thiếu #${id}`);
+  const nav = /<nav class="main-nav"[\s\S]*?<\/nav>/.exec(html)[0];
+  for (const [id] of MECHS) assert.match(nav, new RegExp(`href=["']#${id}["']`), `nav thiếu #${id}`);
+  assert.match(nav, /Bộ 1 · 4 mechanic/);
+  assert.match(nav, /Bộ 2 · 6 mechanic/);
   assert.match(html, /<footer\b/i);
   assert.match(html, /<h1\b/i);
 });
@@ -124,7 +130,7 @@ test('nguồn ngoài hợp lệ, dùng kit JS nhưng không nạp kit CSS, có r
   assert.match(html, /CatDom\.catSVG\s*\(/, 'ảnh minh hoạ dùng CatDom.catSVG');
 });
 
-test('4 trang chi tiết vẫn có khu .demos và .card.play là con trực tiếp của main', () => {
+test('10 trang chi tiết có khu .demos và .card.play là con trực tiếp của main', () => {
   for (const [, page] of MECHS) {
     const src = readFileSync(new URL(page, root), 'utf8');
     const main = src.slice(src.indexOf('<main'), src.indexOf('</main>'));

@@ -46,6 +46,7 @@ h3{font:700 19px/1.3 "Baloo 2",sans-serif;margin:0 0 4px}
 .board,.lyr{position:absolute;inset:0}
 .tile{position:absolute;width:52px;height:52px;margin:2px;border-radius:9px;background:var(--tile);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),inset 0 2px 0 var(--tile-hi)}
 .hole{position:absolute;border-radius:11px}
+.hole-cell{position:absolute;box-sizing:border-box}
 .cat{position:absolute;width:56px;height:56px;display:grid;place-items:center}
 .cat .body{width:52px;height:52px}
 .cat svg{width:100%;height:100%;overflow:visible;display:block}
@@ -110,6 +111,18 @@ th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vert
 th{width:30%;color:var(--muted);font-weight:600}
 .tag{display:inline-block;font-size:12px;font-weight:700;background:#fff3d6;color:#9a5b00;border-radius:8px;padding:2px 8px;margin-left:6px}
 .tip{background:#fff8e6;border:1px solid #ffe2a3;border-radius:16px;padding:16px 18px;margin-top:28px}
+
+/* ---------- tiêu chí đánh giá (ngoài .demos và .card.play để iframe trang tổng không hiện) ---------- */
+details.review{margin-top:28px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:0 20px}
+details.review summary{cursor:pointer;font:800 22px/1.2 "Baloo 2",sans-serif;padding:16px 0}
+.criteria{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;padding-bottom:20px}
+.criteria article{background:var(--bg);border-radius:14px;padding:14px 16px}
+.criteria .n{font:800 13px "Baloo 2";color:var(--accent)}
+.criteria h3{font-size:17px}
+.criteria p{margin:6px 0 0;font-size:14.5px}
+.criteria ul{margin:6px 0 0;padding-left:18px;font-size:14.5px;line-height:1.5}
+.criteria li{margin:3px 0}
+.criteria .verdict{margin-top:4px;padding:6px 10px;background:var(--card);border-radius:10px}
 
 @media (max-width:760px){
   .play{grid-template-columns:1fr}
@@ -197,9 +210,29 @@ th{width:30%;color:var(--muted);font-weight:600}
     </table>
   </div>
 
+  <details class="review">
+    <summary>📋 Tiêu chí đánh giá · Thua khi bộ đếm N về 0</summary>
+    <div class="criteria">
+      <article><div class="n">01</div><h3>Có dễ hiểu không?</h3>
+        <p class="verdict"><b>Kết luận:</b> Dễ — hiểu sau 1–2 thao tác.</p>
+        <ul><li>Số N hiện trên đầu ngay từ đầu màn và giảm ngay lượt đầu: demo nuốt 3 mèo cam, N 5 → 2.</li><li>Cảm xúc leo thang báo trước: khó chịu (≥ 3) → badge cam, nổi gân (2) → badge đỏ nhấp nháy, rung (1).</li><li>Dễ hiểu sai: tưởng N là số <b>lượt</b>. Thật ra N trừ theo <b>số mèo</b> (một lượt nuốt 3 con trừ 3).</li></ul>
+        <p><b>Hỏi người chơi:</b> "Nuốt nhóm này thì N còn mấy?" · "Hố tím cần mấy bước để tới Mèo Ích Kỷ?"</p></article>
+      <article><div class="n">02</div><h3>Có case stuck / thua màn?</h3>
+        <p class="verdict"><b>Kiểu kết thúc:</b> Thua ngay (không có stuck).</p>
+        <ul><li><b>Điều kiện:</b> sau mỗi lượt nuốt không có Mèo Ích Kỷ, N trừ đúng số mèo bị nuốt; N ≤ 0 khi nó còn trên bàn → nó cào, thua.</li><li><b>Trên board demo:</b> bước 1 nuốt 3 mèo cam (N = 2); bước 2 nuốt 3 mèo xanh dương thay vì cứu nó → N = −1 → BỊ CÀO.</li><li><b>An toàn:</b> nuốt nó trong một lượt bất kỳ khi N ≥ 1, kể cả cùng lượt với mèo khác; từ đó hết đếm.</li><li><b>Luật thiết kế màn:</b> phải có lời giải đưa hố cùng màu tới nó sau ≤ N − 1 mèo khác.</li></ul></article>
+      <article><div class="n">03</div><h3>Visual có dễ demo?</h3>
+        <p class="verdict"><b>Kết luận:</b> Rất dễ demo — 1 con mèo, 1 con số, cảm xúc rõ.</p>
+        <ul><li>Badge số, mặt mèo đổi theo N, bong bóng "Tớ trước! Trong 5 con!", cào + rung + banner khi thua, mặt hài lòng khi được cứu.</li><li><b>Rủi ro:</b> N lớn (≥ 7) gần như không căng; nhóm 1 con không cho thấy "trừ theo số mèo" → demo nên dùng nhóm 3–4 con.</li></ul></article>
+      <article><div class="n">04</div><h3>Tạo feeling khác không?</h3>
+        <p class="verdict"><b>Ưu tiên hay để dành:</b> <b>Ưu tiên</b> — dọn đường cho hố cùng màu tới nó trước mọi thứ.</p>
+        <ul><li><b>Cách chơi đổi:</b> khi buộc phải nuốt mèo khác, chọn nhóm nhỏ để "tiết kiệm" N; tránh hố lớn (4–5 ô) đầu màn.</li><li><b>Tần suất trong map:</b> giới thiệu 1 con, N = số mèo cần dọn tối thiểu + 2; màn thường 1 con, N vừa đủ + 1; màn khó 2 con khác màu. Không quá 2 con/màn.</li><li><b>Rủi ro cần playtest:</b> N quá chặt khiến màn chỉ còn đúng 1 thứ tự giải; ghép với Couple trong cùng màn tạo 2 bộ đếm khó theo dõi.</li></ul></article>
+    </div>
+  </details>
+
   <div class="tip">💡 <b>Pro Tip</b>: Nhìn số trên đầu Mèo Ích Kỷ trước khi kéo hole lớn. Một hole nuốt cả nhóm đông có thể làm bộ đếm tụt về 0 chỉ trong một lần kéo, nên hãy mở đường cho hole cùng màu với nó trước.</div>
 </main>
 
+<script src="boards/eat-fixtures.js"></script>
 <script>
 const CELL = 56, PAD = 8, OL = '#3b2417';
 const PAL = {
@@ -305,16 +338,59 @@ class Stage {
     this.cats[id] = {el: d, c, x, y, selfish};
     return d;
   }
-  addHole(id, c, x, y, w = 1, h = 1) {
+  addHole(id, c, x, y, w = 1, h = 1, o = {}) {
     const p = PAL[c], d = document.createElement('div');
-    d.className = 'hole';
+    d.className = 'hole' + (o.cells?.length ? ' has-cells' : '');
     Object.assign(d.style, {
       left: this.px(x, y).left + 3 + 'px', top: this.px(x, y).top + 3 + 'px',
-      width: w * CELL - 6 + 'px', height: h * CELL - 6 + 'px', background: p.f,
-      boxShadow: `0 0 0 2px ${p.d}, inset 0 0 0 3px ${p.l}, inset 0 0 14px 7px ${p.d}`
+      width: w * CELL - 6 + 'px', height: h * CELL - 6 + 'px'
     });
+    if (o.cells?.length) {
+      d.style.background = 'none';
+      d.style.boxShadow = 'none';
+      d.style.outline = 'none';
+      const cells = o.cells;
+      cells.forEach(([cx, cy]) => {
+        const hasLeft = cells.some(([x, y]) => x === cx - 1 && y === cy);
+        const hasRight = cells.some(([x, y]) => x === cx + 1 && y === cy);
+        const hasTop = cells.some(([x, y]) => x === cx && y === cy - 1);
+        const hasBottom = cells.some(([x, y]) => x === cx && y === cy + 1);
+        const cellEl = document.createElement('div');
+        cellEl.className = 'hole-cell';
+        cellEl.dataset.dx = cx;
+        cellEl.dataset.dy = cy;
+        const left = cx * CELL - (hasLeft ? 3 : 0);
+        const top = cy * CELL - (hasTop ? 3 : 0);
+        const width = CELL - 6 + (hasLeft ? 3 : 0) + (hasRight ? 3 : 0);
+        const height = CELL - 6 + (hasTop ? 3 : 0) + (hasBottom ? 3 : 0);
+        const rTL = !hasTop && !hasLeft ? 11 : 0;
+        const rTR = !hasTop && !hasRight ? 11 : 0;
+        const rBR = !hasBottom && !hasRight ? 11 : 0;
+        const rBL = !hasBottom && !hasLeft ? 11 : 0;
+        Object.assign(cellEl.style, {
+          position: 'absolute',
+          boxSizing: 'border-box',
+          left: left + 'px',
+          top: top + 'px',
+          width: width + 'px',
+          height: height + 'px',
+          borderRadius: `${rTL}px ${rTR}px ${rBR}px ${rBL}px`,
+          background: p.f,
+          borderTop: hasTop ? 'none' : `2px solid ${p.d}`,
+          borderBottom: hasBottom ? 'none' : `2px solid ${p.d}`,
+          borderLeft: hasLeft ? 'none' : `2px solid ${p.d}`,
+          borderRight: hasRight ? 'none' : `2px solid ${p.d}`
+        });
+        d.appendChild(cellEl);
+      });
+    } else {
+      Object.assign(d.style, {
+        background: p.f,
+        boxShadow: `0 0 0 2px ${p.d}, inset 0 0 0 3px ${p.l}, inset 0 0 14px 7px ${p.d}`
+      });
+    }
     this.holesL.appendChild(d);
-    this.holes[id] = {el: d, c, x, y};
+    this.holes[id] = {el: d, c, x, y, w, h, cells: o.cells, off: o.off || [0, 0]};
     return d;
   }
   setCounter(id, n) {
@@ -366,70 +442,100 @@ class Stage {
 }
 
 /* ---------- looping demos ---------- */
-const LAYOUT = {
-  N: 3,
-  cats: [['b1','blue',0,0],['b2','blue',1,0],['s','purple',3,1,true],['g1','green',1,3],['g2','green',2,3],['o1','orange',4,4],['o2','orange',3,4]],
-  holes: [['hb','blue',0,2,2,1],['hp','purple',4,2,1,1],['hg','green',1,4,2,1],['ho','orange',3,3,2,1]]
-};
-const SCENES = {
-  win: [
-    {hole:'hb', path:[[0,0]], eat:['b1','b2'], say:'Kéo hole xanh: clear 2 mèo → số giảm từ 3 xuống 1'},
-    {hole:'hp', path:[[3,2],[3,1]], eat:['s'], say:'Kịp lúc! Clear Mèo Ích Kỷ khi số vẫn còn 1'},
-    {hole:'hg', path:[[1,3]], eat:['g1','g2'], say:'Giờ clear thoải mái, nó không còn đếm nữa'},
-    {hole:'ho', path:[[3,4]], eat:['o2','o1'], say:'Bàn sạch!'}
-  ],
-  fail: [
-    {hole:'hb', path:[[0,0]], eat:['b1','b2'], say:'Clear 2 mèo xanh → số còn 1'},
-    {hole:'hg', path:[[1,3]], eat:['g1','g2'], say:'Clear thêm mèo xanh lá → số về 0…'}
-  ]
-};
+function rectOf(cells) {
+  const xs = cells.map(c => c[0]), ys = cells.map(c => c[1]);
+  const x = Math.min(...xs), y = Math.min(...ys);
+  return {x, y, w: Math.max(...xs) - x + 1, h: Math.max(...ys) - y + 1};
+}
 
 function runDemo(el, capEl, steps) {
-  const st = new Stage(el, 5, 5);
+  const FX = CatDomEatFixtures.fixtures.selfish.demo;
+  const st = new Stage(el, FX.level.cols, FX.level.rows);
   const cap = t => { capEl.textContent = t; gsap.fromTo(capEl, {opacity: 0, y: 4}, {opacity: 1, y: 0, duration: .25}); };
   const loop = () => {
     st.reset();
-    LAYOUT.cats.forEach(([id, c, x, y, sf]) => st.addCat(id, c, x, y, sf));
-    LAYOUT.holes.forEach(([id, c, x, y, w, h]) => st.addHole(id, c, x, y, w, h));
-    let n = LAYOUT.N, saved = false;
-    st.setCounter('s', n);
+    const aliveCats = FX.level.cats.map(c => ({ id: c.id, color: c.color, x: c.x, y: c.y, alive: true }));
+    FX.level.cats.forEach(c => st.addCat(c.id, c.color, c.x, c.y, !!c.selfish));
+    const holePos = {};
+    FX.holes.forEach(h => {
+      const r = rectOf(h.shape.map(([dx, dy]) => [h.x + dx, h.y + dy]));
+      const off = [r.x - h.x, r.y - h.y];
+      const cells = h.shape.map(([dx, dy]) => [h.x + dx - r.x, h.y + dy - r.y]);
+      st.addHole(h.id, h.color, r.x, r.y, r.w, r.h, { cells, off });
+      holePos[h.id] = [h.x, h.y];
+    });
+    const selfishCat = FX.level.cats.find(c => c.selfish);
+    const sid = selfishCat ? selfishCat.id : 's';
+    const N0 = FX.level.selfishCount;
+    let n = N0, saved = false;
+    st.setCounter(sid, n);
     const tl = gsap.timeline({onComplete: () => gsap.delayedCall(2.2, loop)});
-    tl.call(() => { cap(`Mèo Ích Kỷ đòi được clear trong ${LAYOUT.N} con đầu tiên`); st.say('s', `Tớ trước! Trong ${LAYOUT.N} con!`, 1.6); })
+    tl.call(() => { cap(FX.intro); st.say(sid, `Tớ trước! Trong ${N0} con!`, 1.6); })
       .to({}, {duration: 1.8});
+
+    const atCat = (x, y) => aliveCats.find(c => c.alive && c.x === x && c.y === y);
+    const groupAt = (x, y) => {
+      const first = atCat(x, y);
+      if (!first) return [];
+      const out = [first], seen = new Set([first.id]);
+      for (let i = 0; i < out.length; i++) {
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const neighbor = atCat(out[i].x + dx, out[i].y + dy);
+          if (neighbor && neighbor.color === first.color && !seen.has(neighbor.id)) {
+            seen.add(neighbor.id);
+            out.push(neighbor);
+          }
+        }
+      }
+      return out.map(c => c.id);
+    };
+
     for (const step of steps) {
       const hole = st.holes[step.hole];
-      const at = (x, y) => ({left: st.px(x, y).left + 3, top: st.px(x, y).top + 3});
-      const handAt = (x, y) => ({left: st.px(x, y).left + 18, top: st.px(x, y).top + 22});
+      const off = hole.off || [0, 0];
+      const cur = holePos[step.hole] || [hole.x, hole.y];
+      const at = (x, y) => ({left: st.px(x + off[0], y + off[1]).left + 3, top: st.px(x + off[0], y + off[1]).top + 3});
+      const handAt = (x, y) => ({left: st.px(x + off[0], y + off[1]).left + 18, top: st.px(x + off[0], y + off[1]).top + 22});
       tl.call(() => cap(step.say))
-        .set(st.hand, handAt(hole.x, hole.y))
+        .set(st.hand, handAt(cur[0], cur[1]))
         .to(st.hand, {opacity: 1, duration: .25})
         .to(st.hand, {scale: .82, duration: .12});
+      const dur = Math.min(.35, 1.2 / step.path.length);
       for (const [x, y] of step.path) {
-        tl.to(hole.el, {...at(x, y), duration: .45, ease: 'power2.inOut'})
-          .to(st.hand, {...handAt(x, y), duration: .45, ease: 'power2.inOut'}, '<');
+        tl.to(hole.el, {...at(x, y), duration: dur, ease: 'power2.inOut'})
+          .to(st.hand, {...handAt(x, y), duration: dur, ease: 'power2.inOut'}, '<');
       }
+      const last = step.path[step.path.length - 1];
+      holePos[step.hole] = [last[0], last[1]];
       tl.to(st.hand, {scale: 1, opacity: 0, duration: .2});
-      const hasSelfish = step.eat.includes('s');
-      if (hasSelfish) { saved = true; tl.call(() => st.markSaved('s')).to({}, {duration: .5}); }
+
+      const ids = groupAt(step.eat[0], step.eat[1]);
+      ids.forEach(id => {
+        const c = aliveCats.find(k => k.id === id);
+        if (c) c.alive = false;
+      });
+
+      const hasSelfish = ids.includes(sid);
+      if (hasSelfish) { saved = true; tl.call(() => st.markSaved(sid)).to({}, {duration: .5}); }
       const lbl = 'eat_' + step.hole;
-      tl.add(st.eatTl(step.eat), lbl);
+      tl.add(st.eatTl(ids), lbl);
       if (!saved) {
-        step.eat.forEach((id, i) => {
+        ids.forEach((id, i) => {
           const v = n - (i + 1);
-          if (v > 0) tl.call(() => st.setCounter('s', v), null, `${lbl}+=${i * .1 + .35}`);
+          if (v > 0) tl.call(() => st.setCounter(sid, v), null, `${lbl}+=${i * .1 + .35}`);
         });
-        n -= step.eat.length;
+        n -= ids.length;
       }
       tl.to(hole.el, {scale: 0, opacity: 0, duration: .3, ease: 'back.in(2)'}, '+=.15');
-      if (!saved && n <= 0) { tl.add(st.scratchTl('s')).to({}, {duration: 1}); return; }
+      if (!saved && n <= 0) { tl.add(st.scratchTl(sid)).to({}, {duration: 1}); return; }
       tl.to({}, {duration: .5});
     }
     tl.call(() => st.showBanner('AN TOÀN ✓', 'ok')).to({}, {duration: 1});
   };
   loop();
 }
-runDemo(document.getElementById('demoWin'), document.getElementById('capWin'), SCENES.win);
-runDemo(document.getElementById('demoFail'), document.getElementById('capFail'), SCENES.fail);
+runDemo(document.getElementById('demoWin'), document.getElementById('capWin'), CatDomEatFixtures.fixtures.selfish.demo.good);
+runDemo(document.getElementById('demoFail'), document.getElementById('capFail'), CatDomEatFixtures.fixtures.selfish.demo.bad);
 
 /* ---------- state strip ---------- */
 const STATES = [
