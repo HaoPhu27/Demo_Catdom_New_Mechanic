@@ -130,6 +130,19 @@ test('NAV-2: GIF gameplay là mặc định của khung visual, nạp lười kh
   assert.match(inlineScripts, /'IntersectionObserver' in window/, 'cần nhánh dự phòng khi không có IntersectionObserver');
 });
 
+test('NAV-3: chế độ Chơi thử nhúng nhỏ như GIF — board nửa khung, panel bên cạnh, log thấp', () => {
+  const flat = inlineScripts.replace(/\s+/g, '');
+  for (const rule of [
+    '.card.play{grid-template-columns:minmax(0,1fr)minmax(0,1fr)!important;gap:12px!important;padding:12px!important}',
+    '.card.play.panel{gap:8px!important}',
+    '.card.play.hint{font-size:12.5px!important}',
+    '.card.play.statstrong{font-size:18px!important}',
+    '.card.play.log{height:96px!important}',
+    '@media(max-width:520px){.card.play{grid-template-columns:1fr!important}.card.play.stage-wrap{max-width:240px!important}}',
+  ]) assert.ok(flat.includes(rule), `thiếu CSS nhúng chế độ play: ${rule}`);
+  assert.ok(flat.includes('main>*:not(${sel}){display:none!important}'), 'giữ quy tắc ẩn phần ngoài .demos/.card.play');
+});
+
 test('nguồn ngoài hợp lệ, dùng kit JS nhưng không nạp kit CSS, có responsive', () => {
   for (const m of html.matchAll(/<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+)["']/gi)) {
     const u = m[1];
