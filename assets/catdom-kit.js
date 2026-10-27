@@ -14,6 +14,8 @@
     yellow:{f:'#ffd84a', d:'#b8900a', l:'#fff0a6', vi:'vàng'}
   };
   const MARK = {pink:'#ff3d8b', blue:'#2f7bff', green:'#1fb24a', orange:'#ff7a00', purple:'#8a3dff', yellow:'#e6b800'};
+  /* Người xem bật "giảm chuyển động": demo không tự chạy/lặp, đợi bấm nút; bỏ rung + nháy. */
+  const REDUCE = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- art ---------- */
   function catSVG(c, mood = 'happy', o = {}) {
@@ -362,8 +364,12 @@
       });
       return tl;
     }
-    shakeTl(n = 7) { return gsap.timeline().fromTo(this.el, {x: -8}, {x: 8, duration: .05, repeat: n, yoyo: true, clearProps: 'x'}); }
+    shakeTl(n = 7) {
+      if (REDUCE) return gsap.timeline();
+      return gsap.timeline().fromTo(this.el, {x: -8}, {x: 8, duration: .05, repeat: n, yoyo: true, clearProps: 'x'});
+    }
     flashTl(color = '#e0263b') {
+      if (REDUCE) return gsap.timeline();
       return gsap.timeline().set(this.flash, {background: color}).to(this.flash, {opacity: .35, duration: .06, yoyo: true, repeat: 3});
     }
     clawsTl() {
@@ -425,6 +431,30 @@
     el.innerHTML = text;
     gsap.fromTo(el, {opacity: 0, y: 4}, {opacity: 1, y: 0, duration: .25});
   }
+  /* Demo tự lặp kiểu GIF: bình thường gọi loop() ngay.
+   * Khi bật giảm chuyển động: loop nhận cờ once → KHÔNG hẹn vòng lặp kế, timeline dựng ra bị giữ ở frame 0
+   * (board + intro đứng yên sau lớp nút), người xem bấm nút mới chạy đúng một lần. */
+  function runDemo(stageEl, loop) {
+    if (!REDUCE) { loop(false); return; }
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'demo-play'; btn.textContent = '▶ Xem demo';
+    let tl = null, shown = false;
+    /* Lần xem lại: nút xuống đáy board (class `again`) để không đè lên banner thắng/thua. */
+    const finished = () => { shown = true; btn.textContent = '↻ Xem lại'; btn.classList.add('again'); btn.hidden = false; };
+    const start = () => {
+      btn.hidden = true;
+      if (shown) { shown = false; arm(loop(true)); } else tl.play();
+    };
+    /* Gắn lại onComplete cho mỗi timeline mới để nút hiện lại sau khi xem xong. */
+    const arm = t => { t.eventCallback('onComplete', finished); tl = t; return t; };
+    btn.addEventListener('click', start);
+    stageEl.appendChild(btn);
+    arm(loop(true));
+    /* Tua tới 0,3 s KHÔNG chặn sự kiện để callback caption intro ở 0 s kịp chạy;
+     * board đứng yên ở frame đầu, bấm nút thì play() tiếp từ đây. */
+    tl.pause();
+    tl.seek(0.3, false);
+  }
   function setHoleTag(st, hid, hs) {
     const el = st.holes[hid]?.el;
     if (!el) return;
@@ -445,7 +475,7 @@
     const logic = loadLogic(cfg.name);
     const st = new Stage(cfg.el, cfg.level.cols, cfg.level.rows);
     if (!logic) { cfg.build(st, null); st.noLogic(cfg.file); caption(cfg.cap, 'Chưa có logic để chạy demo.'); return; }
-    const loop = () => {
+    const loop = (once) => {
       st.reset();
       const game = logic.createGame(cfg.level);
       const ctx = {game, cap: t => caption(cfg.cap, t), hole: null};
@@ -463,7 +493,7 @@
           setHoleTag(st, h.id, holeState[h.id]);
         }
       }
-      const tl = gsap.timeline({onComplete: () => gsap.delayedCall(2.4, loop)});
+      const tl = gsap.timeline({onComplete: () => { if (!once) gsap.delayedCall(2.4, () => loop(false)); }});
       if (typeof cfg.intro === 'function') cfg.intro(st, tl, ctx);
       else if (typeof cfg.intro === 'string') tl.call(() => ctx.cap(cfg.intro)).to({}, {duration: 1.8});
       else tl.to({}, {duration: 1});
@@ -540,8 +570,9 @@
         }
       }
       if (!finished && cfg.outro) { cfg.outro(st, tl, ctx); tl.to({}, {duration: 1.2}); }
+      return tl;
     };
-    loop();
+    runDemo(cfg.el, loop);
   }
   const defaultOn = {
     eat: (st, ev, tl) => tl.add(st.eatTl(ev.ids)),
@@ -706,10 +737,10 @@
     const logic = loadLogic(cfg.slug), view = new MoveView(cfg.el, cfg.level);
     if (!logic) { view.st.noLogic(`logic/${cfg.slug}.js`); caption(cfg.cap, 'Chưa có logic để chạy demo.'); return; }
     const moves = window.CatDomFixtures.seq(cfg.moves);
-    const loop = () => {
+    const loop = (once) => {
       const game = logic.createGame(cfg.level);
       view.build(game.getState());
-      const tl = gsap.timeline({onComplete: () => gsap.delayedCall(2.2, loop)});
+      const tl = gsap.timeline({onComplete: () => { if (!once) gsap.delayedCall(2.2, () => loop(false)); }});
       tl.call(() => caption(cfg.cap, cfg.intro)).to({}, {duration: 1.8});
       for (const [h, dx, dy] of moves) {
         const before = game.getState(), res = game.move(h, dx, dy), name = holeName(before, h) + ' ' + DIR_ARROW[dx + ',' + dy];
@@ -718,8 +749,9 @@
         tl.call(() => caption(cfg.cap, text)).add(view.step(next, res.events)).to({}, {duration: .35});
       }
       tl.to({}, {duration: 1.4});
+      return tl;
     };
-    loop();
+    runDemo(cfg.el, loop);
   }
 
   /* Board chơi thử: chọn hố (bấm/kéo, phím 1–9), đi bằng phím mũi tên, nút data-dir hoặc kéo.
