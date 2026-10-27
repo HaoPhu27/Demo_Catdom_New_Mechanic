@@ -174,6 +174,61 @@
     { eat: [3, 3], hole: 'hb', path: [[4, 3], [3, 3]], say: 'Mải ăn 4 mèo xanh dương thay vì cứu cặp đôi → đếm về 0, chia tay, thua!' }
   ];
 
+  // --- Selfish Cat (Mèo Ích Kỷ) ---
+  const selfishLevel = {
+    cols: 7,
+    rows: 8,
+    selfishCount: 5,
+    cats: [
+      // Orange (L3, 3 cats)
+      { id: 'o1', color: 'orange', x: 0, y: 2 },
+      { id: 'o2', color: 'orange', x: 1, y: 2 },
+      { id: 'o3', color: 'orange', x: 0, y: 3 },
+      // Purple (T4, 4 cats, s at center is Selfish Cat)
+      { id: 'p1', color: 'purple', x: 2, y: 3 },
+      { id: 's',  color: 'purple', x: 3, y: 3, selfish: true },
+      { id: 'p2', color: 'purple', x: 4, y: 3 },
+      { id: 'p3', color: 'purple', x: 3, y: 4 },
+      // Blue (I3, 3 cats)
+      { id: 'b1', color: 'blue', x: 4, y: 0 },
+      { id: 'b2', color: 'blue', x: 5, y: 0 },
+      { id: 'b3', color: 'blue', x: 6, y: 0 },
+      // Green (L4, 4 cats)
+      { id: 'g1', color: 'green', x: 0, y: 4 },
+      { id: 'g2', color: 'green', x: 0, y: 5 },
+      { id: 'g3', color: 'green', x: 0, y: 6 },
+      { id: 'g4', color: 'green', x: 1, y: 6 },
+      // Yellow (O4, 4 cats)
+      { id: 'y1', color: 'yellow', x: 5, y: 3 },
+      { id: 'y2', color: 'yellow', x: 6, y: 3 },
+      { id: 'y3', color: 'yellow', x: 5, y: 4 },
+      { id: 'y4', color: 'yellow', x: 6, y: 4 }
+    ]
+  };
+
+  const selfishHoles = [
+    { id: 'ho', color: 'orange', x: 0, y: 0, shape: [[0, 0], [1, 0], [0, 1]] },
+    { id: 'hp', color: 'purple', x: 2, y: 6, shape: [[0, 0], [1, 0], [2, 0], [1, 1]] },
+    { id: 'hb', color: 'blue', x: 4, y: 2, shape: [[0, 0], [1, 0], [2, 0]] },
+    { id: 'hg', color: 'green', x: 2, y: 0, shape: [[0, 0], [0, 1], [0, 2], [1, 2]] },
+    { id: 'hy', color: 'yellow', x: 5, y: 6, shape: [[0, 0], [1, 0], [0, 1], [1, 1]] }
+  ];
+
+  const selfishIntro = 'Mèo Ích Kỷ đòi được clear trong 5 con đầu tiên. Clear mèo khác làm giảm đếm, về 0 là bị cào thua!';
+
+  const selfishGood = [
+    { eat: [0, 2], hole: 'ho', path: [[0, 1], [0, 2]], say: 'Kéo hố cam nuốt 3 mèo → Mèo Ích Kỷ còn 2' },
+    { eat: [2, 3], hole: 'hp', path: [[2, 5], [2, 4], [2, 3]], say: 'Kịp lúc! Kéo hố tím nuốt Mèo Ích Kỷ cùng nhóm tím → an toàn!' },
+    { eat: [4, 0], hole: 'hb', path: [[4, 1], [4, 0]], say: 'Đã an toàn, kéo hố xanh dương nuốt 3 mèo' },
+    { eat: [0, 4], hole: 'hg', path: [[1, 0], [0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], say: 'Kéo hố xanh lá nuốt 4 mèo' },
+    { eat: [5, 3], hole: 'hy', path: [[5, 5], [5, 4], [5, 3]], say: 'Nuốt nốt 4 mèo vàng cuối cùng, bàn sạch!' }
+  ];
+
+  const selfishBad = [
+    { eat: [0, 2], hole: 'ho', path: [[0, 1], [0, 2]], say: 'Kéo hố cam nuốt 3 mèo → Mèo Ích Kỷ còn 2' },
+    { eat: [4, 0], hole: 'hb', path: [[4, 1], [4, 0]], say: 'Mải ăn 3 mèo xanh dương thay vì cứu Mèo Ích Kỷ → đếm về 0, bị cào, thua!' }
+  ];
+
   return {
     fixtures: {
       weed: {
@@ -184,6 +239,9 @@
       },
       couple: {
         demo: { level: coupleLevel, holes: coupleHoles, intro: coupleIntro, good: coupleGood, bad: coupleBad }
+      },
+      selfish: {
+        demo: { level: selfishLevel, holes: selfishHoles, intro: selfishIntro, good: selfishGood, bad: selfishBad }
       }
     }
   };
