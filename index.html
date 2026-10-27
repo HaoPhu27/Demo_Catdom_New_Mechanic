@@ -741,17 +741,12 @@ footer.site-footer {
     <a href="#" class="logo"><span>🐱</span> CatDom Mechanics</a>
     <nav class="main-nav" aria-label="Các mechanic">
       <div class="nav-group">
-        <button type="button" class="nav-toggle">Bộ 1 · 4 mechanic ▾</button>
+        <button type="button" class="nav-toggle">10 mechanic ▾</button>
         <div class="nav-menu">
           <a href="#selfish">Mèo Ích Kỷ</a>
           <a href="#weed">Cây Dại</a>
           <a href="#sick">Mèo Bệnh</a>
           <a href="#couple">Couple Mèo</a>
-        </div>
-      </div>
-      <div class="nav-group">
-        <button type="button" class="nav-toggle">Bộ 2 · 6 mechanic ▾</button>
-        <div class="nav-menu">
           <a href="#magnet">Mèo Nam Châm</a>
           <a href="#fragile-floor">Sàn Dễ Vỡ</a>
           <a href="#stripe-cat">Mèo Sọc</a>
@@ -774,7 +769,6 @@ footer.site-footer {
         <p class="hero-desc">Trang demo tổng hợp trực quan 10 cơ chế chướng ngại vật giúp Lead review gameplay dễ dàng: xem hoạt cảnh tự lặp hoặc chơi thử tương tác ngay trên trang.</p>
         <div class="hero-btns">
           <a href="#selfish" class="btn btn-primary">Xem mechanic đầu tiên</a>
-          <a href="#magnet" class="btn btn-secondary">Xem bộ 2 · 6 mechanic mới</a>
         </div>
       </div>
       <div class="hero-visual">
@@ -1341,6 +1335,20 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   });
+
+  // GIF gameplay là mặc định: tự bật khi section sắp cuộn tới
+  const sections = document.querySelectorAll('section.mech');
+  function autoGif(id) { if (!currentModes[id]) showDemo(id, 'gif'); }
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) { io.unobserve(entry.target); autoGif(entry.target.id); }
+      });
+    }, { rootMargin: '400px 0px' });
+    sections.forEach(function(sec) { io.observe(sec); });
+  } else {
+    sections.forEach(function(sec) { autoGif(sec.id); });
+  }
 
   // Vẽ ảnh minh hoạ bằng CatDom.catSVG
   renderIllustrations();
