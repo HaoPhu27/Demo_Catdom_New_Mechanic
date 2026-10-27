@@ -38,9 +38,10 @@
     { "name": "test-logic (hồi quy)", "command": "node --test tests/weed.test.mjs tests/sick.test.mjs tests/couple.test.mjs", "timeout_sec": 120 },
     { "name": "test-lab (mechanic 05–10)", "command": "node --test tests/magnet.test.mjs tests/fragile-floor.test.mjs tests/teleport-cat.test.mjs tests/alarm-zone.test.mjs tests/stripe-cat.test.mjs tests/electric-link.test.mjs", "timeout_sec": 180 },
     { "name": "test-demo-board", "command": "node --test tests/demo-board.test.mjs", "timeout_sec": 120 },
-    { "name": "test-eat-demo-board (Cây dại, Mèo bệnh)", "command": "node --test --test-name-pattern=\"^(module|weed|sick)\" tests/eat-demo-board.test.mjs", "timeout_sec": 120 },
+    { "name": "test-eat-demo-board", "command": "node --test tests/eat-demo-board.test.mjs", "timeout_sec": 120 },
     { "name": "html-weed", "command": "node tools/check-html.mjs weed.html", "timeout_sec": 60 },
-    { "name": "html-sick", "command": "node tools/check-html.mjs sick-cat.html", "timeout_sec": 60 }
+    { "name": "html-sick", "command": "node tools/check-html.mjs sick-cat.html", "timeout_sec": 60 },
+    { "name": "html-couple", "command": "node tools/check-html.mjs couple-cat.html", "timeout_sec": 60 }
   ],
   "checks_example": [
     { "name": "lint",  "command": "npm run lint",     "timeout_sec": 300 },

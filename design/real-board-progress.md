@@ -36,8 +36,8 @@ Spec: `design/quick-specs/realistic-eat-board-2026-10-27.md`. Test nghiệm thu:
 | Task | Nội dung | Trạng thái |
 |---|---|---|
 | RB-4 | Kit `demo()` kéo hố đặt sẵn + fixture Cây dại + `weed.html` | XONG `1a8897c` (lượt 1 agy hết giờ 15 phút nhưng đã viết kit + fixture; lượt 2 phiên mới chỉ sửa trang). Đã xem trên trình duyệt. |
-| RB-5 | Fixture Mèo bệnh + `sick-cat.html` | đang giao agy |
-| RB-6 | Fixture Couple + `couple-cat.html` | chờ RB-5 |
+| RB-5 | Fixture Mèo bệnh + `sick-cat.html` | XONG `e992f1f`, đạt lần đầu (prompt kèm công thức dựng board: ổ bệnh giữa nhóm T4 cô lập). Đã xem trên trình duyệt. |
+| RB-6 | Fixture Couple + `couple-cat.html` | đang giao agy |
 | RB-7 | Mèo Ích Kỷ | chờ Lead duyệt RB-4…RB-6 |
 
 Ghi chú: `HoleShapes.json` gốc CÓ trên máy này (`D:/Xgame/Generate VIPPRO/SYSTEM/SOURCE/AI/IndependentSolver/IO/HoleShapes.json`), dùng để đối chiếu ánh xạ `holeType` nếu cần.
