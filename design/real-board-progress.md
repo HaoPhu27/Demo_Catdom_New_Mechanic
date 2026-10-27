@@ -1,6 +1,6 @@
 # Tiến trình: demo trên board giống level thật (feature `real-board`)
 
-Cập nhật: 2026-10-27. Nhánh: `feature/RB-3` (chứa toàn bộ chuỗi `feature/lab-ui` → `RB-1` → `RB-2` → `RB-3`), chưa merge `main`.
+Cập nhật: 2026-10-27. Nhánh mới nhất: `feature/RB-4` (chứa toàn bộ chuỗi `feature/lab-ui` → `RB-1` → … → `RB-4`), chưa merge `main`.
 
 ## Mục tiêu
 Lead: demo "GIF"/chơi thử phải chân thực như game thật, tham khảo cách Rollic dựng obstacle trong *30 Drop Away* (https://rollic.helpshift.com/hc/en/30-drop-away/faq/1043-what-are-the-obstacles/): dùng hố/mèo có sẵn của kit, số lượng khớp, hình hố đa dạng, không spam hố 2 ô ngang/dọc. Claude lên kế hoạch + review, agy (Antigravity CLI) làm qua orchestrator.
@@ -35,8 +35,8 @@ Spec: `design/quick-specs/realistic-eat-board-2026-10-27.md`. Test nghiệm thu:
 
 | Task | Nội dung | Trạng thái |
 |---|---|---|
-| RB-4 | Kit `demo()` kéo hố đặt sẵn + fixture Cây dại + `weed.html` | đang giao agy |
-| RB-5 | Fixture Mèo bệnh + Couple, 2 trang | chờ RB-4 |
+| RB-4 | Kit `demo()` kéo hố đặt sẵn + fixture Cây dại + `weed.html` | XONG `1a8897c` (lượt 1 agy hết giờ 15 phút nhưng đã viết kit + fixture; lượt 2 phiên mới chỉ sửa trang). Đã xem trên trình duyệt. |
+| RB-5 | Fixture Mèo bệnh + Couple, 2 trang | việc tiếp theo; checks cần đổi pattern test thành `^(module|weed|sick|couple)` + html 2 trang |
 | RB-6 | Mèo Ích Kỷ | chờ Lead duyệt RB-4/5 |
 
 Ghi chú: `HoleShapes.json` gốc CÓ trên máy này (`D:/Xgame/Generate VIPPRO/SYSTEM/SOURCE/AI/IndependentSolver/IO/HoleShapes.json`), dùng để đối chiếu ánh xạ `holeType` nếu cần.
@@ -46,3 +46,5 @@ Hướng dự kiến:
 - Kit `demo()`: hố đặt sẵn trên bàn với hình trong catalog (dùng `Stage.addHole(..., {cells})` của RB-1), kéo tới trùm nhóm mèo cùng màu thay vì hiện tại chỗ.
 - Board demo mới cho 4 mechanic theo cùng luật đợt 1 (bàn 6–8 × 7–9, 4–7 hố, sức chứa = số ô, mèo khít, ≥ 3 hình).
 - `selfish-cat.html` là file mẫu chuẩn đã duyệt → làm sau cùng, giữ kịch bản gameplay.
+
+Bài học quy trình: prompt lớn (kit + board + trang) làm agy chạm `--print-timeout 15m`. Nên tách mỗi task ≤ 2 file chính, hoặc tăng timeout.
