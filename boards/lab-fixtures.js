@@ -214,27 +214,27 @@
       },
       demo: {
         name: 'Board thật · Hốc bẫy dịch chuyển',
-        hint: 'Hồng ăn cụm hồng. Cam sang phải ăn cụm cam. Xanh lá xuống ăn cụm xanh lá. Xanh dương sang phải ăn mèo thường trước rồi mới ăn mèo mũi tên. Vàng dọn nốt.',
+        hint: 'Hồng ăn cụm hồng. Cam sang phải ăn cụm cam. Xanh lá trượt xuống cột 0 rồi rẽ phải ăn cụm xanh lá. Vàng rẽ trái rồi xuống ăn hết cụm vàng. Cuối cùng Xanh dương sang phải ăn mèo thường trước, rồi mới ăn mèo mũi tên.',
         level: board({
           cols: 7, rows: 7,
           holes: [
             hole('blue', 2, 3, 2, [[0, 0], [0, 1]]),
             hole('pink', 0, 0, 3, [[0, 0], [1, 0], [0, 1]]),
-            hole('yellow', 0, 5, 4, [[0, 0], [1, 0], [0, 1], [1, 1]]),
-            hole('green', 4, 3, 4, [[0, 0], [1, 0], [2, 0], [1, 1]]),
+            hole('yellow', 4, 5, 4, [[0, 0], [1, 0], [2, 0], [1, -1]]),
+            hole('green', 0, 4, 3, [[0, 0], [0, 1], [1, 1]]),
             hole('orange', 3, 0, 3, [[0, 0], [0, 1], [0, 2]])
           ],
           cats: [
             cat('b_arrow', 'blue', 2, 1, { arrow: [1, 0] }), cat('b_norm', 'blue', 5, 1),
             cat('p1', 'pink', 0, 2), cat('p2', 'pink', 1, 2), cat('p3', 'pink', 0, 3),
-            cat('y1', 'yellow', 2, 5), cat('y2', 'yellow', 3, 5), cat('y3', 'yellow', 2, 6), cat('y4', 'yellow', 3, 6),
-            cat('g1', 'green', 4, 5), cat('g2', 'green', 5, 5), cat('g3', 'green', 6, 5), cat('g4', 'green', 5, 6),
+            cat('y1', 'yellow', 4, 4), cat('y2', 'yellow', 3, 5), cat('y3', 'yellow', 4, 6), cat('y4', 'yellow', 5, 6),
+            cat('g1', 'green', 0, 6), cat('g2', 'green', 1, 6), cat('g3', 'green', 2, 6),
             cat('o1', 'orange', 4, 0), cat('o2', 'orange', 4, 1), cat('o3', 'orange', 4, 2)
           ],
           walls: [[6, 0], [6, 2]]
         }),
         bad: { moves: '1DD 0UU', status: 'lost', loseReason: 'stuck' },
-        good: '1DD 4R 3DD 0URRRUDLLLU 2RR'
+        good: '1DD 4R 3DR 2LD 0URRRUDLLLU'
       }
     } },
 
