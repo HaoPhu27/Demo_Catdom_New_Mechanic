@@ -108,15 +108,26 @@ test('JS: showDemo, CSS nhúng nguyên văn, xử lý lỗi, tự co giãn chi�
   assert.match(inlineScripts, /aria-pressed/);
 });
 
-test('header sticky có nav tới 10 mechanic (2 nhóm); hero và footer', () => {
+test('header sticky có nav gộp 1 menu 10 mechanic; hero và footer', () => {
   assert.match(html, /<header\b/i);
   assert.match(html, /position\s*:\s*sticky/);
   const nav = /<nav class="main-nav"[\s\S]*?<\/nav>/.exec(html)[0];
-  for (const [id] of MECHS) assert.match(nav, new RegExp(`href=["']#${id}["']`), `nav thiếu #${id}`);
-  assert.match(nav, /Bộ 1 · 4 mechanic/);
-  assert.match(nav, /Bộ 2 · 6 mechanic/);
+  const hrefs = [...nav.matchAll(/href=["']#([^"']+)["']/g)].map(m => m[1]);
+  assert.deepEqual(hrefs, MECHS.map(m => m[0]), 'nav: đủ 10 mechanic, đúng thứ tự, mỗi cái 1 lần');
+  assert.equal((nav.match(/class="nav-group"/g) || []).length, 1, 'NAV-2: chỉ 1 nhóm menu, không tách bộ');
+  assert.match(nav, /<button type="button" class="nav-toggle">10 mechanic ▾<\/button>/);
+  assert.doesNotMatch(html, /[Bb]ộ [12]\b/, 'NAV-2: không còn chữ "Bộ 1"/"Bộ 2" trên trang');
+  assert.doesNotMatch(html, /href="#magnet" class="btn/, 'NAV-2: bỏ nút hero "Xem bộ 2"');
   assert.match(html, /<footer\b/i);
   assert.match(html, /<h1\b/i);
+});
+
+test('NAV-2: GIF gameplay là mặc định của khung visual, nạp lười khi cuộn tới', () => {
+  assert.match(inlineScripts, /function\s+autoGif\s*\(\s*id\s*\)\s*{\s*if\s*\(\s*!currentModes\[id\]\s*\)\s*showDemo\(\s*id\s*,\s*'gif'\s*\)/, 'cần autoGif(id): chỉ tự bật gif khi section chưa có chế độ');
+  assert.match(inlineScripts, /new IntersectionObserver\(/);
+  assert.match(inlineScripts, /rootMargin:\s*'400px 0px'/);
+  assert.match(inlineScripts, /unobserve\(/, 'mỗi section chỉ tự bật 1 lần');
+  assert.match(inlineScripts, /'IntersectionObserver' in window/, 'cần nhánh dự phòng khi không có IntersectionObserver');
 });
 
 test('nguồn ngoài hợp lệ, dùng kit JS nhưng không nạp kit CSS, có responsive', () => {
